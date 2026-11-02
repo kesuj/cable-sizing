@@ -262,7 +262,7 @@ const warnText = (w) => (S.lang === "ne" && !eng() ? (WARN_NE.find(([k]) => w.st
 /** Printed marking, like the text along a real cable sheath. */
 function sheathPrint(parts) {
   const line = ["CABLECALC NEPAL", ...parts].join("  ◆  ");
-  return `<div class="sheath-print" aria-hidden="true"><span>${esc(line)}  ◆  ${esc(line)}</span></div>`;
+  return `<div class="sheath-print" title="${esc(line)}"><span>${esc(line)}</span></div>`;
 }
 
 function renderResult() {

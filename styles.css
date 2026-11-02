@@ -286,7 +286,7 @@ html { scroll-behavior: smooth; scroll-padding-top: 76px; }
 
 .hero { padding: var(--s7) 0 var(--s7); border-bottom: 1px solid var(--rule); }
 .hero-in { display: grid; grid-template-columns: minmax(0, 1fr) 340px; gap: var(--s6); align-items: center; }
-.pill { display: inline-block; background: color-mix(in srgb, var(--accent) 20%, var(--sheet)); color: #8A5A00; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; margin: 0 0 var(--s4); }
+.pill { display: inline-block; background: color-mix(in srgb, var(--accent) 20%, var(--sheet)); color: var(--pill-ink, #7A4F00); font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 999px; margin: 0 0 var(--s4); }
 :root[data-theme="dark"] .pill { color: var(--accent); }
 .hero h1 { font-size: 52px; line-height: 1.08; font-weight: 700; letter-spacing: -0.025em; max-width: 16ch; }
 .hero .lead { font-size: 19px; line-height: 1.6; color: var(--graphite); max-width: 60ch; margin: var(--s4) 0 var(--s5); }
@@ -377,11 +377,11 @@ input[type=number], select { border-radius: 8px; border-bottom-width: 1px; }
   background: linear-gradient(90deg, var(--cu) 0 22%, var(--ph-r) 22% 48%, var(--ph-y) 48% 74%, var(--ph-b) 74% 100%); }
 
 /* tool cards: top band in the colour of that cable's sheath */
-.card[data-sheath] { border-top: 5px solid var(--ph-n); padding-top: calc(var(--s5) - 4px); }
-.card[data-sheath="lv"] { border-top-color: var(--ph-n); }
-.card[data-sheath="hv"] { border-top-color: var(--ph-r); }
-.card[data-sheath="line"] { border-top-color: #9AA5AE; }
-.card[data-sheath="buy"] { border-top-color: var(--cu); }
+.card[data-sheath] { position: relative; overflow: hidden; padding-top: calc(var(--s5) + 6px); }
+.card[data-sheath]::before { content: ""; position: absolute; left: 0; right: 0; top: 0; height: 6px; background: var(--ph-n); }
+.card[data-sheath="hv"]::before { background: var(--ph-r); }
+.card[data-sheath="line"]::before { background: #9AA5AE; }
+.card[data-sheath="buy"]::before { background: var(--cu); }
 
 /* how-it-works: steps hang on one live wire with current flowing along it */
 .steps4 { position: relative; }
@@ -398,9 +398,7 @@ input[type=number], select { border-radius: 8px; border-bottom-width: 1px; }
 .sheath-print { margin: 0 0 var(--s4); border-radius: 999px; background: var(--sheath); color: #C9CED4; overflow: hidden; white-space: nowrap;
   font: 600 11px/1 ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace; letter-spacing: .14em; text-transform: uppercase; padding: 9px 0;
   box-shadow: inset 0 2px 3px rgba(255,255,255,.08), inset 0 -3px 4px rgba(0,0,0,.45); }
-.sheath-print span { display: inline-block; padding-left: 100%; animation: sheath 26s linear infinite; }
-@keyframes sheath { to { transform: translateX(-100%); } }
-@media (prefers-reduced-motion: reduce) { .sheath-print span { animation: none; padding-left: 16px; } }
+.sheath-print span { display: block; padding: 0 18px; overflow: hidden; text-overflow: ellipsis; }
 
 /* hero: faint cable runs behind the copy */
 .hero { position: relative; overflow: hidden; }
@@ -422,7 +420,7 @@ input[type=number], select { border-radius: 8px; border-bottom-width: 1px; }
 .comp:target { outline: 3px solid var(--accent); }
 .comp-ph { margin: 0; position: relative; aspect-ratio: 3 / 2; background: var(--film); }
 .comp-ph img { width: 100%; height: 100%; object-fit: cover; display: block; }
-.comp-ph figcaption { position: absolute; left: 0; right: 0; bottom: 0; font-size: 11px; color: #E8EDF4; background: linear-gradient(transparent, rgba(0,0,0,.65)); padding: 16px 10px 6px; }
+.comp-ph figcaption { position: absolute; left: 0; right: 0; bottom: 0; font-size: 12px; color: #E8EDF4; background: linear-gradient(transparent, rgba(0,0,0,.65)); padding: 16px 10px 6px; }
 .comp-ph figcaption a { color: inherit; }
 .comp-ph.none { display: grid; place-items: center; color: var(--graphite); }
 .comp-body { padding: var(--s4) var(--s5) var(--s5); }
@@ -438,3 +436,38 @@ input[type=number], select { border-radius: 8px; border-bottom-width: 1px; }
 .steps4::before { top: 15px; left: 15px; right: 0; }
 .sheath-print { border: 1px solid color-mix(in srgb, var(--graphite) 35%, transparent); }
 .steps4 li { align-content: start; }
+
+/* installation options with real photos */
+.routecard:has(.route-photo) { flex-direction: column; align-items: stretch; padding: 0; overflow: hidden; gap: 0; }
+.routecard .route-photo { width: 100%; aspect-ratio: 16 / 10; object-fit: cover; display: block; }
+.routecard:has(.route-photo) span { padding: var(--s3); }
+.routes:has(.route-photo) { grid-template-columns: repeat(auto-fill, minmax(min(200px, 100%), 1fr)); }
+.mpic .route-photo { width: 56px; height: 56px; object-fit: cover; border-radius: 8px; display: block; }
+.choice.withpic:has(.route-photo) { grid-template-columns: 20px 64px 1fr; }
+
+:root[data-theme="dark"] { --pill-ink: #FFD27A; }
+@media (prefers-color-scheme: dark) { :root:not([data-theme="light"]) { --pill-ink: #FFD27A; } }
+
+.sub { max-width: 64ch; }
+.foot p { max-width: 70ch; }
+.ex-story p { max-width: 60ch; }
+.card p { max-width: 48ch; }
+
+/* cards: icon sits inline with the heading; a stripped-wire mark in the cable's sheath colour leads it */
+.card[data-sheath] { padding-top: var(--s5); overflow: visible; }
+.card[data-sheath]::before { content: none; }
+.card { display: grid; grid-template-columns: auto 1fr; column-gap: var(--s3); align-items: center; }
+.card > .card-ic { width: auto; height: auto; background: none; border-radius: 0; color: var(--primary); grid-row: 1; }
+.card > h3 { margin: 0; grid-row: 1; }
+.card > p { grid-column: 1 / -1; margin-top: var(--s3); }
+.card > h3::before { content: ""; display: inline-block; width: 22px; height: 7px; border-radius: 4px; margin-right: 10px; vertical-align: 3px;
+  background: linear-gradient(90deg, var(--sheath-c, var(--ph-n)) 0 68%, var(--cu) 68% 100%); }
+.card[data-sheath="hv"] { --sheath-c: var(--ph-r); }
+.card[data-sheath="line"] { --sheath-c: #9AA5AE; }
+.card[data-sheath="buy"] { --sheath-c: var(--cu); }
+#honest .card > h3::before { --sheath-c: var(--ph-b); }
+.card > .card-ic { display: none; }
+.card { grid-template-columns: 1fr; }
+.card > h3 { font-size: 19px; }
+.comp-ph { overflow: hidden; }
+.comp-ph img { position: absolute; inset: 0; }

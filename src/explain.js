@@ -1,9 +1,10 @@
+import { CREDITS } from "./credits.js";
 import { ic } from "./icons.js";
 // "Why?" explainers: one short, plain answer per concept (English + Nepali) and, where a picture
 // says it faster, a small line figure. Figures use currentColor so they work in light and dark.
 
 const svg = (w, h, body, label) =>
-  `<svg class="fig" viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" font-family="inherit" font-size="11">${body}</svg>`;
+  `<svg class="fig" viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" font-family="inherit" font-size="12">${body}</svg>`;
 const T = (x, y, s, a = "start", extra = "") => `<text x="${x}" y="${y}" fill="currentColor" stroke="none" text-anchor="${a}" ${extra}>${s}</text>`;
 const ACC = 'class="acc"'; // accent stroke (phase yellow), styled in CSS
 
@@ -17,13 +18,13 @@ export function houseMap(highlight = "main", lang = "en") {
     <path d="M24 30 C 50 40, 70 44, 92 62" ${hl("service")}/>
     <rect x="92" y="55" width="34" height="30"/>${T(109, 99, L.meter, "middle")}
     <path d="M126 70 H170" ${hl("main")}/>${T(148, 63, L.main, "middle")}
-    <rect x="170" y="40" width="40" height="66"/>${T(150, 120, L.board, "middle")}${T(150, 132, "MCB, RCD", "middle", 'font-size="9"')}
+    <rect x="170" y="40" width="40" height="66"/>${T(150, 120, L.board, "middle")}${T(150, 132, "MCB, RCD", "middle", 'font-size="11"')}
     <path d="M210 48 H300" ${hl(L.lights)}/>${T(306, 52, "lights")}
     <path d="M210 64 H300" ${hl(L.sockets)}/>${T(306, 68, "sockets")}
     <path d="M210 80 H300" ${hl("heater")}/>${T(306, 84, L.heater)}
     <path d="M210 96 H300" ${hl("ev")}/>${T(306, 100, L.ev)}
     <path d="M200 106 V155 H300" ${hl(L.pump)} stroke-dasharray="${highlight === "pump" ? "0" : "4 3"}"/>${T(306, 159, "pump")}
-    ${T(250, 182, L.cap, "middle", 'font-size="10"')}`, "House wiring map");
+    ${T(250, 182, L.cap, "middle", 'font-size="11"')}`, "House wiring map");
 }
 
 const WIRE = (cx, cy, r, col) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}" stroke="none"/>`;
@@ -41,6 +42,8 @@ const routePics = {
   duct: `${SOIL}<circle cx="32" cy="40" r="11" fill="none" stroke-width="2"/><circle cx="32" cy="43" r="5.5" class="sheath"/>`,
 };
 export function routePic(k) {
+  const cr = CREDITS[`route-${k}`];
+  if (cr) return `<img class="route-photo" src="assets/photos/${cr.file}" alt="${cr.alt || ""}" title="Photo: ${String(cr.author).replace(/"/g, "'")} (${cr.license}), Wikimedia Commons" loading="lazy">`;
   return svg(64, 56, routePics[k] || "", "");
 }
 
@@ -71,10 +74,10 @@ const FIG = {
     <path d="M20 40 H150" stroke-width="3"/><path d="M150 40 l10 -12 l6 24 l6 -24 l6 12" ${ACC}/>${T(20, 30, "fault: thousands of amps")}
     ${T(190, 30, "the cable must stay below 250 °C (XLPE)")}${T(190, 46, "until the breaker or relay trips")}${T(20, 70, "size ≥ fault current × √(clearing time) ÷ k      k = 94 Al XLPE, 143 Cu XLPE")}`, "Short circuit"),
   hv: () => svg(360, 80, `
-    <rect x="10" y="20" width="70" height="36"/>${T(45, 42, "NEA 33/11 kV", "middle", 'font-size="10"')}${T(45, 70, "fault kA, time s", "middle", 'font-size="10"')}
+    <rect x="10" y="20" width="70" height="36"/>${T(45, 42, "NEA 33/11 kV", "middle", 'font-size="11"')}${T(45, 70, "fault kA, time s", "middle", 'font-size="11"')}
     <path d="M80 38 H230" ${ACC} stroke-width="3"/>${T(155, 30, "11 kV cable (km)", "middle")}
-    <circle cx="245" cy="32" r="12"/><circle cx="245" cy="46" r="12"/>${T(245, 70, "transformer kVA", "middle", 'font-size="10"')}
-    <path d="M257 38 H300"/><rect x="300" y="26" width="40" height="24"/>${T(320, 62, "LT panel", "middle", 'font-size="10"')}`, "HV feeder"),
+    <circle cx="245" cy="32" r="12"/><circle cx="245" cy="46" r="12"/>${T(245, 70, "transformer kVA", "middle", 'font-size="11"')}
+    <path d="M257 38 H300"/><rect x="300" y="26" width="40" height="24"/>${T(320, 62, "LT panel", "middle", 'font-size="11"')}`, "HV feeder"),
 };
 
 /** Concept → { en: [title, body], ne: [title, body], fig } */

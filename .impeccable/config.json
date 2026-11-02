@@ -29,6 +29,42 @@
         ],
         "createdAt": "2026-11-02T19:18:54.088Z",
         "reason": "Claude (agent): static scan flags .tablewrap (table scroll wrapper) because it cannot see th/td padding (8px 10px in styles.css). Live-page scan of guide.html finds no cramped padding (2026-11-03). Re-check live with 'impeccable detect https://...'."
+      },
+      {
+        "rule": "overused-font",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-02T19:41:20.775Z",
+        "reason": "User requested the fonts of their ElectricalCalc AI site (Inter) in this conversation, 2026-11-03."
+      },
+      {
+        "rule": "overused-font",
+        "value": "*",
+        "files": [
+          "components.html"
+        ],
+        "createdAt": "2026-11-02T19:41:20.956Z",
+        "reason": "User requested the fonts of their ElectricalCalc AI site (Inter) in this conversation, 2026-11-03."
+      },
+      {
+        "rule": "overused-font",
+        "value": "*",
+        "files": [
+          "guide.html"
+        ],
+        "createdAt": "2026-11-02T19:41:21.166Z",
+        "reason": "User requested the fonts of their ElectricalCalc AI site (Inter) in this conversation, 2026-11-03."
+      },
+      {
+        "rule": "repeating-stripes-gradient",
+        "value": "*",
+        "files": [
+          "styles.css"
+        ],
+        "createdAt": "2026-11-02T19:41:21.370Z",
+        "reason": "User asked for a wire-themed design; the repeating gradient is the dashed live wire with current flowing in 'How it works' (one element), not decoration."
       }
     ]
   }
