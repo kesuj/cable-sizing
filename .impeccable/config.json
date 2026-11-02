@@ -20,6 +20,15 @@
         ],
         "createdAt": "2026-11-02T18:21:43.526Z",
         "reason": "Claude (agent): static scan of guide.html mixes light- and dark-theme tokens (e.g. #9aa7ae on #ffffff, #000 on #1c2428), pairs never rendered. Live-page scans in light and dark found no contrast failures (2026-11-02/03); re-run 'impeccable detect http://...' for real contrast."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "guide.html"
+        ],
+        "createdAt": "2026-11-02T19:18:54.088Z",
+        "reason": "Claude (agent): static scan flags .tablewrap (table scroll wrapper) because it cannot see th/td padding (8px 10px in styles.css). Live-page scan of guide.html finds no cramped padding (2026-11-03). Re-check live with 'impeccable detect https://...'."
       }
     ]
   }
