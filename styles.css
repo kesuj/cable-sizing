@@ -48,13 +48,14 @@ a { color: inherit; }
 .guide-link { font-size: 14px; padding: var(--s2) 0; text-underline-offset: 3px; }
 
 /* bench layout */
-.bench { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: var(--s6); padding: var(--s6);
-  max-width: 1320px; margin: 0 auto; align-items: start; }
+.page { max-width: 1320px; margin: 0 auto; padding: var(--s6); }
+/* The result panel is sticky only inside .bench (form + result), so it never covers the working below. */
+.bench { display: grid; grid-template-columns: minmax(0, 1fr) 380px; gap: var(--s6); align-items: start; }
 .bench > * { min-width: 0; }
 .form { display: grid; gap: var(--s5); grid-template-columns: minmax(0, 1fr); }
 .result { position: sticky; top: var(--s4); background: var(--sheet); border: 1px solid var(--rule);
-  border-radius: 6px; padding: var(--s5); }
-.working { grid-column: 1 / -1; }
+  border-radius: 6px; padding: var(--s5); max-height: calc(100vh - 2 * var(--s4)); overflow-y: auto; overscroll-behavior: contain; }
+.working { margin-top: var(--s6); border-top: 1px solid var(--rule); }
 
 .step { background: var(--sheet); border: 1px solid var(--rule); padding: var(--s5); }
 .step h2 { display: flex; align-items: baseline; gap: var(--s3); margin-bottom: var(--s4); }
@@ -165,8 +166,9 @@ p, li { text-wrap: pretty; }
 .foot { padding: var(--s5) var(--s6) var(--s7); color: var(--graphite); font-size: 13px; max-width: 1320px; margin: 0 auto; }
 
 @media (max-width: 1023px) {
-  .bench { grid-template-columns: minmax(0, 1fr); padding: var(--s4); gap: var(--s4); }
-  .result { position: static; }
+  .page { padding: var(--s4); }
+  .bench { grid-template-columns: minmax(0, 1fr); gap: var(--s4); }
+  .result { position: static; max-height: none; overflow: visible; }
   .top { padding: var(--s5) var(--s4) var(--s4); }
   h1 { font-size: 31px; }
   .sticky { display: block; position: fixed; left: 0; right: 0; bottom: 0; background: var(--ink); color: var(--sheet);
@@ -183,7 +185,7 @@ p, li { text-wrap: pretty; }
 @media (prefers-reduced-motion: reduce) { .xsec svg .ring { transition: none; } }
 @media print {
   .switches, .form, .actions, .sticky, .guide-link { display: none !important; }
-  .bench { display: block; padding: 0; }
-  .result { position: static; border: 0; }
+  .page, .bench { display: block; padding: 0; }
+  .result { position: static; border: 0; max-height: none; overflow: visible; }
   body { background: #fff; color: #000; }
 }
