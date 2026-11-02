@@ -42,3 +42,10 @@ test("HV 500 kVA transformer feed at 11 kV: fault decides (13.1 kA, 1 s → 150 
   assert.equal(res.chosen.size, 150);
   assert.deepEqual(res.decidedBy, ["short-circuit withstand"]);
 });
+
+test("7.4 kW EV charger uses its 32 A rating: 40 A breaker, 10 mm² in conduit at 35 °C", () => {
+  const { res } = run("ev", { evKw: "7.4" }, "conduit", 20);
+  assert.equal(res.current.I, 32);
+  assert.equal(res.current.In, 40);
+  assert.equal(res.chosen.size, 10); // 6 mm² B1 PVC: 41 A × 0.94 = 38.5 A < 40 A
+});

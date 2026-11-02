@@ -3,6 +3,8 @@ import { ADAPTERS } from "./adapters/index.js";
 import { sizeConductor, cableDescription } from "./size.js";
 import { round, kValue } from "./core.js";
 import { drawCable } from "./xsec.js";
+import { JOBS, ROUTES, REGIONS as NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } from "./jobs.js";
+import { explainHtml, routePic, houseMap } from "./explain.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -35,6 +37,8 @@ const DEFAULT_STATE = {
   material: "cu", insulation: "XLPE", cores: "4", armoured: true,
   vdLimitPct: 5, vdStartLimitPct: 15, faultOn: false, faultBasis: "kat", faultKa: 10, faultT: 0.1, i2t: 40000, sizeOn: "device",
   hvKv: 11, hvEarth: "E", hvSource: "polycab", minSize: "",
+  lang: "en", job: "house", route: "buried",
+  ...Object.values(JOBS).reduce((o, j) => ({ ...o, ...j.defaults }), {}), ...JOBS.house.defaults, hvKv: "11", faultKa: 10, faultT: 0.1,
 };
 
 let S = { ...DEFAULT_STATE };
@@ -46,13 +50,18 @@ const adapter = () => ADAPTERS[adapterKey()] || ADAPTERS["LV-IS"];
 const eng = () => S.mode === "engineer";
 
 // ---------- field helpers ----------
+// Concept explainers attached to fields (both modes).
+const WHY = { pf: "pf", eff: "efficiency", margin: "growth", motorFactor: "branch", lengthM: "distance", groupCount: "group",
+  cores: "cores", material: "conductor", vdLimitPct: "vdrop", faultKa: "fault", startMult: "starter", meterA: "meter", houseBasis: "meter",
+  kwFuture: "growth", hp: "efficiency", motorBasis: "efficiency", starter: "starter", acTon: "ton", evKw: "ev", kva: "kva", region: "region" };
+const why = (name, lang = "en") => (WHY[name] ? explainHtml(WHY[name], eng() ? "en" : lang) : "");
 function num(name, label, { suffix, hint, step = "any", min = 0 } = {}) {
   const input = `<input type="number" id="${name}" name="${name}" value="${esc(S[name])}" step="${step}" min="${min}" inputmode="decimal">`;
-  return `<div class="field"><label for="${name}">${label}</label>${suffix ? `<div class="unit">${input}<span class="suffix">${suffix}</span></div>` : input}${hint ? `<span class="hint">${hint}</span>` : ""}</div>`;
+  return `<div class="field"><label for="${name}">${label}</label>${suffix ? `<div class="unit">${input}<span class="suffix">${suffix}</span></div>` : input}${hint ? `<span class="hint">${hint}</span>` : ""}${why(name, S.lang)}</div>`;
 }
 function sel(name, label, opts, { hint, struct } = {}) {
   const o = opts.map(([v, t]) => `<option value="${esc(v)}"${String(S[name]) === String(v) ? " selected" : ""}>${esc(t)}</option>`).join("");
-  return `<div class="field"><label for="${name}">${label}</label><select id="${name}" name="${name}"${struct ? " data-struct" : ""}>${o}</select>${hint ? `<span class="hint">${hint}</span>` : ""}</div>`;
+  return `<div class="field"><label for="${name}">${label}</label><select id="${name}" name="${name}"${struct ? " data-struct" : ""}>${o}</select>${hint ? `<span class="hint">${hint}</span>` : ""}${why(name, S.lang)}</div>`;
 }
 function choices(name, label, opts, struct = true) {
   const items = opts.map(([v, t, d]) => `<label class="choice"><input type="radio" name="${name}" value="${esc(v)}"${String(S[name]) === String(v) ? " checked" : ""}${struct ? " data-struct" : ""}><div><b>${esc(t)}</b>${d ? `<span>${esc(d)}</span>` : ""}</div></label>`).join("");
@@ -71,6 +80,11 @@ function renderForm() {
     if (b.dataset.set === "std") b.disabled = hv;
     if (b.dataset.set === "std" && b.dataset.val === "IEC") b.disabled = hv || !ADAPTERS["LV-IEC"];
   }
+  document.documentElement.lang = !eng() && S.lang === "ne" ? "ne" : "en";
+  const langSeg = document.querySelector("[data-only=simple]");
+  if (langSeg) langSeg.hidden = eng();
+  if (!eng()) return renderSimple();
+  setStepTitles(STEP_EN);
 
   // 1 load
   let h = "";
@@ -207,13 +221,14 @@ function buildInput() {
 // ---------- results ----------
 let last = null;
 function compute() {
-  const A = adapter();
-  let res, err = null, notes = [];
+  let A = adapter();
+  let res, err = null, notes = [], simple = null;
   try {
-    const b = buildInput(); notes = b.notes;
+    const b = eng() ? buildInput() : buildSimple();
+    notes = b.notes; simple = b.simple || null; A = b.A || A;
     res = sizeConductor(A, b.inp);
   } catch (e) { err = e.message; }
-  last = { res, err, notes, A };
+  last = { res, err, notes, A, simple };
   renderResult();
 }
 
@@ -253,8 +268,11 @@ function renderResult() {
     h += meter("Voltage drop", c.vdPct, s.vdLimitPct, "%", c.pass.voltageDrop);
     if (c.vdStartPct != null) h += meter("Dip at motor start", c.vdStartPct, s.vdStartLimitPct, "%", c.pass.motorStart);
     if (c.scMin != null) h += meter("Size needed for the fault", c.scMin, c.size, "mm²", c.pass.shortCircuit);
-    h += `<p class="decided">Size decided by <b>${esc(res.decidedBy.join(" and "))}</b>.</p>`;
-    const allNotes = [...notes.filter((n) => !n.startsWith("Climate") || !eng()), ...res.warnings];
+    const DEC_NE = { "current-carrying capacity": "करेन्ट बोक्ने क्षमता", "voltage drop": "भोल्टेज ड्रप", "motor starting voltage dip": "मोटर सुरु हुँदा भोल्टेज झर्ने", "short-circuit withstand": "सर्ट सर्किट सहने क्षमता", "smallest size in the table": "तालिकाको सबैभन्दा सानो साइज" };
+    const dec = res.decidedBy.map((d) => (!eng() && S.lang === "ne" ? (DEC_NE[d] || (d.startsWith("the minimum size rule") ? "न्यूनतम साइजको नियम (NBC 207 / IEC)" : d)) : d));
+    h += `<p class="decided">${tr("decided")} <b>${esc(dec.join(S.lang === "ne" && !eng() ? " र " : " and "))}</b>.</p>`;
+    if (last.simple) h += renderSimpleResult(res, last.simple);
+    const allNotes = [...(last.simple ? [] : notes.filter((n) => !n.startsWith("Climate") || !eng())), ...res.warnings];
     if (allNotes.length) h += `<ul class="notes">${allNotes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`;
     sticky.textContent = `${res.runs > 1 ? res.runs + " × " : ""}${c.size} mm² ${s.material === "cu" ? "Cu" : "Al"}${res.current.In ? ` · ${res.current.In} A breaker` : ""}`;
   }
@@ -289,6 +307,172 @@ function renderWorking(res, A) {
   return h;
 }
 
+
+// ======================================================================
+// Simple mode: start from the job (Nepal), ask what people can see, explain every term.
+// ======================================================================
+const UI = {
+  en: { s1: "What is the cable for?", s2: "About the load", s3: "Where the cable runs", s4: "The cable",
+    job: "Choose the job", phase: "Supply", ph1: "Single phase, 230 V (most houses)", ph3: "Three phase, 400 V",
+    houseBasis: "Size it from", hbMeter: "My NEA meter category (on the bill)", hbLoad: "The appliances I use and will add",
+    meterA: "NEA meter capacity", kwNow: "Power used at the same time now", kwFuture: "Power you plan to add later",
+    kw: "Rated power (on the nameplate)", acBasis: "I know", acTon: "Capacity (ton)", amps: "Nameplate current",
+    acInverter: "Inverter AC?", yes: "Yes, inverter", no: "No, fixed speed", pumpType: "Type",
+    motorBasis: "From the nameplate I know", mbHp: "Power in HP", mbAmps: "Current in amps (best)", hp: "Motor power",
+    starter: "How it is started", evKw: "Charger", hvKv: "Supply voltage", kva: "Transformer size",
+    faultKa: "Fault level at your point of supply", faultT: "Time for the relay and breaker to clear a fault",
+    route: "How the cable is laid", region: "Where in Nepal", custom: "Somewhere else — I'll enter temperatures",
+    lengthM: "Cable length, one way", groupCount: "Circuits run together in the same pipe, tray or trench",
+    material: "Conductor", cu: "Copper — needed inside buildings", al: "Aluminium — cheaper for big, long runs",
+    airTemp: "Hottest air temperature", groundTemp: "Ground temperature at the cable",
+    decided: "Size decided by", vTitle: "Voltage your appliance gets", vNom: "When NEA supplies", vLow: "When NEA is at its −5 % limit",
+    vBad: "Below 90 % of nominal: motors overheat and may not start. Use a bigger cable or move the board closer.",
+    prot: "Protection to fit", whyNot: "Why not", wouldIt: "It would", assum: "What this answer assumes", shop: "At the shop: check before you pay",
+    earth: "Earth conductor", ph3note: "Three phase: phase-to-neutral voltage shown.",
+    shopList: ["The sheath is printed with the maker, the standard (IS 694, IS 1554, IS 7098), the size in mm², the cores and the voltage grade.",
+      "ISI or NS mark. Scrape a strand: copper must be copper all through, not copper-coated aluminium.",
+      "Weigh or measure: thin '2.5 mm²' wire is common. Compare the coil weight with the maker's catalogue.",
+      "Buy the length shown (10 % extra). Use crimped lugs of the right size; bimetallic lugs between aluminium and copper.",
+      "Before switching on: insulation test with a 500 V tester (at least 1 MΩ; new cable is usually hundreds of MΩ) and press the RCD test button."] },
+  ne: { s1: "तार केका लागि हो?", s2: "भारबारे", s3: "तार कहाँबाट जान्छ", s4: "तार",
+    job: "काम छान्नुहोस्", phase: "सप्लाई", ph1: "सिङ्गल फेज, २३० V (धेरैजसो घर)", ph3: "थ्री फेज, ४०० V",
+    houseBasis: "कसरी नाप्ने", hbMeter: "मेरो NEA मिटरको क्षमता (बिलमा)", hbLoad: "अहिले र पछि चलाउने उपकरण",
+    meterA: "NEA मिटरको क्षमता", kwNow: "अहिले सँगै चल्ने पावर", kwFuture: "पछि थप्ने पावर",
+    kw: "रेटेड पावर (नेमप्लेटमा)", acBasis: "मलाई थाहा छ", acTon: "क्षमता (टन)", amps: "नेमप्लेटको करेन्ट",
+    acInverter: "इन्भर्टर AC हो?", yes: "हो, इन्भर्टर", no: "होइन, फिक्स्ड स्पिड", pumpType: "प्रकार",
+    motorBasis: "नेमप्लेटमा थाहा भएको", mbHp: "HP मा पावर", mbAmps: "एम्पियरमा करेन्ट (सबैभन्दा राम्रो)", hp: "मोटरको पावर",
+    starter: "कसरी सुरु गरिन्छ", evKw: "चार्जर", hvKv: "सप्लाई भोल्टेज", kva: "ट्रान्सफर्मरको साइज",
+    faultKa: "सप्लाई बिन्दुमा फल्ट लेभल", faultT: "रिले र ब्रेकरले फल्ट काट्ने समय",
+    route: "तार कसरी राखिन्छ", region: "नेपालको कुन भागमा", custom: "अन्यत्र — तापक्रम म आफैं राख्छु",
+    lengthM: "तारको लम्बाइ (एकतर्फी)", groupCount: "एउटै पाइप, ट्रे वा खाल्डोमा भएका सर्किट",
+    material: "कन्डक्टर", cu: "तामा — भवनभित्र अनिवार्य", al: "एल्युमिनियम — ठूलो र लामो तारमा सस्तो",
+    airTemp: "हावाको सबैभन्दा बढी तापक्रम", groundTemp: "तार रहेको जमिनको तापक्रम",
+    decided: "साइज तय गर्ने कारण:", vTitle: "उपकरणमा पुग्ने भोल्टेज", vNom: "NEA ले दिँदा", vLow: "NEA −५ % सीमामा हुँदा",
+    vBad: "नामिनलको ९० % भन्दा कम: मोटर तातिन्छ र सुरु नहुन सक्छ। ठूलो तार प्रयोग गर्नुहोस्।",
+    prot: "राख्नुपर्ने सुरक्षा उपकरण", whyNot: "किन होइन", wouldIt: "यसले", assum: "यो उत्तरका मान्यताहरू", shop: "पसलमा: पैसा तिर्नुअघि जाँच्नुहोस्",
+    earth: "अर्थ तार", ph3note: "थ्री फेज: फेज-न्युट्रल भोल्टेज देखाइएको।",
+    shopList: ["खोलमा निर्माता, मापदण्ड (IS 694, IS 1554, IS 7098), साइज mm², कोर र भोल्टेज ग्रेड छापिएको हुनुपर्छ।",
+      "ISI वा NS चिन्ह। तार खुर्केर हेर्नुहोस्: तामा भित्रसम्मै तामा हुनुपर्छ।",
+      "तौल वा मोटाइ जाँच्नुहोस्: पातलो '२.५ mm²' तार धेरै पाइन्छ।",
+      "देखाइएको लम्बाइ (१० % थप) किन्नुहोस्। सही साइजको लग क्रिम्प गर्नुहोस्; एल्युमिनियम-तामा बीच बाइमेटालिक लग।",
+      "चलाउनुअघि ५०० V टेस्टरले इन्सुलेसन जाँच (कम्तीमा १ MΩ) र RCD को टेस्ट बटन थिच्नुहोस्।"] },
+};
+const tr = (k) => (eng() ? UI.en : UI[S.lang] || UI.en)[k] ?? UI.en[k] ?? k;
+const L2 = (o) => (S.lang === "ne" && o.ne ? o.ne : o.en);
+const STEP_EN = ["What the cable will power", "Where the cable runs", "The cable", "Checks"];
+function setStepTitles(t) {
+  ["#s1", "#s2", "#s3", "#s4"].forEach((id, i) => { const n = document.querySelector(id); if (n) n.innerHTML = `<span class="n">${i + 1}</span> ${esc(t[i])}`; });
+  const s4 = document.querySelector("#s4")?.closest("section");
+  if (s4) s4.hidden = t[3] === "";
+}
+
+const ICONS = {
+  house: '<path d="M4 14 L16 4 L28 14 V28 H4 Z"/><path d="M13 28 V20 H19 V28"/>',
+  heater: '<rect x="8" y="4" width="16" height="24" rx="4"/><path d="M12 22 q2 -3 0 -6 q-2 -3 0 -6 M20 22 q2 -3 0 -6 q-2 -3 0 -6"/>',
+  ac: '<rect x="3" y="8" width="26" height="10" rx="2"/><path d="M8 22 v4 M16 22 v6 M24 22 v4"/>',
+  pump: '<circle cx="12" cy="18" r="8"/><path d="M20 18 H29 M12 10 V4 H20"/><path d="M9 18 h6 M12 15 v6"/>',
+  ev: '<path d="M5 20 L8 12 H22 L26 20 V25 H5 Z"/><circle cx="10" cy="25" r="2.5"/><circle cx="21" cy="25" r="2.5"/><path d="M16 4 l-3 5 h4 l-3 5"/>',
+  shop: '<path d="M4 12 H28 L26 6 H6 Z"/><path d="M6 12 V28 H26 V12"/><path d="M13 28 V20 H19 V28"/>',
+  hv: '<path d="M16 3 L10 29 M16 3 L22 29 M11 22 H21 M13 14 H19"/><path d="M6 8 H26"/>',
+};
+const icon = (k) => `<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ""}</svg>`;
+const ROUTE_HL = { house: "main", heater: "heater", ac: "heater", pump: "pump", ev: "ev", shop: "main", hvfeed: "service" };
+
+function renderSimple() {
+  const job = JOBS[S.job] || JOBS.house;
+  const lang = S.lang;
+  setStepTitles([tr("s1"), tr("s3"), tr("s4"), ""]);
+  let h = `<fieldset class="field jobs"><legend class="lbl">${tr("job")}</legend><div class="jobgrid">` +
+    Object.entries(JOBS).map(([k, j]) => `<label class="jobcard"><input type="radio" name="job" value="${k}"${S.job === k ? " checked" : ""} data-struct>${icon(j.icon)}<span>${esc(L2(j))}</span></label>`).join("") +
+    `</div></fieldset>`;
+  if (job.level === "LV") h += `<div class="figwrap map">${houseMap(ROUTE_HL[S.job])}</div>${explainHtml("run", lang)}`;
+  else h += explainHtml("hv", lang);
+  const F = {
+    phase: () => sel("phase", tr("phase"), [["1ph", tr("ph1")], ["3ph", tr("ph3")]], { struct: true }),
+    houseBasis: () => sel("houseBasis", tr("houseBasis"), [["meter", tr("hbMeter")], ["load", tr("hbLoad")]], { struct: true }),
+    meterA: () => sel("meterA", tr("meterA"), NEA_METERS.map((a) => [a, `${a} A`])),
+    kwNow: () => num("kwNow", tr("kwNow"), { suffix: "kW" }),
+    kwFuture: () => num("kwFuture", tr("kwFuture"), { suffix: "kW" }),
+    kw: () => num("kw", tr("kw"), { suffix: "kW" }),
+    acBasis: () => sel("acBasis", tr("acBasis"), [["ton", tr("acTon")], ["amps", tr("amps")]], { struct: true }),
+    acTon: () => sel("acTon", tr("acTon"), [["1", "1 ton (12 000 BTU)"], ["1.5", "1.5 ton (18 000 BTU)"], ["2", "2 ton (24 000 BTU)"]]),
+    amps: () => num("amps", tr("amps"), { suffix: "A" }),
+    acInverter: () => sel("acInverter", tr("acInverter"), [["yes", tr("yes")], ["no", tr("no")]]),
+    pumpType: () => sel("pumpType", tr("pumpType"), Object.entries(PUMPS).map(([k, p]) => [k, L2(p)])),
+    motorBasis: () => sel("motorBasis", tr("motorBasis"), [["hp", tr("mbHp")], ["amps", tr("mbAmps")]], { struct: true }),
+    hp: () => num("hp", tr("hp"), { suffix: "HP" }),
+    starter: () => sel("starter", tr("starter"), Object.entries(STARTERS).map(([k, p]) => [k, L2(p)])),
+    evKw: () => sel("evKw", tr("evKw"), Object.entries(EV).map(([k, e]) => [k, e.en])),
+    hvKv: () => sel("hvKv", tr("hvKv"), [["11", "11 kV"], ["33", "33 kV"]], { struct: true }),
+    kva: () => num("kva", tr("kva"), { suffix: "kVA" }),
+    faultKa: () => num("faultKa", tr("faultKa"), { suffix: "kA" }),
+    faultT: () => num("faultT", tr("faultT"), { suffix: "s" }),
+  };
+  const fields = job.fields(S).map((f) => F[f]?.() || "");
+  for (let i = 0; i < fields.length; i += 2) h += row(fields[i], fields[i + 1] || "");
+  $("#load-fields").innerHTML = h;
+
+  const routes = Object.entries(ROUTES).filter(([k]) => job.level === "LV" || ["buried", "duct", "tray", "clipped"].includes(k));
+  if (!routes.some(([k]) => k === S.route)) S.route = routes[0][0];
+  h = `<fieldset class="field"><legend class="lbl">${tr("route")}</legend><div class="routes">` +
+    routes.map(([k, r]) => `<label class="routecard"><input type="radio" name="route" value="${k}"${S.route === k ? " checked" : ""} data-struct>${routePic(k)}<span>${esc(L2(r))}</span></label>`).join("") +
+    `</div>${explainHtml("route", lang)}</fieldset>`;
+  if (!NP_REGIONS[S.region] && S.region !== "custom") S.region = "hills";
+  h += row(sel("region", tr("region"), [...Object.entries(NP_REGIONS).map(([k, r]) => [k, L2(r)]), ["custom", tr("custom")]], { struct: true }));
+  if (S.region === "custom") h += row(num("airTemp", tr("airTemp"), { suffix: "°C" }), num("groundTemp", tr("groundTemp"), { suffix: "°C" }));
+  h += row(num("lengthM", tr("lengthM"), { suffix: "m" }), num("groupCount", tr("groupCount"), { step: 1, min: 1 }));
+  $("#route-fields").innerHTML = h;
+
+  $("#cable-fields").innerHTML = row(sel("material", tr("material"), [["cu", tr("cu")], ["al", tr("al")]], { struct: true })) + explainHtml("cores", lang);
+  $("#check-fields").innerHTML = "";
+}
+
+function buildSimple() {
+  const job = JOBS[S.job] || JOBS.house;
+  const t = job.toInput(S);
+  const r = routeFor(S.route, S.std, job.level);
+  const A = ADAPTERS[r.adapterKey];
+  const reg = NP_REGIONS[S.region];
+  const iec = r.adapterKey === "LV-IEC";
+  const env = { airTemp: reg ? reg.air : +S.airTemp, groundTemp: reg ? reg.ground : +S.groundTemp,
+    soilRes: iec ? 250 : 150, depthMm: job.level === "HV" ? (Number(S.hvKv) >= 22 ? 1050 : 900) : iec ? 700 : 750 };
+  const inp = {
+    ...t.input, method: r.method, lengthM: +S.lengthM, material: S.material, env,
+    group: { count: Math.max(1, Math.round(+S.groupCount || 1)), spacing: "touching", formation: "flat", racks: 1 },
+    vdLimitPct: 5, vdStartLimitPct: t.input.vdStartLimitPct || 15, fault: t.input.fault || null, sizeOn: t.input.sizeOn || "device",
+    armoured: job.level === "HV" || ["buried", "duct"].includes(S.route),
+  };
+  inp.insulation = t.input.insulation || (["A1", "B1"].includes(r.method) ? "PVC" : A.options.insulations[0][0]);
+  inp.cores = t.input.cores || coresFor(t, inp.system, r.method, r.adapterKey);
+  if (job.level === "LV") {
+    if (inp.material === "al") { inp.minSize = 16; inp.minSizeRule = "aluminium in fixed installations, IEC 60364-5-52 Table 52.2"; }
+    else if (S.std === "IS") { inp.minSize = 4; inp.minSizeRule = "power circuits, Nepal NBC 207"; }
+    else { inp.minSize = 1.5; inp.minSizeRule = "IEC 60364-5-52 Table 52.2"; }
+  }
+  const notes = t.assumptions.map(L2);
+  if (reg) notes.push(L2({ en: `Climate: ${reg.en.split(" (")[0]}: air ${reg.air} °C, ground ${reg.ground} °C.`, ne: `मौसम: ${reg.ne.split(" (")[0]}: हावा ${reg.air} °C, जमिन ${reg.ground} °C।` }));
+  if (iec && S.std === "IS") notes.push(L2({ en: "Cable in a pipe in the wall: IS catalogue tables only cover air, duct and ground, so IEC 60364-5-52 method B1 (single-core wires in conduit) is used.",
+    ne: "भित्ताको पाइपभित्रको तार: IS तालिकामा यो अवस्था नभएकाले IEC 60364-5-52 को B1 विधि प्रयोग गरिएको।" }));
+  return { inp, notes, A, simple: { t, job } };
+}
+
+function renderSimpleResult(res, sm) {
+  let h = "";
+  const v = voltageAtLoad(res);
+  const bad = v.lowAtLoad < v.minOk;
+  h += `<div class="volt${bad ? " bad" : ""}"><h3 class="rh">${sm.job.level === "HV" ? (S.lang === "ne" ? "ट्रान्सफर्मरमा पुग्ने भोल्टेज" : "Voltage at the transformer") : tr("vTitle")}</h3><dl class="kv">
+    <dt>${tr("vNom")} ${fmt(v.nominal, 0)} V</dt><dd>${fmt(v.atLoad, 0)} V</dd>
+    <dt>${tr("vLow")} (${fmt(v.low, 0)} V)</dt><dd>${fmt(v.lowAtLoad, 0)} V</dd></dl>
+    ${v.unit !== "V" ? `<p class="hint">${tr("ph3note")}</p>` : ""}${bad ? `<p class="err">${tr("vBad")}</p>` : ""}</div>`;
+  const prot = protectionFor(sm.t.kind, res, sm.t.starter);
+  h += `<h3 class="rh">${tr("prot")}</h3><ul class="plain">${prot.map((p) => `<li>${esc(L2(p))}</li>`).join("")}${sm.job.level === "LV" ? `<li>${tr("earth")}: ${res.earthSize} mm² ${res.spec.material === "cu" ? "Cu" : "Al"}</li>` : ""}</ul>`;
+  const sm1 = smallerSize(res);
+  if (sm1 && sm1.why.length) h += `<p class="smaller"><b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;
+  h += `<details class="why"><summary>${tr("assum")}</summary><ul class="plain">${last.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></details>`;
+  if (sm.job.level === "LV") h += `<details class="why"><summary>${tr("shop")}</summary><ul class="plain">${tr("shopList").map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
+  return h;
+}
+
 // ---------- events ----------
 function readField(el) {
   if (el.type === "checkbox") return el.checked;
@@ -303,6 +487,9 @@ form.addEventListener("input", (e) => {
   save(); compute();
 });
 function onStruct(name) {
+  if (name === "job") { const j = JOBS[S.job]; Object.assign(S, j.defaults); S.level = j.level;
+    if (j.level === "HV") { S.material = "al"; S.lengthM = 1500; S.faultOn = true; S.cores = "3"; S.method = "ground"; S.depthMm = Number(S.hvKv) >= 22 ? 1050 : 900; if (S.route === "conduit") S.route = "buried"; }
+    else if (S.lengthM > 500) S.lengthM = 40; }
   if (name === "loadType") {
     if (S.loadType === "motor") { S.unit = "HP"; S.system = "3ph"; S.motorStartOn = true; }
     else if (S.loadType === "amps") S.unit = "A";
@@ -320,6 +507,10 @@ document.querySelector(".switches").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-set]");
   if (!b || b.disabled) return;
   S[b.dataset.set] = b.dataset.val;
+  if (b.dataset.set === "level" && !eng()) {
+    if (S.level === "HV" && JOBS[S.job].level !== "HV") { S.job = "hvfeed"; onStruct("job"); }
+    if (S.level === "LV" && JOBS[S.job].level === "HV") { S.job = "house"; onStruct("job"); S.material = "cu"; }
+  }
   if (b.dataset.set === "level") {
     if (S.level === "HV") { S.unit = "kVA"; S.power = 2000; S.lengthM = 2000; S.faultKa = 13.1; S.faultT = 1; S.faultOn = true; S.cores = "3"; S.insulation = "XLPE"; S.method = "ground"; S.material = "al"; S.depthMm = Number(S.hvKv) >= 22 ? 1050 : 900; S.margin = 25; }
     else { S.unit = "kW"; S.power = 15; S.lengthM = 40; S.faultKa = 10; S.faultT = 0.1; S.faultOn = false; S.cores = "4"; S.depthMm = 750; S.material = "cu"; }
@@ -329,7 +520,7 @@ document.querySelector(".switches").addEventListener("click", (e) => {
     else { const R = REGIONS[S.region]; S.airTemp = R?.air ?? 40; S.groundTemp = R?.ground ?? 30; S.soilRes = 150; S.depthMm = 750; S.cores = "4"; }
   }
   const A = adapter();
-  const allowed = !eng() && A.options.simpleMethods ? A.options.simpleMethods : A.options.methods.map(([m]) => m);
+  const allowed = A.options.methods.map(([m]) => m);
   if (!allowed.includes(S.method)) S.method = allowed[0];
   save(); renderForm(); compute();
 });

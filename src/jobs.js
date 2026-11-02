@@ -21,10 +21,10 @@ export const AC_TON_KW = { "1": 1.1, "1.5": 1.6, "2": 2.2 };
 
 /** EV chargers (IEC 61851 mode 3 wallboxes). */
 export const EV = {
-  "3.3": { kw: 3.3, system: "1ph", en: "3.3 kW single-phase (16 A)" },
-  "7.4": { kw: 7.4, system: "1ph", en: "7.4 kW single-phase (32 A)" },
-  "11": { kw: 11, system: "3ph", en: "11 kW three-phase (16 A)" },
-  "22": { kw: 22, system: "3ph", en: "22 kW three-phase (32 A)" },
+  "3.3": { kw: 3.3, amps: 16, system: "1ph", en: "3.3 kW single-phase (16 A)" },
+  "7.4": { kw: 7.4, amps: 32, system: "1ph", en: "7.4 kW single-phase (32 A)" },
+  "11": { kw: 11, amps: 16, system: "3ph", en: "11 kW three-phase (16 A)" },
+  "22": { kw: 22, amps: 32, system: "3ph", en: "22 kW three-phase (32 A)" },
 };
 
 /** NEA domestic meter categories (single phase), A. */
@@ -123,10 +123,10 @@ export const JOBS = {
     defaults: { evKw: "7.4" },
     toInput(a) {
       const e = EV[a.evKw] || EV["7.4"];
-      return { input: { system: e.system, voltage: e.system === "1ph" ? 230 : 400, load: { power: e.kw, unit: "kW", pf: 1 },
+      return { input: { system: e.system, voltage: e.system === "1ph" ? 230 : 400, load: { power: e.amps, unit: "A", pf: 1 },
         motorFactor: 1.25, designMargin: 0 },
         assumptions: [
-          A(`${e.en} charger runs at full current for hours.`, `${e.en} चार्जर घण्टौंसम्म पूरा करेन्टमा चल्छ।`),
+          A(`${e.en} charger: rated current ${e.amps} A per phase (IEC 61851), drawn at full value for hours.`, `${e.en} चार्जर: प्रति फेज ${e.amps} A, घण्टौंसम्म पूरा करेन्टमा चल्छ।`),
           A("Continuous load: sized at 125 % (NEC 625.41); dedicated circuit, no diversity (IEC 60364-7-722).", "लगातारको भार: १२५ % मा नापिएको; छुट्टै सर्किट चाहिन्छ।"),
         ], kind: "ev" };
     },

@@ -763,12 +763,417 @@ function drawCable(svg, c) {
 
 return { drawCable };
 })();
+__m["jobs.js"] = (() => {
+// Job-based Simple mode. Each job turns plain answers (what people can read off a nameplate,
+// a bill or a tape measure) into an engineering input for sizeConductor(), and lists every
+// assumption it made, in English and Nepali. Pure functions — tested in tests/jobs.test.js.
+
+/** Starting current multiples (× full-load current) and power factor at start. */
+const STARTERS = {
+  dol: { mult: 6, pf: 0.3, en: "Direct-on-line (DOL) starter", ne: "डाइरेक्ट अन लाइन (DOL) स्टार्टर" },
+  sd: { mult: 2.5, pf: 0.35, en: "Star-delta starter", ne: "स्टार-डेल्टा स्टार्टर" },
+  soft: { mult: 3.5, pf: 0.35, en: "Soft starter", ne: "सफ्ट स्टार्टर" },
+  vfd: { mult: 1.2, pf: 0.85, en: "VFD / inverter drive", ne: "VFD / इन्भर्टर ड्राइभ" },
+};
+
+/** Pump defaults when only HP is known (typical, not guaranteed — the nameplate wins). */
+const PUMPS = {
+  sub: { eff: 0.78, pf: 0.8, en: "Submersible (borewell) pump", ne: "सबमर्सिबल (बोरिङ) पम्प" },
+  surface: { eff: 0.85, pf: 0.85, en: "Surface / monoblock pump or other motor", ne: "जमिन माथिको / मोनोब्लक पम्प वा अन्य मोटर" },
+};
+
+/** Air conditioner maximum electrical input by capacity (typical split units, kW). */
+const AC_TON_KW = { "1": 1.1, "1.5": 1.6, "2": 2.2 };
+
+/** EV chargers (IEC 61851 mode 3 wallboxes). */
+const EV = {
+  "3.3": { kw: 3.3, amps: 16, system: "1ph", en: "3.3 kW single-phase (16 A)" },
+  "7.4": { kw: 7.4, amps: 32, system: "1ph", en: "7.4 kW single-phase (32 A)" },
+  "11": { kw: 11, amps: 16, system: "3ph", en: "11 kW three-phase (16 A)" },
+  "22": { kw: 22, amps: 32, system: "3ph", en: "22 kW three-phase (32 A)" },
+};
+
+/** NEA domestic meter categories (single phase), A. */
+const NEA_METERS = [5, 15, 30, 60];
+
+const A = (en, ne) => ({ en, ne });
+
+const JOBS = {
+  house: {
+    level: "LV", icon: "house",
+    en: "Main cable of a house or flat (meter to board)", ne: "घर वा फ्ल्याटको मुख्य तार (मिटरदेखि बोर्डसम्म)",
+    fields: (a) => ["phase", "houseBasis", ...(a.houseBasis === "meter" ? ["meterA"] : ["kwNow", "kwFuture"])],
+    defaults: { phase: "1ph", houseBasis: "meter", meterA: 30, kwNow: 4, kwFuture: 3 },
+    toInput(a) {
+      const sys = a.phase;
+      const assumptions = [];
+      let load;
+      if (a.houseBasis === "meter") {
+        load = { power: +a.meterA, unit: "A", pf: 0.9 };
+        assumptions.push(A(`Sized for the full NEA meter capacity, ${a.meterA} A${sys === "3ph" ? " per phase" : ""}: the cable can never be the weak link up to the meter limit.`,
+          `NEA मिटरको पूरा क्षमता ${a.meterA} A${sys === "3ph" ? " (प्रति फेज)" : ""} अनुसार नापिएको: मिटरको सीमासम्म तार कमजोर हुँदैन।`));
+      } else {
+        const kw = (+a.kwNow || 0) + (+a.kwFuture || 0);
+        load = { power: kw, unit: "kW", pf: 0.9 };
+        assumptions.push(A(`Load = ${a.kwNow} kW used together now + ${a.kwFuture} kW you plan to add = ${kw} kW, power factor 0.9.`,
+          `भार = अहिले सँगै चल्ने ${a.kwNow} kW + पछि थप्ने ${a.kwFuture} kW = ${kw} kW, पावर फ्याक्टर ०.९।`));
+      }
+      return { input: { system: sys, voltage: sys === "1ph" ? 230 : 400, load, designMargin: 0, motorFactor: 1 },
+        assumptions, kind: "main" };
+    },
+  },
+
+  heater: {
+    level: "LV", icon: "heater",
+    en: "Geyser, heater or induction cooker", ne: "गिजर, हिटर वा इन्डक्सन चुलो",
+    fields: () => ["phase", "kw"],
+    defaults: { phase: "1ph", kw: 2 },
+    toInput(a) {
+      return { input: { system: a.phase, voltage: a.phase === "1ph" ? 230 : 400, load: { power: +a.kw, unit: "kW", pf: 1 }, designMargin: 0, motorFactor: 1 },
+        assumptions: [A(`Resistive load ${a.kw} kW, power factor 1.0 (all current does useful work).`, `${a.kw} kW को रेजिस्टिभ भार, पावर फ्याक्टर १.०।`)],
+        kind: "resistive" };
+    },
+  },
+
+  ac: {
+    level: "LV", icon: "ac",
+    en: "Air conditioner", ne: "एयर कन्डिसनर (AC)",
+    fields: (a) => ["acBasis", ...(a.acBasis === "amps" ? ["amps"] : ["acTon"]), "acInverter"],
+    defaults: { acBasis: "ton", acTon: "1.5", amps: 8, acInverter: "yes" },
+    toInput(a) {
+      const assumptions = [];
+      const load = a.acBasis === "amps" ? { power: +a.amps, unit: "A", pf: 0.9 } : { power: AC_TON_KW[a.acTon], unit: "kW", pf: 0.9 };
+      if (a.acBasis !== "amps") assumptions.push(A(`${a.acTon} ton split AC draws up to about ${AC_TON_KW[a.acTon]} kW. The nameplate current is better if you can read it.`,
+        `${a.acTon} टनको AC ले करिब ${AC_TON_KW[a.acTon]} kW सम्म लिन्छ। नेमप्लेटको करेन्ट थाहा भए त्यो राम्रो।`));
+      assumptions.push(A("Compressor circuit sized at 125 % of its current (NEC 440.32 practice for motor-compressors).",
+        "कम्प्रेसरको सर्किट करेन्टको १२५ % मा नापिएको (मोटर-कम्प्रेसरको चलन)।"));
+      const fixed = a.acInverter === "no";
+      if (fixed) assumptions.push(A("Fixed-speed compressor: starting current about 5 × running current is checked.", "फिक्स्ड-स्पिड कम्प्रेसर: सुरुको करेन्ट करिब ५ गुणा जाँचिएको।"));
+      return { input: { system: "1ph", voltage: 230, load, motorFactor: 1.25, designMargin: 0,
+        motorStart: fixed ? { multiple: 5, pf: 0.4 } : null }, assumptions, kind: "ac" };
+    },
+  },
+
+  pump: {
+    level: "LV", icon: "pump",
+    en: "Water pump or motor (borewell, tank, mill)", ne: "पानी पम्प वा मोटर (बोरिङ, ट्याङ्की, मिल)",
+    fields: (a) => ["phase", "pumpType", "motorBasis", ...(a.motorBasis === "amps" ? ["amps"] : ["hp"]), "starter"],
+    defaults: { phase: "1ph", pumpType: "sub", motorBasis: "hp", hp: 1, amps: 7, starter: "dol" },
+    toInput(a) {
+      const P = PUMPS[a.pumpType] || PUMPS.surface;
+      const st = STARTERS[a.starter] || STARTERS.dol;
+      const assumptions = [];
+      let load;
+      if (a.motorBasis === "amps") {
+        load = { power: +a.amps, unit: "A", pf: P.pf };
+        assumptions.push(A(`Nameplate full-load current ${a.amps} A used directly (most accurate).`, `नेमप्लेटको ${a.amps} A करेन्ट सिधै प्रयोग गरिएको (सबैभन्दा सही)।`));
+      } else {
+        load = { power: +a.hp, unit: "HP", pf: P.pf, eff: P.eff };
+        assumptions.push(A(`${a.hp} HP is shaft output = ${(a.hp * 0.7457).toFixed(2)} kW. ${P.en}: efficiency ${P.eff}, power factor ${P.pf} (typical; nameplate values are better).`,
+          `${a.hp} HP भनेको सफ्टको आउटपुट = ${(a.hp * 0.7457).toFixed(2)} kW। ${P.ne}: दक्षता ${P.eff}, पावर फ्याक्टर ${P.pf} (सामान्य मान)।`));
+      }
+      assumptions.push(A("Motor branch: cable sized for 125 % of full-load current (NEC 430.22; common practice in Nepal/India).", "मोटर सर्किट: तार पूरा-भार करेन्टको १२५ % का लागि नापिएको।"));
+      assumptions.push(A(`${st.en}: starting current ≈ ${st.mult} × running current; dip at the motor kept within 15 %.`, `${st.ne}: सुरुको करेन्ट ≈ ${st.mult} गुणा; सुरु हुँदा भोल्टेज १५ % भन्दा बढी झर्न हुँदैन।`));
+      if (a.starter === "sd") assumptions.push(A("Star-delta needs two 3-core cables from the starter to the motor, each carrying 58 % of the current; this tool sizes the supply cable to the starter.",
+        "स्टार-डेल्टामा स्टार्टरदेखि मोटरसम्म दुईवटा ३-कोर तार चाहिन्छ; यहाँ स्टार्टरसम्मको तार नापिएको छ।"));
+      return { input: { system: a.phase, voltage: a.phase === "1ph" ? 230 : 400, load: { ...load, shaftOutput: true },
+        motorFactor: 1.25, designMargin: 0, motorStart: { multiple: st.mult, pf: st.pf }, vdStartLimitPct: 15 },
+        assumptions, kind: "motor", starter: a.starter };
+    },
+  },
+
+  ev: {
+    level: "LV", icon: "ev",
+    en: "Electric vehicle (EV) charger", ne: "विद्युतीय सवारी (EV) चार्जर",
+    fields: () => ["evKw"],
+    defaults: { evKw: "7.4" },
+    toInput(a) {
+      const e = EV[a.evKw] || EV["7.4"];
+      return { input: { system: e.system, voltage: e.system === "1ph" ? 230 : 400, load: { power: e.amps, unit: "A", pf: 1 },
+        motorFactor: 1.25, designMargin: 0 },
+        assumptions: [
+          A(`${e.en} charger: rated current ${e.amps} A per phase (IEC 61851), drawn at full value for hours.`, `${e.en} चार्जर: प्रति फेज ${e.amps} A, घण्टौंसम्म पूरा करेन्टमा चल्छ।`),
+          A("Continuous load: sized at 125 % (NEC 625.41); dedicated circuit, no diversity (IEC 60364-7-722).", "लगातारको भार: १२५ % मा नापिएको; छुट्टै सर्किट चाहिन्छ।"),
+        ], kind: "ev" };
+    },
+  },
+
+  shop: {
+    level: "LV", icon: "shop",
+    en: "Shop, office, school or small industry supply", ne: "पसल, अफिस, विद्यालय वा सानो उद्योगको सप्लाई",
+    fields: () => ["phase", "kw"],
+    defaults: { phase: "3ph", kw: 20 },
+    toInput(a) {
+      return { input: { system: a.phase, voltage: a.phase === "1ph" ? 230 : 400, load: { power: +a.kw, unit: "kW", pf: 0.85 }, designMargin: 0.25, motorFactor: 1 },
+        assumptions: [A(`${a.kw} kW that can run at the same time, power factor 0.85, plus 25 % for growth (cables in walls and trenches are hard to replace).`,
+          `सँगै चल्न सक्ने ${a.kw} kW, पावर फ्याक्टर ०.८५, र भविष्यका लागि २५ % थप।`)], kind: "main" };
+    },
+  },
+
+  hvfeed: {
+    level: "HV", icon: "hv",
+    en: "11 kV or 33 kV cable to a transformer (industry, hospital, hydropower)", ne: "ट्रान्सफर्मरसम्मको ११ वा ३३ kV केबल (उद्योग, अस्पताल, जलविद्युत)",
+    fields: () => ["hvKv", "kva", "faultKa", "faultT"],
+    defaults: { hvKv: "11", kva: 500, faultKa: 13.1, faultT: 1 },
+    toInput(a) {
+      const kv = Number(a.hvKv);
+      return { input: { system: "3ph", voltage: kv * 1000, grade: String(a.hvKv), load: { power: +a.kva, unit: "kVA", pf: 0.9 },
+        sizeOn: "current", designMargin: 0, motorFactor: 1, fault: { ka: +a.faultKa, timeS: +a.faultT }, hvSource: "polycab", cores: "3", insulation: "XLPE" },
+        assumptions: [
+          A(`Sized for the transformer's full-load current: ${a.kva} kVA ÷ (√3 × ${kv} kV) = ${(a.kva / (Math.sqrt(3) * kv)).toFixed(1)} A.`,
+            `ट्रान्सफर्मरको पूरा-भार करेन्ट: ${a.kva} kVA ÷ (√3 × ${kv} kV) = ${(a.kva / (Math.sqrt(3) * kv)).toFixed(1)} A।`),
+          A(`Fault ${a.faultKa} kA for ${a.faultT} s — get the real value from the NEA substation; it usually decides the HV cable size.`,
+            `फल्ट ${a.faultKa} kA, ${a.faultT} सेकेन्ड — वास्तविक मान NEA सबस्टेसनबाट लिनुहोस्; HV मा तारको साइज प्रायः यसैले तय गर्छ।`),
+          A("3-core aluminium XLPE, armoured, IS 7098-2 (Polycab ratings); relay set at or below the cable's derated rating.",
+            "३-कोर एल्युमिनियम XLPE, आर्मर्ड, IS 7098-2; रिले तारको क्षमताभन्दा कममा सेट गर्नुपर्छ।"),
+        ], kind: "hv" };
+    },
+  },
+};
+
+/** Route choices in plain words → installation method per standard.
+ *  IS catalogue tables cover only air, duct and ground; conduit runs use IEC 60364-5-52 method B. */
+const ROUTES = {
+  clipped: { en: "Clipped on a wall or ceiling, in shade", ne: "भित्ता वा सिलिङमा क्लिप गरेर, छायाँमा", is: ["LV-IS", "air"], iec: "C", hv: "air" },
+  conduit: { en: "In a PVC pipe in or on the wall (normal house wiring)", ne: "भित्तामा PVC पाइपभित्र (सामान्य घरको वायरिङ)", is: ["LV-IEC", "B1"], iec: "B1", hv: null },
+  tray: { en: "On a cable tray or ladder in open air", ne: "खुला हावामा केबल ट्रे वा भर्याङमा", is: ["LV-IS", "air"], iec: "E", hv: "air" },
+  buried: { en: "Buried directly in the ground", ne: "जमिनमा सिधै गाडेर", is: ["LV-IS", "ground"], iec: "D2", hv: "ground" },
+  duct: { en: "In a pipe buried in the ground", ne: "जमिनमा गाडिएको पाइपभित्र", is: ["LV-IS", "duct"], iec: "D1", hv: "duct" },
+};
+
+const REGIONS = {
+  terai: { air: 45, ground: 35, en: "Terai / Madhesh (Biratnagar, Birgunj, Nepalgunj, Dhangadhi)", ne: "तराई / मधेस (विराटनगर, वीरगञ्ज, नेपालगञ्ज, धनगढी)" },
+  hills: { air: 35, ground: 25, en: "Hills and valleys (Kathmandu, Pokhara, Dhankuta, Tansen)", ne: "पहाड र उपत्यका (काठमाडौं, पोखरा, धनकुटा, तानसेन)" },
+  mountain: { air: 25, ground: 20, en: "High hills and mountains (above 2000 m)", ne: "उच्च पहाड र हिमाल (२००० मिटरभन्दा माथि)" },
+};
+
+/** Which adapter + method a route uses for a job under the chosen standard. */
+function routeFor(route, std, level) {
+  const R = ROUTES[route] || ROUTES.buried;
+  if (level === "HV") return { adapterKey: "HV-IS", method: R.hv || "ground" };
+  if (std === "IEC") return { adapterKey: "LV-IEC", method: R.iec };
+  const [adapterKey, method] = R.is;
+  return { adapterKey, method };
+}
+
+/** Cores for a job: wires in conduit are single-core; otherwise by system and load kind. */
+function coresFor(job, system, method, adapterKey) {
+  if (adapterKey === "HV-IS") return "3";
+  if (["A1", "B1"].includes(method)) return "1";
+  if (adapterKey === "LV-IEC") return system === "3ph" ? (job.kind === "motor" ? "4" : "5") : "3"; // with PE core
+  if (system === "3ph") return job.kind === "motor" ? "3" : "4";
+  return "2";
+}
+
+/** Protective device advice (IEC 60898 trip curves, IEC 61008/61009 RCDs, IEC 60364-7-722). */
+function protectionFor(kind, res, starter) {
+  const In = res.current.In;
+  const sys = res.spec.system;
+  const poles = sys === "1ph" ? "2-pole (DP)" : kind === "motor" ? "3-pole (TP)" : "4-pole (TPN)";
+  const polesNe = sys === "1ph" ? "२-पोल (DP)" : kind === "motor" ? "३-पोल (TP)" : "४-पोल (TPN)";
+  if (kind === "hv") return [A(`Relay (IDMT overcurrent + earth fault) on the 11/33 kV breaker or RMU, set at or below ${Math.floor(res.chosen.iz * res.runs)} A.`,
+    `११/३३ kV ब्रेकर वा RMU मा रिले, ${Math.floor(res.chosen.iz * res.runs)} A वा त्योभन्दा कममा सेट।`)];
+  const out = [];
+  if (kind === "motor") {
+    out.push(A(`${In} A ${poles} MCB/MCCB, C-curve (D-curve for direct-on-line motors above about 5 HP), to protect the cable.`,
+      `तारको सुरक्षाका लागि ${In} A ${polesNe} MCB/MCCB, C-कर्भ (५ HP भन्दा ठूला DOL मोटरमा D-कर्भ)।`));
+    out.push(A(`Motor overload relay or MPCB set at the nameplate current (${res.current.I.toFixed(1)} A) — this is what protects the motor.`,
+      `मोटरको सुरक्षाका लागि ओभरलोड रिले वा MPCB नेमप्लेट करेन्ट (${res.current.I.toFixed(1)} A) मा सेट।`));
+    if (starter !== "vfd") out.push(A("Add a single-phasing / dry-run protector for submersible pumps.", "सबमर्सिबल पम्पमा सिङ्गल-फेजिङ / ड्राइ-रन प्रोटेक्टर राख्नुहोस्।"));
+  } else {
+    const curve = kind === "resistive" ? "B" : "C";
+    out.push(A(`${In} A ${poles} MCB, ${curve}-curve${curve === "B" ? " (heating loads, no starting surge)" : " (general and compressor loads)"}.`,
+      `${In} A ${polesNe} MCB, ${curve}-कर्भ।`));
+  }
+  if (kind === "ev") out.push(A("RCD 30 mA Type A plus 6 mA DC fault detection in the charger, or a Type B RCD (IEC 60364-7-722).",
+    "३० mA Type A RCD र चार्जरमा ६ mA DC पत्ता लगाउने सुविधा, नभए Type B RCD।"));
+  else if (kind === "main") out.push(A("RCCB at the board: 30 mA for socket and bathroom circuits; 100–300 mA for the whole installation where the earth electrode is the only fault path (TT).",
+    "बोर्डमा RCCB: सकेट र बाथरुम सर्किटमा ३० mA; पूरै घरका लागि १००–३०० mA।"));
+  else out.push(A("30 mA RCD (RCCB/RCBO) — water and metal bodies make shock likely.", "३० mA RCD (RCCB/RCBO) — पानी र धातुले करेन्ट लाग्ने सम्भावना बढाउँछ।"));
+  return out;
+}
+
+/** Voltage at the load: nominal supply and at NEA's −5 % limit (Electricity Regulation 2050, Rule 40). */
+function voltageAtLoad(res) {
+  const U = res.spec.voltage;
+  const vd = res.chosen ? res.chosen.vd : 0;
+  const phaseV = res.spec.system === "3ph" ? 1 / Math.sqrt(3) : 1; // show phase-to-neutral for 3-ph LV
+  const lv = U <= 1100;
+  const scale = lv && res.spec.system === "3ph" ? phaseV : 1;
+  return {
+    unit: lv && res.spec.system === "3ph" ? "V (phase to neutral)" : "V",
+    nominal: U * scale, atLoad: (U - vd) * scale,
+    low: U * 0.95 * scale, lowAtLoad: (U * 0.95 - vd) * scale,
+    minOk: U * 0.9 * scale, // equipment generally tolerates −10 %
+  };
+}
+
+/** What one size smaller would do — the single most persuasive line for an electrician. */
+function smallerSize(res) {
+  const c = res.chosen;
+  if (!c) return null;
+  const i = res.candidates.indexOf(c);
+  if (i <= 0) return null;
+  const s = res.candidates[i - 1];
+  const why = [];
+  if (!s.pass.ampacity) why.push({ en: `carry only ${s.iz.toFixed(0)} A after derating, less than the ${res.current.basis.toFixed(0)} A it must carry — it would overheat`, ne: `घटाएपछि ${s.iz.toFixed(0)} A मात्र बोक्छ, चाहिने ${res.current.basis.toFixed(0)} A भन्दा कम — तातिन्छ` });
+  if (!s.pass.voltageDrop) why.push({ en: `lose ${s.vdPct.toFixed(1)} % of the voltage on the way (limit ${res.spec.vdLimitPct} %)`, ne: `बाटोमै ${s.vdPct.toFixed(1)} % भोल्टेज गुमाउँछ (सीमा ${res.spec.vdLimitPct} %)` });
+  if (!s.pass.motorStart) why.push({ en: `let the voltage fall ${s.vdStartPct.toFixed(0)} % when the motor starts — it may stall`, ne: `मोटर सुरु हुँदा भोल्टेज ${s.vdStartPct.toFixed(0)} % झर्छ — मोटर अड्किन सक्छ` });
+  if (!s.pass.shortCircuit) why.push({ en: `be damaged by a short circuit before the protection clears it (needs ${s.scMin.toFixed(0)} mm²)`, ne: `सर्ट सर्किटमा सुरक्षा उपकरणले काट्नुअघि नै बिग्रिन्छ` });
+  return { size: s.size, why };
+}
+
+return { STARTERS, PUMPS, AC_TON_KW, EV, NEA_METERS, JOBS, ROUTES, REGIONS, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize };
+})();
+__m["explain.js"] = (() => {
+// "Why?" explainers: one short, plain answer per concept (English + Nepali) and, where a picture
+// says it faster, a small line figure. Figures use currentColor so they work in light and dark.
+
+const svg = (w, h, body, label) =>
+  `<svg class="fig" viewBox="0 0 ${w} ${h}" role="img" aria-label="${label}" xmlns="http://www.w3.org/2000/svg" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" font-family="inherit" font-size="11">${body}</svg>`;
+const T = (x, y, s, a = "start", extra = "") => `<text x="${x}" y="${y}" fill="currentColor" stroke="none" text-anchor="${a}" ${extra}>${s}</text>`;
+const ACC = 'class="acc"'; // accent stroke (phase yellow), styled in CSS
+
+/** House wiring map, Nepal style, with the run being sized highlighted. */
+function houseMap(highlight = "main") {
+  const hl = (k) => (k === highlight ? ACC + ' stroke-width="3.5"' : "");
+  return svg(380, 190, `
+    <line x1="20" y1="20" x2="20" y2="130"/><line x1="10" y1="28" x2="30" y2="28"/>${T(20, 148, "NEA pole", "middle")}
+    <path d="M20 30 C 50 40, 70 44, 92 62" ${hl("service")}/>
+    <rect x="92" y="55" width="34" height="30"/>${T(109, 99, "Meter", "middle")}
+    <path d="M126 70 H170" ${hl("main")}/>${T(148, 63, "main", "middle")}
+    <rect x="170" y="40" width="40" height="66"/>${T(190, 120, "Board", "middle")}${T(190, 132, "(MCB, RCD)", "middle", 'font-size="9"')}
+    <path d="M210 48 H300" ${hl("lights")}/>${T(306, 52, "lights")}
+    <path d="M210 64 H300" ${hl("sockets")}/>${T(306, 68, "sockets")}
+    <path d="M210 80 H300" ${hl("heater")}/>${T(306, 84, "geyser / AC")}
+    <path d="M210 96 H300" ${hl("ev")}/>${T(306, 100, "EV charger")}
+    <path d="M190 106 V155 H300" ${hl("pump")} stroke-dasharray="${highlight === "pump" ? "0" : "4 3"}"/>${T(306, 159, "pump")}
+    ${T(250, 182, "each line is one cable run, sized on its own", "middle", 'font-size="10"')}`, "House wiring map");
+}
+
+const routePics = {
+  clipped: `<rect x="4" y="4" width="10" height="52" fill="currentColor" opacity=".15" stroke="none"/><circle cx="24" cy="30" r="7"/><path d="M14 22 H32 M14 38 H32" opacity=".6"/>`,
+  conduit: `<rect x="4" y="4" width="10" height="52" fill="currentColor" opacity=".15" stroke="none"/><circle cx="28" cy="30" r="13"/><circle cx="24" cy="27" r="3.5"/><circle cx="32" cy="27" r="3.5"/><circle cx="28" cy="34" r="3.5"/>`,
+  tray: `<path d="M6 40 H54 M6 40 V34 M54 40 V34" /><circle cx="18" cy="31" r="7"/><circle cx="33" cy="31" r="7"/><path d="M10 46 h4 m6 0 h4 m6 0 h4 m6 0 h4" opacity=".6"/>`,
+  buried: `<path d="M2 12 H58" stroke-dasharray="3 3"/>${""}<rect x="22" y="40" width="16" height="5" fill="currentColor" opacity=".35" stroke="none"/><circle cx="30" cy="50" r="4"/><path d="M18 56 H42" opacity=".5"/>`,
+  duct: `<path d="M2 12 H58" stroke-dasharray="3 3"/><circle cx="30" cy="45" r="10"/><circle cx="30" cy="45" r="4"/>`,
+};
+function routePic(k) {
+  return svg(60, 60, routePics[k] || "", "");
+}
+
+const FIG = {
+  cores: () => svg(360, 92, `
+    <circle cx="40" cy="38" r="26"/><circle cx="30" cy="38" r="8" class="c-r"/><circle cx="50" cy="38" r="8" class="c-n"/>${T(40, 82, "2-core: L N", "middle")}
+    <circle cx="130" cy="38" r="26"/><circle cx="130" cy="27" r="8" class="c-r"/><circle cx="120" cy="45" r="8" class="c-y"/><circle cx="140" cy="45" r="8" class="c-b"/>${T(130, 82, "3-core: R Y B", "middle")}
+    <circle cx="220" cy="38" r="26"/><circle cx="220" cy="25" r="8" class="c-r"/><circle cx="208" cy="42" r="8" class="c-y"/><circle cx="232" cy="42" r="8" class="c-b"/><circle cx="220" cy="55" r="4.5" class="c-n"/>${T(220, 82, "3½-core: R Y B + ½N", "middle")}
+    <circle cx="310" cy="38" r="26"/><circle cx="301" cy="29" r="8" class="c-r"/><circle cx="319" cy="29" r="8" class="c-y"/><circle cx="301" cy="47" r="8" class="c-b"/><circle cx="319" cy="47" r="8" class="c-n"/>${T(310, 82, "4-core: R Y B N", "middle")}`, "Cable cores"),
+  efficiency: () => svg(360, 80, `
+    ${T(10, 34, "electricity in")}${T(10, 48, "4.39 kW", "start", 'font-weight="700"')}
+    <path d="M80 40 H130" ${ACC}/><rect x="130" y="20" width="70" height="40" rx="4"/>${T(165, 44, "motor", "middle")}
+    <path d="M200 40 H250" ${ACC}/>${T(258, 34, "shaft out (nameplate)")}${T(258, 48, "5 HP = 3.73 kW", "start", 'font-weight="700"')}
+    <path d="M165 60 V72" stroke-dasharray="3 2"/>${T(175, 74, "0.66 kW lost as heat → η = 3.73 ÷ 4.39 = 0.85")}`, "Motor efficiency"),
+  growth: () => svg(360, 92, `
+    <rect x="40" y="40" width="50" height="34" fill="currentColor" opacity=".25" stroke="none"/>${T(65, 88, "today 3 kW", "middle")}
+    <rect x="160" y="10" width="50" height="64" fill="currentColor" opacity=".25" stroke="none"/><rect x="160" y="10" width="50" height="30" ${ACC}/>${T(185, 88, "in 5 years 8 kW", "middle")}
+    ${T(222, 22, "+ AC")}${T(222, 34, "+ induction cooker")}${T(222, 46, "+ EV charger")}${T(222, 62, "the cable must survive this", "start", 'font-weight="700"')}`, "Future growth"),
+  vdrop: () => svg(360, 110, `
+    <path d="M20 20 H120 L120 34 H230 L230 60 H340" ${ACC}/>
+    ${T(20, 14, "NEA gives 230 V (or 218 V at −5 %)")}${T(125, 30, "meter")}${T(235, 54, "far end: what your appliance gets")}
+    <path d="M20 80 H340" opacity=".5"/>${T(20, 98, "drop = 2 × I × L × R  (single phase)    √3 × I × L × R  (three phase)")}`, "Voltage drop"),
+  run: () => houseMap("main"),
+  branch: () => svg(360, 70, `
+    <rect x="20" y="22" width="120" height="22" fill="currentColor" opacity=".25" stroke="none"/>${T(80, 37, "nameplate 7.45 A", "middle")}
+    <rect x="160" y="22" width="150" height="22" ${ACC}/>${T(235, 37, "cable sized for 9.3 A", "middle")}${T(160, 62, "× 1.25 for long running, low voltage, slight overload")}`, "Motor branch factor"),
+  fault: () => svg(360, 80, `
+    <path d="M20 40 H150" stroke-width="3"/><path d="M150 40 l10 -12 l6 24 l6 -24 l6 12" ${ACC}/>${T(20, 30, "fault: thousands of amps")}
+    ${T(190, 30, "the cable must stay below 250 °C (XLPE)")}${T(190, 46, "until the breaker or relay trips")}${T(20, 70, "size ≥ fault current × √(clearing time) ÷ k      k = 94 Al XLPE, 143 Cu XLPE")}`, "Short circuit"),
+  hv: () => svg(360, 80, `
+    <rect x="10" y="20" width="70" height="36"/>${T(45, 42, "NEA 33/11 kV", "middle", 'font-size="10"')}${T(45, 70, "fault kA, time s", "middle", 'font-size="10"')}
+    <path d="M80 38 H230" ${ACC} stroke-width="3"/>${T(155, 30, "11 kV cable (km)", "middle")}
+    <circle cx="245" cy="32" r="12"/><circle cx="245" cy="46" r="12"/>${T(245, 70, "transformer kVA", "middle", 'font-size="10"')}
+    <path d="M257 38 H300"/><rect x="300" y="26" width="40" height="24"/>${T(320, 62, "LT panel", "middle", 'font-size="10"')}`, "HV feeder"),
+};
+
+/** Concept → { en: [title, body], ne: [title, body], fig } */
+const EXPLAIN = {
+  run: { fig: "run",
+    en: ["What is a cable run?", "The path one cable takes from where it starts to the load. In a house: pole → meter (service cable, NEA's), meter → board (main cable, yours), board → each appliance. Each run is sized separately."],
+    ne: ["केबल रन भनेको के हो?", "एउटा तार सुरु भएदेखि उपकरणसम्म जाने बाटो। घरमा: पोल → मिटर (NEA को), मिटर → बोर्ड (मुख्य तार), बोर्ड → हरेक उपकरण। हरेक रन छुट्टै नापिन्छ।"] },
+  route: {
+    en: ["Why does the route matter?", "A cable's limit is heat. In open air it cools well; in a pipe inside a wall the heat is trapped; under ground the soil carries heat away slowly. The same cable can safely carry 40 % more in one place than another."],
+    ne: ["बाटोले किन फरक पार्छ?", "तारको सीमा भनेको ताप हो। खुला हावामा छिटो चिसो हुन्छ, भित्ताको पाइपमा ताप थुनिन्छ, जमिनमा बिस्तारै जान्छ। एउटै तारले एक ठाउँमा अर्कोभन्दा ४० % बढी बोक्न सक्छ।"] },
+  distance: {
+    en: ["How to measure the length", "Walk the real path with a tape: along walls, up and down, around corners — not the straight-line distance. Enter one-way length; the calculator accounts for the return conductor."],
+    ne: ["लम्बाइ कसरी नाप्ने", "तार जाने वास्तविक बाटो टेपले नाप्नुहोस्: भित्ताको छेउ, माथि-तल, कुना घुमेर। एकतर्फी लम्बाइ राख्नुहोस्।"] },
+  region: {
+    en: ["Why the region?", "Hot air or ground means the cable is already warm before current flows, so it carries less. The Terai at 45 °C cuts a PVC cable in air to 90 % of its rating; in the mountains it can carry more."],
+    ne: ["क्षेत्र किन?", "हावा वा जमिन तातो भए तार पहिल्यै तातो हुन्छ, त्यसैले कम बोक्छ। तराईको ४५ °C मा PVC तारको क्षमता ९० % मा झर्छ; हिमालमा बढी बोक्छ।"] },
+  group: {
+    en: ["Cables run together", "Cables touching each other share their heat. Three circuits in one pipe can each carry only 70 % of what one alone could. Count every circuit in the same pipe, tray or trench, including this one."],
+    ne: ["सँगै राखिएका तार", "छोएर राखिएका तारले एकअर्कालाई तताउँछन्। एउटै पाइपमा तीन सर्किट भए हरेकले ७० % मात्र बोक्छ। सोही पाइप, ट्रे वा खाल्डोका सबै सर्किट गन्नुहोस्।"] },
+  cores: { fig: "cores",
+    en: ["What are cores?", "Separate insulated conductors inside one cable. Colours in Nepal/India: red, yellow, blue = the three phases, black = neutral, green = earth. Single phase uses 2 cores (L, N); a three-phase motor 3 cores; a three-phase building 4 (or 3½: a half-size neutral)."],
+    ne: ["कोर भनेको के हो?", "एउटै केबलभित्रका छुट्टाछुट्टै इन्सुलेटेड तार। रंग: रातो, पहेँलो, निलो = तीन फेज, कालो = न्युट्रल, हरियो = अर्थ। सिङ्गल फेजमा २ कोर, थ्री फेज मोटरमा ३, थ्री फेज भवनमा ४ (वा ३½)।"] },
+  conductor: {
+    en: ["Copper or aluminium?", "Copper is smaller for the same current, makes reliable joints and is required inside buildings in Nepal (NBC 207: at least 2.5 mm² for lights, 4 mm² for power). Aluminium is cheaper and lighter, needs about 1.6 × the size, and only from 16 mm² up, with bimetallic lugs where it meets copper."],
+    ne: ["तामा कि एल्युमिनियम?", "तामा सानो साइजमै पुग्छ, जोड्न भरपर्दो र भवनभित्र अनिवार्य (NBC 207: बत्तीमा कम्तीमा २.५ mm², पावरमा ४ mm²)। एल्युमिनियम सस्तो र हलुका, करिब १.६ गुणा ठूलो चाहिन्छ, १६ mm² देखि मात्र, तामासँग जोड्दा बाइमेटालिक लग।"] },
+  efficiency: { fig: "efficiency",
+    en: ["Motor efficiency (η)", "The nameplate HP or kW is what the shaft delivers. The motor draws more from the supply; the rest becomes heat. Find η on the nameplate (\"Eff\", \"η\", or IE2/IE3) or in the pump catalogue. Typical: 1 HP 0.75–0.80, 5 HP 0.85, 10 HP 0.88, submersible 0.75–0.85. If the nameplate shows amps, use that instead — then you need neither η nor pf."],
+    ne: ["मोटरको दक्षता (η)", "नेमप्लेटको HP वा kW भनेको सफ्टले दिने शक्ति हो। मोटरले सप्लाईबाट बढी लिन्छ; बाँकी ताप बन्छ। η नेमप्लेटमा (\"Eff\", \"η\", IE2/IE3) वा पम्प क्याटलगमा हुन्छ। नेमप्लेटमा एम्पियर लेखिएको भए त्यही प्रयोग गर्नुहोस्।"] },
+  pf: {
+    en: ["Power factor", "The share of the current that does useful work. Heater, geyser: 1.0. LED lights, inverter AC: about 0.9. Motors and pumps: 0.8–0.85. A lower power factor means more current for the same kW."],
+    ne: ["पावर फ्याक्टर", "करेन्टको कति भागले काम गर्छ भन्ने। हिटर, गिजर: १.०। LED, इन्भर्टर AC: करिब ०.९। मोटर, पम्प: ०.८–०.८५।"] },
+  growth: { fig: "growth",
+    en: ["Future growth", "A cable in a wall or trench is costly to replace. Size it for what you will add: an AC (1.5–2.2 kW), an induction cooker (2 kW), a geyser (2–3 kW), an EV charger (3.3–7.4 kW)."],
+    ne: ["भविष्यको थप भार", "भित्ता वा खाल्डोको तार फेर्न महँगो पर्छ। पछि थप्ने AC (१.५–२.२ kW), इन्डक्सन (२ kW), गिजर (२–३ kW), EV चार्जर (३.३–७.४ kW) का लागि पनि नाप्नुहोस्।"] },
+  meter: {
+    en: ["NEA meter category", "Your NEA bill and meter show the category: 5, 15, 30 or 60 A single phase, or three phase. Sizing the main cable for the meter's full capacity means the cable is never the weak link up to what NEA lets you draw."],
+    ne: ["NEA मिटरको क्षमता", "NEA को बिल र मिटरमा ५, १५, ३० वा ६० A (सिङ्गल फेज) वा थ्री फेज लेखिएको हुन्छ। मिटरको पूरा क्षमतामा मुख्य तार नाप्दा तार कहिल्यै कमजोर हुँदैन।"] },
+  branch: { fig: "branch",
+    en: ["Why 125 % for motors?", "A motor runs for hours, often at low voltage, and may be loaded a little past its rating. Codes size its cable at 125 % of the nameplate current so the cable never becomes the weak point (NEC 430.22; common practice in Nepal/India)."],
+    ne: ["मोटरमा १२५ % किन?", "मोटर घण्टौं चल्छ, प्रायः कम भोल्टेजमा, र अलि बढी भार पनि पर्छ। त्यसैले तारलाई नेमप्लेट करेन्टको १२५ % मा नापिन्छ।"] },
+  starter: {
+    en: ["Starter type", "Starting current: direct-on-line 6–7 × running current, star-delta about 2–3 ×, soft starter 3–4 ×, VFD about 1.2 ×. A long cable plus a big starting current can drop the voltage so far that the motor stalls."],
+    ne: ["स्टार्टरको प्रकार", "सुरुको करेन्ट: DOL ६–७ गुणा, स्टार-डेल्टा २–३ गुणा, सफ्ट स्टार्टर ३–४ गुणा, VFD १.२ गुणा। लामो तार र ठूलो सुरुको करेन्टले मोटर अड्काउन सक्छ।"] },
+  vdrop: { fig: "vdrop",
+    en: ["Voltage drop", "Current flowing through the cable's resistance loses voltage on the way. NEA must supply 230 V ±5 % (Electricity Regulation 2050, Rule 40), so you may start at 218 V; the cable must not lose more than about 5 % more. Too much drop: dim lights, hot motors, pumps that fail to start."],
+    ne: ["भोल्टेज ड्रप", "तारको रेजिस्टेन्सले बाटोमै भोल्टेज घटाउँछ। NEA ले २३० V ±५ % दिनुपर्छ (विद्युत नियमावली २०५०, नियम ४०), त्यसैले २१८ V मात्र आउन सक्छ; तारमा थप ५ % भन्दा बढी गुमाउनु हुँदैन।"] },
+  fault: { fig: "fault",
+    en: ["Short-circuit check", "In a fault, thousands of amps flow until the breaker or relay trips. The cable must be thick enough not to overheat in that time. For house circuits a fast MCB limits this; for big feeders and all HV cables it often decides the size."],
+    ne: ["सर्ट सर्किट जाँच", "फल्टमा ब्रेकर वा रिलेले काट्नुअघि हजारौं एम्पियर बग्छ। त्यति बेला तार नबिग्रिने गरी मोटो हुनुपर्छ। HV मा प्रायः यसैले साइज तय गर्छ।"] },
+  hv: { fig: "hv",
+    en: ["How an HV feeder is sized", "Current = transformer kVA ÷ (√3 × kV) — usually small. The NEA fault level and clearing time usually decide the size; voltage drop decides on long rural feeders (NEA keeps it under 5 %). The relay, not a breaker rating, protects the cable."],
+    ne: ["HV फिडर कसरी नाप्ने", "करेन्ट = ट्रान्सफर्मर kVA ÷ (√3 × kV) — प्रायः सानो। NEA को फल्ट लेभल र समयले साइज तय गर्छ; लामो फिडरमा भोल्टेज ड्रपले (NEA: ५ % भन्दा कम)।"] },
+  ton: {
+    en: ["AC capacity", "Written on the indoor unit or the box: 1, 1.5 or 2 ton (12 000, 18 000, 24 000 BTU). The nameplate current on the outdoor unit is more accurate."],
+    ne: ["AC को क्षमता", "भित्री युनिट वा बाकसमा: १, १.५ वा २ टन। बाहिरी युनिटको नेमप्लेट करेन्ट बढी सही।"] },
+  ev: {
+    en: ["EV charger", "Most home wallboxes in Nepal are 7.4 kW single phase (32 A). An EV charges at full current for hours, so the cable and breaker are sized as a continuous load and the circuit is dedicated."],
+    ne: ["EV चार्जर", "घरका धेरैजसो चार्जर ७.४ kW सिङ्गल फेज (३२ A) हुन्छन्। घण्टौं पूरा करेन्टमा चल्ने भएकाले छुट्टै सर्किट चाहिन्छ।"] },
+  kva: {
+    en: ["Transformer kVA", "Written on the transformer nameplate (e.g. 100, 200, 500, 1000 kVA). Add them up if one cable feeds several."],
+    ne: ["ट्रान्सफर्मर kVA", "ट्रान्सफर्मरको नेमप्लेटमा लेखिएको (जस्तै १००, २००, ५००, १००० kVA)।"] },
+};
+
+function explainHtml(key, lang = "en") {
+  const e = EXPLAIN[key];
+  if (!e) return "";
+  const [t, b] = e[lang] || e.en;
+  const fig = e.fig && FIG[e.fig] ? `<div class="figwrap">${FIG[e.fig]()}</div>` : "";
+  return `<details class="why"><summary>${lang === "ne" ? "किन? / के हो?" : "What is this?"}</summary><p><b>${t}.</b> ${b}</p>${fig}</details>`;
+}
+
+return { houseMap, routePic, EXPLAIN, explainHtml };
+})();
 __m["app.js"] = (() => {
 // UI for the conductor sizing workbench. All engineering lives in core.js / size.js / adapters.
 const { ADAPTERS } = __m["adapters/index.js"];
 const { sizeConductor, cableDescription } = __m["size.js"];
 const { round, kValue } = __m["core.js"];
 const { drawCable } = __m["xsec.js"];
+const { JOBS, ROUTES, REGIONS: NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } = __m["jobs.js"];
+const { explainHtml, routePic, houseMap } = __m["explain.js"];
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const fmt = (v, d = 1) => (v == null || !isFinite(v) ? "–" : Number(round(v, d)).toLocaleString("en-IN"));
@@ -800,6 +1205,8 @@ const DEFAULT_STATE = {
   material: "cu", insulation: "XLPE", cores: "4", armoured: true,
   vdLimitPct: 5, vdStartLimitPct: 15, faultOn: false, faultBasis: "kat", faultKa: 10, faultT: 0.1, i2t: 40000, sizeOn: "device",
   hvKv: 11, hvEarth: "E", hvSource: "polycab", minSize: "",
+  lang: "en", job: "house", route: "buried",
+  ...Object.values(JOBS).reduce((o, j) => ({ ...o, ...j.defaults }), {}), ...JOBS.house.defaults, hvKv: "11", faultKa: 10, faultT: 0.1,
 };
 
 let S = { ...DEFAULT_STATE };
@@ -811,13 +1218,18 @@ const adapter = () => ADAPTERS[adapterKey()] || ADAPTERS["LV-IS"];
 const eng = () => S.mode === "engineer";
 
 // ---------- field helpers ----------
+// Concept explainers attached to fields (both modes).
+const WHY = { pf: "pf", eff: "efficiency", margin: "growth", motorFactor: "branch", lengthM: "distance", groupCount: "group",
+  cores: "cores", material: "conductor", vdLimitPct: "vdrop", faultKa: "fault", startMult: "starter", meterA: "meter", houseBasis: "meter",
+  kwFuture: "growth", hp: "efficiency", motorBasis: "efficiency", starter: "starter", acTon: "ton", evKw: "ev", kva: "kva", region: "region" };
+const why = (name, lang = "en") => (WHY[name] ? explainHtml(WHY[name], eng() ? "en" : lang) : "");
 function num(name, label, { suffix, hint, step = "any", min = 0 } = {}) {
   const input = `<input type="number" id="${name}" name="${name}" value="${esc(S[name])}" step="${step}" min="${min}" inputmode="decimal">`;
-  return `<div class="field"><label for="${name}">${label}</label>${suffix ? `<div class="unit">${input}<span class="suffix">${suffix}</span></div>` : input}${hint ? `<span class="hint">${hint}</span>` : ""}</div>`;
+  return `<div class="field"><label for="${name}">${label}</label>${suffix ? `<div class="unit">${input}<span class="suffix">${suffix}</span></div>` : input}${hint ? `<span class="hint">${hint}</span>` : ""}${why(name, S.lang)}</div>`;
 }
 function sel(name, label, opts, { hint, struct } = {}) {
   const o = opts.map(([v, t]) => `<option value="${esc(v)}"${String(S[name]) === String(v) ? " selected" : ""}>${esc(t)}</option>`).join("");
-  return `<div class="field"><label for="${name}">${label}</label><select id="${name}" name="${name}"${struct ? " data-struct" : ""}>${o}</select>${hint ? `<span class="hint">${hint}</span>` : ""}</div>`;
+  return `<div class="field"><label for="${name}">${label}</label><select id="${name}" name="${name}"${struct ? " data-struct" : ""}>${o}</select>${hint ? `<span class="hint">${hint}</span>` : ""}${why(name, S.lang)}</div>`;
 }
 function choices(name, label, opts, struct = true) {
   const items = opts.map(([v, t, d]) => `<label class="choice"><input type="radio" name="${name}" value="${esc(v)}"${String(S[name]) === String(v) ? " checked" : ""}${struct ? " data-struct" : ""}><div><b>${esc(t)}</b>${d ? `<span>${esc(d)}</span>` : ""}</div></label>`).join("");
@@ -836,6 +1248,11 @@ function renderForm() {
     if (b.dataset.set === "std") b.disabled = hv;
     if (b.dataset.set === "std" && b.dataset.val === "IEC") b.disabled = hv || !ADAPTERS["LV-IEC"];
   }
+  document.documentElement.lang = !eng() && S.lang === "ne" ? "ne" : "en";
+  const langSeg = document.querySelector("[data-only=simple]");
+  if (langSeg) langSeg.hidden = eng();
+  if (!eng()) return renderSimple();
+  setStepTitles(STEP_EN);
 
   // 1 load
   let h = "";
@@ -972,13 +1389,14 @@ function buildInput() {
 // ---------- results ----------
 let last = null;
 function compute() {
-  const A = adapter();
-  let res, err = null, notes = [];
+  let A = adapter();
+  let res, err = null, notes = [], simple = null;
   try {
-    const b = buildInput(); notes = b.notes;
+    const b = eng() ? buildInput() : buildSimple();
+    notes = b.notes; simple = b.simple || null; A = b.A || A;
     res = sizeConductor(A, b.inp);
   } catch (e) { err = e.message; }
-  last = { res, err, notes, A };
+  last = { res, err, notes, A, simple };
   renderResult();
 }
 
@@ -1018,8 +1436,11 @@ function renderResult() {
     h += meter("Voltage drop", c.vdPct, s.vdLimitPct, "%", c.pass.voltageDrop);
     if (c.vdStartPct != null) h += meter("Dip at motor start", c.vdStartPct, s.vdStartLimitPct, "%", c.pass.motorStart);
     if (c.scMin != null) h += meter("Size needed for the fault", c.scMin, c.size, "mm²", c.pass.shortCircuit);
-    h += `<p class="decided">Size decided by <b>${esc(res.decidedBy.join(" and "))}</b>.</p>`;
-    const allNotes = [...notes.filter((n) => !n.startsWith("Climate") || !eng()), ...res.warnings];
+    const DEC_NE = { "current-carrying capacity": "करेन्ट बोक्ने क्षमता", "voltage drop": "भोल्टेज ड्रप", "motor starting voltage dip": "मोटर सुरु हुँदा भोल्टेज झर्ने", "short-circuit withstand": "सर्ट सर्किट सहने क्षमता", "smallest size in the table": "तालिकाको सबैभन्दा सानो साइज" };
+    const dec = res.decidedBy.map((d) => (!eng() && S.lang === "ne" ? (DEC_NE[d] || (d.startsWith("the minimum size rule") ? "न्यूनतम साइजको नियम (NBC 207 / IEC)" : d)) : d));
+    h += `<p class="decided">${tr("decided")} <b>${esc(dec.join(S.lang === "ne" && !eng() ? " र " : " and "))}</b>.</p>`;
+    if (last.simple) h += renderSimpleResult(res, last.simple);
+    const allNotes = [...(last.simple ? [] : notes.filter((n) => !n.startsWith("Climate") || !eng())), ...res.warnings];
     if (allNotes.length) h += `<ul class="notes">${allNotes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`;
     sticky.textContent = `${res.runs > 1 ? res.runs + " × " : ""}${c.size} mm² ${s.material === "cu" ? "Cu" : "Al"}${res.current.In ? ` · ${res.current.In} A breaker` : ""}`;
   }
@@ -1054,6 +1475,172 @@ function renderWorking(res, A) {
   return h;
 }
 
+
+// ======================================================================
+// Simple mode: start from the job (Nepal), ask what people can see, explain every term.
+// ======================================================================
+const UI = {
+  en: { s1: "What is the cable for?", s2: "About the load", s3: "Where the cable runs", s4: "The cable",
+    job: "Choose the job", phase: "Supply", ph1: "Single phase, 230 V (most houses)", ph3: "Three phase, 400 V",
+    houseBasis: "Size it from", hbMeter: "My NEA meter category (on the bill)", hbLoad: "The appliances I use and will add",
+    meterA: "NEA meter capacity", kwNow: "Power used at the same time now", kwFuture: "Power you plan to add later",
+    kw: "Rated power (on the nameplate)", acBasis: "I know", acTon: "Capacity (ton)", amps: "Nameplate current",
+    acInverter: "Inverter AC?", yes: "Yes, inverter", no: "No, fixed speed", pumpType: "Type",
+    motorBasis: "From the nameplate I know", mbHp: "Power in HP", mbAmps: "Current in amps (best)", hp: "Motor power",
+    starter: "How it is started", evKw: "Charger", hvKv: "Supply voltage", kva: "Transformer size",
+    faultKa: "Fault level at your point of supply", faultT: "Time for the relay and breaker to clear a fault",
+    route: "How the cable is laid", region: "Where in Nepal", custom: "Somewhere else — I'll enter temperatures",
+    lengthM: "Cable length, one way", groupCount: "Circuits run together in the same pipe, tray or trench",
+    material: "Conductor", cu: "Copper — needed inside buildings", al: "Aluminium — cheaper for big, long runs",
+    airTemp: "Hottest air temperature", groundTemp: "Ground temperature at the cable",
+    decided: "Size decided by", vTitle: "Voltage your appliance gets", vNom: "When NEA supplies", vLow: "When NEA is at its −5 % limit",
+    vBad: "Below 90 % of nominal: motors overheat and may not start. Use a bigger cable or move the board closer.",
+    prot: "Protection to fit", whyNot: "Why not", wouldIt: "It would", assum: "What this answer assumes", shop: "At the shop: check before you pay",
+    earth: "Earth conductor", ph3note: "Three phase: phase-to-neutral voltage shown.",
+    shopList: ["The sheath is printed with the maker, the standard (IS 694, IS 1554, IS 7098), the size in mm², the cores and the voltage grade.",
+      "ISI or NS mark. Scrape a strand: copper must be copper all through, not copper-coated aluminium.",
+      "Weigh or measure: thin '2.5 mm²' wire is common. Compare the coil weight with the maker's catalogue.",
+      "Buy the length shown (10 % extra). Use crimped lugs of the right size; bimetallic lugs between aluminium and copper.",
+      "Before switching on: insulation test with a 500 V tester (at least 1 MΩ; new cable is usually hundreds of MΩ) and press the RCD test button."] },
+  ne: { s1: "तार केका लागि हो?", s2: "भारबारे", s3: "तार कहाँबाट जान्छ", s4: "तार",
+    job: "काम छान्नुहोस्", phase: "सप्लाई", ph1: "सिङ्गल फेज, २३० V (धेरैजसो घर)", ph3: "थ्री फेज, ४०० V",
+    houseBasis: "कसरी नाप्ने", hbMeter: "मेरो NEA मिटरको क्षमता (बिलमा)", hbLoad: "अहिले र पछि चलाउने उपकरण",
+    meterA: "NEA मिटरको क्षमता", kwNow: "अहिले सँगै चल्ने पावर", kwFuture: "पछि थप्ने पावर",
+    kw: "रेटेड पावर (नेमप्लेटमा)", acBasis: "मलाई थाहा छ", acTon: "क्षमता (टन)", amps: "नेमप्लेटको करेन्ट",
+    acInverter: "इन्भर्टर AC हो?", yes: "हो, इन्भर्टर", no: "होइन, फिक्स्ड स्पिड", pumpType: "प्रकार",
+    motorBasis: "नेमप्लेटमा थाहा भएको", mbHp: "HP मा पावर", mbAmps: "एम्पियरमा करेन्ट (सबैभन्दा राम्रो)", hp: "मोटरको पावर",
+    starter: "कसरी सुरु गरिन्छ", evKw: "चार्जर", hvKv: "सप्लाई भोल्टेज", kva: "ट्रान्सफर्मरको साइज",
+    faultKa: "सप्लाई बिन्दुमा फल्ट लेभल", faultT: "रिले र ब्रेकरले फल्ट काट्ने समय",
+    route: "तार कसरी राखिन्छ", region: "नेपालको कुन भागमा", custom: "अन्यत्र — तापक्रम म आफैं राख्छु",
+    lengthM: "तारको लम्बाइ (एकतर्फी)", groupCount: "एउटै पाइप, ट्रे वा खाल्डोमा भएका सर्किट",
+    material: "कन्डक्टर", cu: "तामा — भवनभित्र अनिवार्य", al: "एल्युमिनियम — ठूलो र लामो तारमा सस्तो",
+    airTemp: "हावाको सबैभन्दा बढी तापक्रम", groundTemp: "तार रहेको जमिनको तापक्रम",
+    decided: "साइज तय गर्ने कारण:", vTitle: "उपकरणमा पुग्ने भोल्टेज", vNom: "NEA ले दिँदा", vLow: "NEA −५ % सीमामा हुँदा",
+    vBad: "नामिनलको ९० % भन्दा कम: मोटर तातिन्छ र सुरु नहुन सक्छ। ठूलो तार प्रयोग गर्नुहोस्।",
+    prot: "राख्नुपर्ने सुरक्षा उपकरण", whyNot: "किन होइन", wouldIt: "यसले", assum: "यो उत्तरका मान्यताहरू", shop: "पसलमा: पैसा तिर्नुअघि जाँच्नुहोस्",
+    earth: "अर्थ तार", ph3note: "थ्री फेज: फेज-न्युट्रल भोल्टेज देखाइएको।",
+    shopList: ["खोलमा निर्माता, मापदण्ड (IS 694, IS 1554, IS 7098), साइज mm², कोर र भोल्टेज ग्रेड छापिएको हुनुपर्छ।",
+      "ISI वा NS चिन्ह। तार खुर्केर हेर्नुहोस्: तामा भित्रसम्मै तामा हुनुपर्छ।",
+      "तौल वा मोटाइ जाँच्नुहोस्: पातलो '२.५ mm²' तार धेरै पाइन्छ।",
+      "देखाइएको लम्बाइ (१० % थप) किन्नुहोस्। सही साइजको लग क्रिम्प गर्नुहोस्; एल्युमिनियम-तामा बीच बाइमेटालिक लग।",
+      "चलाउनुअघि ५०० V टेस्टरले इन्सुलेसन जाँच (कम्तीमा १ MΩ) र RCD को टेस्ट बटन थिच्नुहोस्।"] },
+};
+const tr = (k) => (eng() ? UI.en : UI[S.lang] || UI.en)[k] ?? UI.en[k] ?? k;
+const L2 = (o) => (S.lang === "ne" && o.ne ? o.ne : o.en);
+const STEP_EN = ["What the cable will power", "Where the cable runs", "The cable", "Checks"];
+function setStepTitles(t) {
+  ["#s1", "#s2", "#s3", "#s4"].forEach((id, i) => { const n = document.querySelector(id); if (n) n.innerHTML = `<span class="n">${i + 1}</span> ${esc(t[i])}`; });
+  const s4 = document.querySelector("#s4")?.closest("section");
+  if (s4) s4.hidden = t[3] === "";
+}
+
+const ICONS = {
+  house: '<path d="M4 14 L16 4 L28 14 V28 H4 Z"/><path d="M13 28 V20 H19 V28"/>',
+  heater: '<rect x="8" y="4" width="16" height="24" rx="4"/><path d="M12 22 q2 -3 0 -6 q-2 -3 0 -6 M20 22 q2 -3 0 -6 q-2 -3 0 -6"/>',
+  ac: '<rect x="3" y="8" width="26" height="10" rx="2"/><path d="M8 22 v4 M16 22 v6 M24 22 v4"/>',
+  pump: '<circle cx="12" cy="18" r="8"/><path d="M20 18 H29 M12 10 V4 H20"/><path d="M9 18 h6 M12 15 v6"/>',
+  ev: '<path d="M5 20 L8 12 H22 L26 20 V25 H5 Z"/><circle cx="10" cy="25" r="2.5"/><circle cx="21" cy="25" r="2.5"/><path d="M16 4 l-3 5 h4 l-3 5"/>',
+  shop: '<path d="M4 12 H28 L26 6 H6 Z"/><path d="M6 12 V28 H26 V12"/><path d="M13 28 V20 H19 V28"/>',
+  hv: '<path d="M16 3 L10 29 M16 3 L22 29 M11 22 H21 M13 14 H19"/><path d="M6 8 H26"/>',
+};
+const icon = (k) => `<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ""}</svg>`;
+const ROUTE_HL = { house: "main", heater: "heater", ac: "heater", pump: "pump", ev: "ev", shop: "main", hvfeed: "service" };
+
+function renderSimple() {
+  const job = JOBS[S.job] || JOBS.house;
+  const lang = S.lang;
+  setStepTitles([tr("s1"), tr("s3"), tr("s4"), ""]);
+  let h = `<fieldset class="field jobs"><legend class="lbl">${tr("job")}</legend><div class="jobgrid">` +
+    Object.entries(JOBS).map(([k, j]) => `<label class="jobcard"><input type="radio" name="job" value="${k}"${S.job === k ? " checked" : ""} data-struct>${icon(j.icon)}<span>${esc(L2(j))}</span></label>`).join("") +
+    `</div></fieldset>`;
+  if (job.level === "LV") h += `<div class="figwrap map">${houseMap(ROUTE_HL[S.job])}</div>${explainHtml("run", lang)}`;
+  else h += explainHtml("hv", lang);
+  const F = {
+    phase: () => sel("phase", tr("phase"), [["1ph", tr("ph1")], ["3ph", tr("ph3")]], { struct: true }),
+    houseBasis: () => sel("houseBasis", tr("houseBasis"), [["meter", tr("hbMeter")], ["load", tr("hbLoad")]], { struct: true }),
+    meterA: () => sel("meterA", tr("meterA"), NEA_METERS.map((a) => [a, `${a} A`])),
+    kwNow: () => num("kwNow", tr("kwNow"), { suffix: "kW" }),
+    kwFuture: () => num("kwFuture", tr("kwFuture"), { suffix: "kW" }),
+    kw: () => num("kw", tr("kw"), { suffix: "kW" }),
+    acBasis: () => sel("acBasis", tr("acBasis"), [["ton", tr("acTon")], ["amps", tr("amps")]], { struct: true }),
+    acTon: () => sel("acTon", tr("acTon"), [["1", "1 ton (12 000 BTU)"], ["1.5", "1.5 ton (18 000 BTU)"], ["2", "2 ton (24 000 BTU)"]]),
+    amps: () => num("amps", tr("amps"), { suffix: "A" }),
+    acInverter: () => sel("acInverter", tr("acInverter"), [["yes", tr("yes")], ["no", tr("no")]]),
+    pumpType: () => sel("pumpType", tr("pumpType"), Object.entries(PUMPS).map(([k, p]) => [k, L2(p)])),
+    motorBasis: () => sel("motorBasis", tr("motorBasis"), [["hp", tr("mbHp")], ["amps", tr("mbAmps")]], { struct: true }),
+    hp: () => num("hp", tr("hp"), { suffix: "HP" }),
+    starter: () => sel("starter", tr("starter"), Object.entries(STARTERS).map(([k, p]) => [k, L2(p)])),
+    evKw: () => sel("evKw", tr("evKw"), Object.entries(EV).map(([k, e]) => [k, e.en])),
+    hvKv: () => sel("hvKv", tr("hvKv"), [["11", "11 kV"], ["33", "33 kV"]], { struct: true }),
+    kva: () => num("kva", tr("kva"), { suffix: "kVA" }),
+    faultKa: () => num("faultKa", tr("faultKa"), { suffix: "kA" }),
+    faultT: () => num("faultT", tr("faultT"), { suffix: "s" }),
+  };
+  const fields = job.fields(S).map((f) => F[f]?.() || "");
+  for (let i = 0; i < fields.length; i += 2) h += row(fields[i], fields[i + 1] || "");
+  $("#load-fields").innerHTML = h;
+
+  const routes = Object.entries(ROUTES).filter(([k]) => job.level === "LV" || ["buried", "duct", "tray", "clipped"].includes(k));
+  if (!routes.some(([k]) => k === S.route)) S.route = routes[0][0];
+  h = `<fieldset class="field"><legend class="lbl">${tr("route")}</legend><div class="routes">` +
+    routes.map(([k, r]) => `<label class="routecard"><input type="radio" name="route" value="${k}"${S.route === k ? " checked" : ""} data-struct>${routePic(k)}<span>${esc(L2(r))}</span></label>`).join("") +
+    `</div>${explainHtml("route", lang)}</fieldset>`;
+  if (!NP_REGIONS[S.region] && S.region !== "custom") S.region = "hills";
+  h += row(sel("region", tr("region"), [...Object.entries(NP_REGIONS).map(([k, r]) => [k, L2(r)]), ["custom", tr("custom")]], { struct: true }));
+  if (S.region === "custom") h += row(num("airTemp", tr("airTemp"), { suffix: "°C" }), num("groundTemp", tr("groundTemp"), { suffix: "°C" }));
+  h += row(num("lengthM", tr("lengthM"), { suffix: "m" }), num("groupCount", tr("groupCount"), { step: 1, min: 1 }));
+  $("#route-fields").innerHTML = h;
+
+  $("#cable-fields").innerHTML = row(sel("material", tr("material"), [["cu", tr("cu")], ["al", tr("al")]], { struct: true })) + explainHtml("cores", lang);
+  $("#check-fields").innerHTML = "";
+}
+
+function buildSimple() {
+  const job = JOBS[S.job] || JOBS.house;
+  const t = job.toInput(S);
+  const r = routeFor(S.route, S.std, job.level);
+  const A = ADAPTERS[r.adapterKey];
+  const reg = NP_REGIONS[S.region];
+  const iec = r.adapterKey === "LV-IEC";
+  const env = { airTemp: reg ? reg.air : +S.airTemp, groundTemp: reg ? reg.ground : +S.groundTemp,
+    soilRes: iec ? 250 : 150, depthMm: job.level === "HV" ? (Number(S.hvKv) >= 22 ? 1050 : 900) : iec ? 700 : 750 };
+  const inp = {
+    ...t.input, method: r.method, lengthM: +S.lengthM, material: S.material, env,
+    group: { count: Math.max(1, Math.round(+S.groupCount || 1)), spacing: "touching", formation: "flat", racks: 1 },
+    vdLimitPct: 5, vdStartLimitPct: t.input.vdStartLimitPct || 15, fault: t.input.fault || null, sizeOn: t.input.sizeOn || "device",
+    armoured: job.level === "HV" || ["buried", "duct"].includes(S.route),
+  };
+  inp.insulation = t.input.insulation || (["A1", "B1"].includes(r.method) ? "PVC" : A.options.insulations[0][0]);
+  inp.cores = t.input.cores || coresFor(t, inp.system, r.method, r.adapterKey);
+  if (job.level === "LV") {
+    if (inp.material === "al") { inp.minSize = 16; inp.minSizeRule = "aluminium in fixed installations, IEC 60364-5-52 Table 52.2"; }
+    else if (S.std === "IS") { inp.minSize = 4; inp.minSizeRule = "power circuits, Nepal NBC 207"; }
+    else { inp.minSize = 1.5; inp.minSizeRule = "IEC 60364-5-52 Table 52.2"; }
+  }
+  const notes = t.assumptions.map(L2);
+  if (reg) notes.push(L2({ en: `Climate: ${reg.en.split(" (")[0]}: air ${reg.air} °C, ground ${reg.ground} °C.`, ne: `मौसम: ${reg.ne.split(" (")[0]}: हावा ${reg.air} °C, जमिन ${reg.ground} °C।` }));
+  if (iec && S.std === "IS") notes.push(L2({ en: "Cable in a pipe in the wall: IS catalogue tables only cover air, duct and ground, so IEC 60364-5-52 method B1 (single-core wires in conduit) is used.",
+    ne: "भित्ताको पाइपभित्रको तार: IS तालिकामा यो अवस्था नभएकाले IEC 60364-5-52 को B1 विधि प्रयोग गरिएको।" }));
+  return { inp, notes, A, simple: { t, job } };
+}
+
+function renderSimpleResult(res, sm) {
+  let h = "";
+  const v = voltageAtLoad(res);
+  const bad = v.lowAtLoad < v.minOk;
+  h += `<div class="volt${bad ? " bad" : ""}"><h3 class="rh">${sm.job.level === "HV" ? (S.lang === "ne" ? "ट्रान्सफर्मरमा पुग्ने भोल्टेज" : "Voltage at the transformer") : tr("vTitle")}</h3><dl class="kv">
+    <dt>${tr("vNom")} ${fmt(v.nominal, 0)} V</dt><dd>${fmt(v.atLoad, 0)} V</dd>
+    <dt>${tr("vLow")} (${fmt(v.low, 0)} V)</dt><dd>${fmt(v.lowAtLoad, 0)} V</dd></dl>
+    ${v.unit !== "V" ? `<p class="hint">${tr("ph3note")}</p>` : ""}${bad ? `<p class="err">${tr("vBad")}</p>` : ""}</div>`;
+  const prot = protectionFor(sm.t.kind, res, sm.t.starter);
+  h += `<h3 class="rh">${tr("prot")}</h3><ul class="plain">${prot.map((p) => `<li>${esc(L2(p))}</li>`).join("")}${sm.job.level === "LV" ? `<li>${tr("earth")}: ${res.earthSize} mm² ${res.spec.material === "cu" ? "Cu" : "Al"}</li>` : ""}</ul>`;
+  const sm1 = smallerSize(res);
+  if (sm1 && sm1.why.length) h += `<p class="smaller"><b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;
+  h += `<details class="why"><summary>${tr("assum")}</summary><ul class="plain">${last.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></details>`;
+  if (sm.job.level === "LV") h += `<details class="why"><summary>${tr("shop")}</summary><ul class="plain">${tr("shopList").map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
+  return h;
+}
+
 // ---------- events ----------
 function readField(el) {
   if (el.type === "checkbox") return el.checked;
@@ -1068,6 +1655,9 @@ form.addEventListener("input", (e) => {
   save(); compute();
 });
 function onStruct(name) {
+  if (name === "job") { const j = JOBS[S.job]; Object.assign(S, j.defaults); S.level = j.level;
+    if (j.level === "HV") { S.material = "al"; S.lengthM = 1500; S.faultOn = true; S.cores = "3"; S.method = "ground"; S.depthMm = Number(S.hvKv) >= 22 ? 1050 : 900; if (S.route === "conduit") S.route = "buried"; }
+    else if (S.lengthM > 500) S.lengthM = 40; }
   if (name === "loadType") {
     if (S.loadType === "motor") { S.unit = "HP"; S.system = "3ph"; S.motorStartOn = true; }
     else if (S.loadType === "amps") S.unit = "A";
@@ -1085,6 +1675,10 @@ document.querySelector(".switches").addEventListener("click", (e) => {
   const b = e.target.closest("button[data-set]");
   if (!b || b.disabled) return;
   S[b.dataset.set] = b.dataset.val;
+  if (b.dataset.set === "level" && !eng()) {
+    if (S.level === "HV" && JOBS[S.job].level !== "HV") { S.job = "hvfeed"; onStruct("job"); }
+    if (S.level === "LV" && JOBS[S.job].level === "HV") { S.job = "house"; onStruct("job"); S.material = "cu"; }
+  }
   if (b.dataset.set === "level") {
     if (S.level === "HV") { S.unit = "kVA"; S.power = 2000; S.lengthM = 2000; S.faultKa = 13.1; S.faultT = 1; S.faultOn = true; S.cores = "3"; S.insulation = "XLPE"; S.method = "ground"; S.material = "al"; S.depthMm = Number(S.hvKv) >= 22 ? 1050 : 900; S.margin = 25; }
     else { S.unit = "kW"; S.power = 15; S.lengthM = 40; S.faultKa = 10; S.faultT = 0.1; S.faultOn = false; S.cores = "4"; S.depthMm = 750; S.material = "cu"; }
@@ -1094,7 +1688,7 @@ document.querySelector(".switches").addEventListener("click", (e) => {
     else { const R = REGIONS[S.region]; S.airTemp = R?.air ?? 40; S.groundTemp = R?.ground ?? 30; S.soilRes = 150; S.depthMm = 750; S.cores = "4"; }
   }
   const A = adapter();
-  const allowed = !eng() && A.options.simpleMethods ? A.options.simpleMethods : A.options.methods.map(([m]) => m);
+  const allowed = A.options.methods.map(([m]) => m);
   if (!allowed.includes(S.method)) S.method = allowed[0];
   save(); renderForm(); compute();
 });

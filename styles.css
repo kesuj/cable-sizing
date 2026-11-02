@@ -88,6 +88,36 @@ input[type=number]:focus, select:focus { border-bottom-color: var(--accent); out
 .check input { width: 18px; height: 18px; accent-color: var(--ink); }
 .err { color: var(--fail); font-size: 14px; margin: 0; }
 
+/* simple mode: jobs, routes, explainers */
+fieldset.field { border: 0; padding: 0; margin: 0 0 var(--s4); }
+fieldset.field > legend { padding: 0; margin-bottom: var(--s2); font-weight: 600; font-size: 15px; }
+.jobgrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(190px, 100%), 1fr)); gap: var(--s2); }
+.jobcard, .routecard { position: relative; display: flex; gap: var(--s3); align-items: center; padding: var(--s3); border: 1px solid var(--rule); background: var(--sheet); cursor: pointer; min-height: 56px; font-size: 15px; line-height: 1.3; }
+.jobcard input, .routecard input { position: absolute; opacity: 0; inset: 0; margin: 0; width: 100%; height: 100%; cursor: pointer; }
+.jobcard svg { flex: none; }
+.jobcard:has(input:checked), .routecard:has(input:checked) { border-color: var(--ink); background: color-mix(in srgb, var(--accent) 14%, var(--sheet)); font-weight: 600; }
+.jobcard:has(input:focus-visible), .routecard:has(input:focus-visible) { outline: 3px solid var(--accent); outline-offset: 2px; }
+.routes { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(220px, 100%), 1fr)); gap: var(--s2); }
+.jobcard span, .routecard span { flex: 1; min-width: 0; }
+.figwrap { margin: var(--s3) 0; color: var(--ink); }
+.figwrap svg, svg.fig { width: 100%; max-width: 420px; height: auto; display: block; }
+.figwrap.map { max-width: 460px; }
+.routecard svg, .routecard svg.fig { width: 52px; height: 52px; flex: none; }
+svg .acc { stroke: var(--accent); }
+svg .c-r { fill: #C62828; stroke: none; } svg .c-y { fill: #E2B007; stroke: none; } svg .c-b { fill: #1F5FAF; stroke: none; } svg .c-n { fill: currentColor; stroke: none; }
+details.why { margin-top: var(--s2); font-size: 14px; }
+details.why summary { cursor: pointer; color: var(--graphite); text-decoration: underline; text-underline-offset: 3px; min-height: 28px; display: inline-flex; align-items: center; }
+details.why[open] { background: var(--film); border: 1px solid var(--rule); padding: var(--s3); }
+details.why[open] summary { color: var(--ink); margin-bottom: var(--s2); }
+details.why p { margin: 0 0 var(--s2); max-width: 64ch; }
+.result details.why[open] { background: var(--film); }
+.rh { font-size: 17px; margin: var(--s4) 0 var(--s2); }
+.volt { margin-top: var(--s4); }
+.volt.bad dd { color: var(--fail); }
+ul.plain { margin: 0; padding-left: 1.2em; display: grid; gap: var(--s2); font-size: 14px; }
+.smaller { font-size: 14px; padding: var(--s3); border: 1px solid var(--rule); margin: var(--s4) 0 0; }
+:lang(ne) body, [lang="ne"] { line-height: 1.6; }
+
 /* result */
 .xsec { margin: 0 0 var(--s4); display: grid; justify-items: center; }
 .xsec svg { width: 100%; max-width: 240px; height: auto; }

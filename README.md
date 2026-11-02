@@ -14,9 +14,15 @@ errors found in it.
 **No install.** Double-click `index.html` — it runs offline in any browser (also from a USB stick or
 a phone's file manager). Or publish the folder on GitHub Pages.
 
-* **Simple** — answer four questions: what it powers, where the cable runs (and where in Nepal),
-  how long it is, copper or aluminium. You get: the exact cable to ask for at the shop, the breaker
-  rating, the earth conductor, and how much cable to order.
+Live: **https://kesuj.github.io/cable-sizing/**
+
+* **Simple** (English / नेपाली) — start from the job: house main cable (from the NEA meter
+  category on your bill), geyser/heater, AC, water pump (nameplate HP or amps, starter type),
+  EV charger, shop/small industry, or an 11/33 kV transformer feed. Pick how the cable is laid from
+  pictures, where in Nepal, and the length. You get the cable to ask for, the breaker (rating, trip
+  curve, poles), the RCD, the earth wire, **the voltage your appliance actually gets** (at 230 V and
+  at NEA's −5 % limit), why one size smaller would fail, every assumption, and a shop checklist.
+  Every term has a "What is this?" note with a figure.
 * **Engineer** — every input is open: voltage, pf, efficiency, growth margin, motor factor, soil
   resistivity, depth, grouping, spacing, formation, voltage-drop limit, fault level and clearing time
   (or breaker let-through I²t), motor starting, sizing basis (In or Ib), HV catalogue choice.
@@ -58,6 +64,8 @@ guide.html                  how it works, Nepal and world practice, for laymen a
 src/core.js                 formulas (current, VD, short circuit, k values, PE size, interpolation)
 src/size.js                 the sizing process
 src/adapters/               data sources: IS LV, IS HV, IEC 60364-5-52
+src/jobs.js                 Simple-mode jobs: plain answers -> engineering input, protection, voltage at load
+src/explain.js              "What is this?" explainers (EN/NE) and line figures
 src/app.js  src/xsec.js     UI and the to-scale cable cross-section
 dist/app.bundle.js          generated single-file bundle
 scripts/                    extract Excel, build data, build bundle

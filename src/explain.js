@@ -9,18 +9,18 @@ const ACC = 'class="acc"'; // accent stroke (phase yellow), styled in CSS
 /** House wiring map, Nepal style, with the run being sized highlighted. */
 export function houseMap(highlight = "main") {
   const hl = (k) => (k === highlight ? ACC + ' stroke-width="3.5"' : "");
-  return svg(360, 170, `
-    <line x1="20" y1="20" x2="20" y2="120"/><line x1="10" y1="28" x2="30" y2="28"/>${T(20, 138, "NEA pole", "middle")}
-    <path d="M20 30 C 50 40, 70 40, 92 58" ${hl("service")}/>
-    <rect x="92" y="50" width="34" height="30"/>${T(109, 94, "Meter", "middle")}
-    <path d="M126 65 H170" ${hl("main")}/>${T(148, 58, "main", "middle")}
-    <rect x="170" y="45" width="40" height="44"/>${T(190, 103, "Board", "middle")}${T(190, 115, "(MCB, RCD)", "middle", 'font-size="9"')}
-    <path d="M210 52 H300" ${hl("lights")}/>${T(306, 55, "lights")}
-    <path d="M210 62 H300" ${hl("sockets")}/>${T(306, 65, "sockets")}
-    <path d="M210 72 H300" ${hl("heater")}/>${T(306, 75, "geyser / AC")}
-    <path d="M210 82 H300" ${hl("ev")}/>${T(306, 85, "EV charger")}
-    <path d="M190 89 V140 H300" ${hl("pump")} stroke-dasharray="${highlight === "pump" ? "0" : "4 3"}"/>${T(306, 143, "pump")}
-    ${T(250, 160, "each line is one cable run, sized on its own", "middle", 'font-size="10"')}`, "House wiring map");
+  return svg(380, 190, `
+    <line x1="20" y1="20" x2="20" y2="130"/><line x1="10" y1="28" x2="30" y2="28"/>${T(20, 148, "NEA pole", "middle")}
+    <path d="M20 30 C 50 40, 70 44, 92 62" ${hl("service")}/>
+    <rect x="92" y="55" width="34" height="30"/>${T(109, 99, "Meter", "middle")}
+    <path d="M126 70 H170" ${hl("main")}/>${T(148, 63, "main", "middle")}
+    <rect x="170" y="40" width="40" height="66"/>${T(190, 120, "Board", "middle")}${T(190, 132, "(MCB, RCD)", "middle", 'font-size="9"')}
+    <path d="M210 48 H300" ${hl("lights")}/>${T(306, 52, "lights")}
+    <path d="M210 64 H300" ${hl("sockets")}/>${T(306, 68, "sockets")}
+    <path d="M210 80 H300" ${hl("heater")}/>${T(306, 84, "geyser / AC")}
+    <path d="M210 96 H300" ${hl("ev")}/>${T(306, 100, "EV charger")}
+    <path d="M190 106 V155 H300" ${hl("pump")} stroke-dasharray="${highlight === "pump" ? "0" : "4 3"}"/>${T(306, 159, "pump")}
+    ${T(250, 182, "each line is one cable run, sized on its own", "middle", 'font-size="10"')}`, "House wiring map");
 }
 
 const routePics = {
