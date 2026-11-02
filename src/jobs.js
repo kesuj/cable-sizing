@@ -35,7 +35,7 @@ const A = (en, ne) => ({ en, ne });
 export const JOBS = {
   house: {
     level: "LV", icon: "house",
-    en: "Main cable of a house or flat (meter to board)", ne: "घर वा फ्ल्याटको मुख्य तार (मिटरदेखि बोर्डसम्म)",
+    en: "House main cable (meter to board)", ne: "घरको मुख्य तार (मिटरदेखि बोर्ड)",
     fields: (a) => ["phase", "houseBasis", ...(a.houseBasis === "meter" ? ["meterA"] : ["kwNow", "kwFuture"])],
     defaults: { phase: "1ph", houseBasis: "meter", meterA: 30, kwNow: 4, kwFuture: 3 },
     toInput(a) {
@@ -90,7 +90,7 @@ export const JOBS = {
 
   pump: {
     level: "LV", icon: "pump",
-    en: "Water pump or motor (borewell, tank, mill)", ne: "पानी पम्प वा मोटर (बोरिङ, ट्याङ्की, मिल)",
+    en: "Water pump or motor", ne: "पानी पम्प वा मोटर",
     fields: (a) => ["phase", "pumpType", "motorBasis", ...(a.motorBasis === "amps" ? ["amps"] : ["hp"]), "starter"],
     defaults: { phase: "1ph", pumpType: "sub", motorBasis: "hp", hp: 1, amps: 7, starter: "dol" },
     toInput(a) {
@@ -134,7 +134,7 @@ export const JOBS = {
 
   shop: {
     level: "LV", icon: "shop",
-    en: "Shop, office, school or small industry supply", ne: "पसल, अफिस, विद्यालय वा सानो उद्योगको सप्लाई",
+    en: "Shop, office or small industry", ne: "पसल, अफिस वा सानो उद्योग",
     fields: () => ["phase", "kw"],
     defaults: { phase: "3ph", kw: 20 },
     toInput(a) {
@@ -146,7 +146,7 @@ export const JOBS = {
 
   hvfeed: {
     level: "HV", icon: "hv",
-    en: "11 kV or 33 kV cable to a transformer (industry, hospital, hydropower)", ne: "ट्रान्सफर्मरसम्मको ११ वा ३३ kV केबल (उद्योग, अस्पताल, जलविद्युत)",
+    en: "11 or 33 kV cable to a transformer", ne: "ट्रान्सफर्मरसम्म ११/३३ kV केबल",
     fields: () => ["hvKv", "kva", "faultKa", "faultT"],
     defaults: { hvKv: "11", kva: 500, faultKa: 13.1, faultT: 1 },
     toInput(a) {

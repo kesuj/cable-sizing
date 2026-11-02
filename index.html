@@ -8,33 +8,33 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2715%27 fill=%27%2318212A%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%279%27 fill=%27%23E2B007%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%275%27 fill=%27%23B87333%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 <header class="top">
   <div class="brand">
-    <h1>Conductor sizing</h1>
-    <p>Which cable to buy and which breaker to fit, with every step of the working shown.</p>
+    <h1 data-en="Cable size calculator" data-ne="तारको साइज क्याल्कुलेटर">Cable size calculator</h1>
+    <p data-en="Pick the job, answer a few questions, and get the cable, breaker and parts to buy — checked against IS and IEC." data-ne="काम छान्नुहोस्, केही प्रश्नको जवाफ दिनुहोस्, र किन्नुपर्ने तार, ब्रेकर र सामान पाउनुहोस् — IS र IEC अनुसार जाँचिएको।">Pick the job, answer a few questions, and get the cable, breaker and parts to buy — checked against IS and IEC.</p>
   </div>
   <nav class="switches" aria-label="Calculator setup">
     <div class="seg" role="radiogroup" aria-label="Voltage level">
-      <button type="button" role="radio" data-set="level" data-val="LV">Low voltage <small>up to 1.1 kV</small></button>
-      <button type="button" role="radio" data-set="level" data-val="HV">High voltage <small>3.3 to 33 kV</small></button>
+      <button type="button" role="radio" data-set="level" data-val="LV" data-en="Low voltage <small>up to 1.1 kV</small>" data-ne="कम भोल्टेज <small>१.१ kV सम्म</small>">Low voltage <small>up to 1.1 kV</small></button>
+      <button type="button" role="radio" data-set="level" data-val="HV" data-en="High voltage <small>3.3 to 33 kV</small>" data-ne="उच्च भोल्टेज <small>३.३–३३ kV</small>">High voltage <small>3.3 to 33 kV</small></button>
     </div>
     <div class="seg" role="radiogroup" aria-label="Standard">
-      <button type="button" role="radio" data-set="std" data-val="IS">Nepal / India <small>IS tables</small></button>
-      <button type="button" role="radio" data-set="std" data-val="IEC">International <small>IEC 60364</small></button>
+      <button type="button" role="radio" data-set="std" data-val="IS" data-en="Nepal / India <small>IS tables</small>" data-ne="नेपाल / भारत <small>IS तालिका</small>">Nepal / India <small>IS tables</small></button>
+      <button type="button" role="radio" data-set="std" data-val="IEC" data-en="International <small>IEC 60364</small>" data-ne="अन्तर्राष्ट्रिय <small>IEC 60364</small>">International <small>IEC 60364</small></button>
     </div>
     <div class="seg" role="radiogroup" aria-label="Detail">
-      <button type="button" role="radio" data-set="mode" data-val="simple">Simple</button>
-      <button type="button" role="radio" data-set="mode" data-val="engineer">Engineer</button>
+      <button type="button" role="radio" data-set="mode" data-val="simple" data-en="Simple" data-ne="सजिलो">Simple</button>
+      <button type="button" role="radio" data-set="mode" data-val="engineer" data-en="Engineer" data-ne="इन्जिनियर">Engineer</button>
     </div>
     <div class="seg" role="radiogroup" aria-label="Language" data-only="simple">
       <button type="button" role="radio" data-set="lang" data-val="en">English</button>
       <button type="button" role="radio" data-set="lang" data-val="ne" lang="ne">नेपाली</button>
     </div>
-    <a class="guide-link" href="guide.html">How it works</a>
+    <a class="guide-link" href="guide.html" data-en="How cable sizing works" data-ne="तार नाप्ने तरिका">How cable sizing works</a>
   </nav>
 </header>
 
@@ -74,7 +74,7 @@
  </div>
 
   <section class="working" aria-labelledby="w-h">
-    <h2 id="w-h">The working</h2>
+    <h2 id="w-h">How this answer was calculated</h2>
     <div id="working"></div>
   </section>
 </main>
@@ -82,7 +82,7 @@
 <div class="sticky" id="sticky" aria-hidden="true"></div>
 
 <footer class="foot">
-  <p>Results are for design and checking. Use the actual manufacturer datasheet before buying, and have the installation done or inspected by a licensed electrician. In Nepal, any connection to the NEA network needs NEA approval.</p>
+  <p data-en="Results are for design and checking. Use the actual manufacturer datasheet before buying, and have the installation done or inspected by a licensed electrician. In Nepal, any connection to the NEA network needs NEA approval." data-ne="नतिजा डिजाइन र जाँचका लागि हो। किन्नुअघि निर्माताको डाटाशिट हेर्नुहोस्, र जडान इजाजतप्राप्त इलेक्ट्रिसियनबाट गराउनुहोस्। NEA को लाइनमा जोड्न NEA को स्वीकृति चाहिन्छ।">Results are for design and checking. Use the actual manufacturer datasheet before buying, and have the installation done or inspected by a licensed electrician. In Nepal, any connection to the NEA network needs NEA approval.</p>
 </footer>
 <script src="dist/app.bundle.js"></script>
 </body>

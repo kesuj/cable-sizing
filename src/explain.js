@@ -1,3 +1,4 @@
+import { ic } from "./icons.js";
 // "Why?" explainers: one short, plain answer per concept (English + Nepali) and, where a picture
 // says it faster, a small line figure. Figures use currentColor so they work in light and dark.
 
@@ -7,31 +8,40 @@ const T = (x, y, s, a = "start", extra = "") => `<text x="${x}" y="${y}" fill="c
 const ACC = 'class="acc"'; // accent stroke (phase yellow), styled in CSS
 
 /** House wiring map, Nepal style, with the run being sized highlighted. */
-export function houseMap(highlight = "main") {
+export function houseMap(highlight = "main", lang = "en") {
+  const L = lang === "ne" ? { pole: "NEA पोल", meter: "मिटर", main: "मुख्य", board: "बोर्ड", lights: "बत्ती", sockets: "सकेट", heater: "गिजर / AC", ev: "EV चार्जर", pump: "पम्प", cap: "हरेक लाइन छुट्टै नापिने एउटा तार हो" }
+    : { pole: "NEA pole", meter: "Meter", main: "main", board: "Board", lights: "lights", sockets: "sockets", heater: "geyser / AC", ev: "EV charger", pump: "pump", cap: "each line is one cable run, sized on its own" };
   const hl = (k) => (k === highlight ? ACC + ' stroke-width="3.5"' : "");
   return svg(380, 190, `
-    <line x1="20" y1="20" x2="20" y2="130"/><line x1="10" y1="28" x2="30" y2="28"/>${T(20, 148, "NEA pole", "middle")}
-    <path d="M20 30 C 50 40, 70 44, 92 62" ${hl("service")}/>
-    <rect x="92" y="55" width="34" height="30"/>${T(109, 99, "Meter", "middle")}
-    <path d="M126 70 H170" ${hl("main")}/>${T(148, 63, "main", "middle")}
-    <rect x="170" y="40" width="40" height="66"/>${T(190, 120, "Board", "middle")}${T(190, 132, "(MCB, RCD)", "middle", 'font-size="9"')}
-    <path d="M210 48 H300" ${hl("lights")}/>${T(306, 52, "lights")}
-    <path d="M210 64 H300" ${hl("sockets")}/>${T(306, 68, "sockets")}
-    <path d="M210 80 H300" ${hl("heater")}/>${T(306, 84, "geyser / AC")}
-    <path d="M210 96 H300" ${hl("ev")}/>${T(306, 100, "EV charger")}
-    <path d="M190 106 V155 H300" ${hl("pump")} stroke-dasharray="${highlight === "pump" ? "0" : "4 3"}"/>${T(306, 159, "pump")}
-    ${T(250, 182, "each line is one cable run, sized on its own", "middle", 'font-size="10"')}`, "House wiring map");
+    <line x1="24" y1="20" x2="24" y2="130"/><line x1="14" y1="28" x2="34" y2="28"/>${T(6, 148, L.pole)}
+    <path d="M24 30 C 50 40, 70 44, 92 62" ${hl("service")}/>
+    <rect x="92" y="55" width="34" height="30"/>${T(109, 99, L.meter, "middle")}
+    <path d="M126 70 H170" ${hl("main")}/>${T(148, 63, L.main, "middle")}
+    <rect x="170" y="40" width="40" height="66"/>${T(150, 120, L.board, "middle")}${T(150, 132, "MCB, RCD", "middle", 'font-size="9"')}
+    <path d="M210 48 H300" ${hl(L.lights)}/>${T(306, 52, "lights")}
+    <path d="M210 64 H300" ${hl(L.sockets)}/>${T(306, 68, "sockets")}
+    <path d="M210 80 H300" ${hl("heater")}/>${T(306, 84, L.heater)}
+    <path d="M210 96 H300" ${hl("ev")}/>${T(306, 100, L.ev)}
+    <path d="M200 106 V155 H300" ${hl(L.pump)} stroke-dasharray="${highlight === "pump" ? "0" : "4 3"}"/>${T(306, 159, "pump")}
+    ${T(250, 182, L.cap, "middle", 'font-size="10"')}`, "House wiring map");
 }
 
+const WIRE = (cx, cy, r, col) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}" stroke="none"/>`;
+const SOIL = '<rect x="0" y="16" width="64" height="40" class="soil" stroke="none"/><path d="M0 16 H64" /><path d="M6 16 l-2 -4 M14 16 l1 -4 M40 16 l-2 -4 M52 16 l2 -4" />';
 const routePics = {
-  clipped: `<rect x="4" y="4" width="10" height="52" fill="currentColor" opacity=".15" stroke="none"/><circle cx="24" cy="30" r="7"/><path d="M14 22 H32 M14 38 H32" opacity=".6"/>`,
-  conduit: `<rect x="4" y="4" width="10" height="52" fill="currentColor" opacity=".15" stroke="none"/><circle cx="28" cy="30" r="13"/><circle cx="24" cy="27" r="3.5"/><circle cx="32" cy="27" r="3.5"/><circle cx="28" cy="34" r="3.5"/>`,
-  tray: `<path d="M6 40 H54 M6 40 V34 M54 40 V34" /><circle cx="18" cy="31" r="7"/><circle cx="33" cy="31" r="7"/><path d="M10 46 h4 m6 0 h4 m6 0 h4 m6 0 h4" opacity=".6"/>`,
-  buried: `<path d="M2 12 H58" stroke-dasharray="3 3"/>${""}<rect x="22" y="40" width="16" height="5" fill="currentColor" opacity=".35" stroke="none"/><circle cx="30" cy="50" r="4"/><path d="M18 56 H42" opacity=".5"/>`,
-  duct: `<path d="M2 12 H58" stroke-dasharray="3 3"/><circle cx="30" cy="45" r="10"/><circle cx="30" cy="45" r="4"/>`,
+  clipped: `<rect x="0" y="0" width="12" height="56" class="wall" stroke="none"/><path d="M12 0 V56"/>
+    <circle cx="30" cy="28" r="9" class="sheath"/>${WIRE(27, 28, 3, "#C62828")}${WIRE(33, 28, 3, "#222")}
+    <path d="M12 19 H21 M12 37 H21" /><path d="M21 19 a9 9 0 0 1 18 9 a9 9 0 0 1 -18 9" fill="none" stroke-width="1.2" opacity=".55"/>`,
+  conduit: `<rect x="0" y="0" width="12" height="56" class="wall" stroke="none"/><path d="M12 0 V56"/>
+    <circle cx="32" cy="28" r="15" fill="none"/>${WIRE(27, 25, 4, "#C62828")}${WIRE(37, 25, 4, "#222")}${WIRE(32, 34, 4, "#2E7D4F")}`,
+  tray: `<path d="M4 40 H60 M4 40 V30 M60 40 V30" stroke-width="2"/><path d="M10 44 v4 M20 44 v4 M30 44 v4 M40 44 v4 M50 44 v4" opacity=".5"/>
+    <circle cx="18" cy="32" r="7" class="sheath"/><circle cx="33" cy="32" r="7" class="sheath"/><circle cx="48" cy="32" r="7" class="sheath"/>`,
+  buried: `${SOIL}<rect x="20" y="30" width="24" height="5" class="brick" stroke="none"/><rect x="18" y="37" width="28" height="14" class="sand" stroke="none"/>
+    <circle cx="32" cy="44" r="5" class="sheath"/>`,
+  duct: `${SOIL}<circle cx="32" cy="40" r="11" fill="none" stroke-width="2"/><circle cx="32" cy="43" r="5.5" class="sheath"/>`,
 };
 export function routePic(k) {
-  return svg(60, 60, routePics[k] || "", "");
+  return svg(64, 56, routePics[k] || "", "");
 }
 
 const FIG = {
@@ -133,5 +143,6 @@ export function explainHtml(key, lang = "en") {
   if (!e) return "";
   const [t, b] = e[lang] || e.en;
   const fig = e.fig && FIG[e.fig] ? `<div class="figwrap">${FIG[e.fig]()}</div>` : "";
-  return `<details class="why"><summary>${lang === "ne" ? "किन? / के हो?" : "What is this?"}</summary><p><b>${t}.</b> ${b}</p>${fig}</details>`;
+  const lbl = lang === "ne" ? `${t} — व्याख्या` : `Explain: ${t}`;
+  return `<details class="why"><summary title="${lbl}" aria-label="${lbl}">${ic("help", 18)}</summary><div class="why-body"><p><b>${t}.</b> ${b}</p>${fig}</div></details>`;
 }

@@ -5,6 +5,7 @@ import { round, kValue } from "./core.js";
 import { drawCable } from "./xsec.js";
 import { JOBS, ROUTES, REGIONS as NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } from "./jobs.js";
 import { explainHtml, routePic, houseMap } from "./explain.js";
+import { ic } from "./icons.js";
 
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
@@ -63,8 +64,11 @@ function sel(name, label, opts, { hint, struct } = {}) {
   const o = opts.map(([v, t]) => `<option value="${esc(v)}"${String(S[name]) === String(v) ? " selected" : ""}>${esc(t)}</option>`).join("");
   return `<div class="field"><label for="${name}">${label}</label><select id="${name}" name="${name}"${struct ? " data-struct" : ""}>${o}</select>${hint ? `<span class="hint">${hint}</span>` : ""}${why(name, S.lang)}</div>`;
 }
+const METHOD_PIC = { ground: "buried", duct: "duct", air: "tray", D2: "buried", D1: "duct", A1: "conduit", A2: "conduit", B1: "conduit", B2: "conduit",
+  C: "clipped", E: "tray", F: "tray", F_flat_touching: "tray", G_horizontal_spaced: "tray", G_vertical_spaced: "tray" };
 function choices(name, label, opts, struct = true) {
-  const items = opts.map(([v, t, d]) => `<label class="choice"><input type="radio" name="${name}" value="${esc(v)}"${String(S[name]) === String(v) ? " checked" : ""}${struct ? " data-struct" : ""}><div><b>${esc(t)}</b>${d ? `<span>${esc(d)}</span>` : ""}</div></label>`).join("");
+  const pic = (v) => (name === "method" && METHOD_PIC[v] ? `<span class="mpic">${routePic(METHOD_PIC[v])}</span>` : "");
+  const items = opts.map(([v, t, d]) => `<label class="choice${name === "method" ? " withpic" : ""}"><input type="radio" name="${name}" value="${esc(v)}"${String(S[name]) === String(v) ? " checked" : ""}${struct ? " data-struct" : ""}>${pic(v)}<div><b>${esc(t)}</b>${d ? `<span>${esc(d)}</span>` : ""}</div></label>`).join("");
   return `<fieldset class="field" style="border:0;padding:0;margin:0 0 16px"><legend class="lbl" style="padding:0;margin-bottom:4px">${label}</legend><div class="choices">${items}</div></fieldset>`;
 }
 const check = (name, label, struct = true) =>
@@ -103,7 +107,7 @@ function renderForm() {
       num("power", S.loadType === "amps" && !eng() ? "Current" : "Load", { suffix: unitSel(units), hint: eng() ? "" : S.std === "IEC" ? L.hint?.replace("the NEA sanctioned load", "your sanctioned (contracted) load") : L.hint }));
     if (eng()) {
       h += row(num("pf", "Power factor", { step: 0.01 }), num("eff", "Motor efficiency", { step: 0.01, hint: "Used for HP, and for kW when it is a motor's output." }),
-        num("margin", "Future growth allowance", { suffix: "%" }), num("motorFactor", "Motor branch factor", { step: 0.05, hint: "1.25 for a single motor (IS 732 / NEC practice), else 1." }));
+        num("margin", "Future growth allowance", { suffix: "%" }), num("motorFactor", "Motor branch factor", { step: 0.05, hint: "1.25 for a single motor (NEC 430.22 practice), else 1." }));
     }
   }
   $("#load-fields").innerHTML = h;
@@ -234,47 +238,60 @@ function compute() {
 
 function meter(label, value, limit, unit, good) {
   const pct = Math.max(2, Math.min(100, (value / limit) * 100));
-  return `<div class="meter${good ? "" : " bad"}"><div class="top-line"><span>${label}</span><b>${fmt(value)} / ${fmt(limit)} ${unit}</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  return `<div class="meter${good ? "" : " bad"}"><div class="top-line"><span>${good ? ic("check", 15) : ic("x", 15)} ${label}</span><b>${fmt(value)} / ${fmt(limit)} ${unit}</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
 }
+const kvRow = (icon, label, value) => `<div class="kvr">${ic(icon, 17)}<span>${label}</span><b>${value}</b></div>`;
+
+// Engine warnings are English; translate the common ones for Nepali Simple mode.
+const WARN_NE = [
+  ["Motor circuits:", "मोटर सर्किट: मोटरका लागि बनेको MCCB/MPCB वा फ्यूज + ओभरलोड रिले छान्नुहोस्; देखाइएको रेटिङ तारका लागि न्यूनतम हो।"],
+  ["Single-core AC cables", "सिङ्गल-कोर AC केबलमा स्टिल आर्मर हुनु हुँदैन; एल्युमिनियम आर्मर प्रयोग गर्नुहोस्।"],
+  ["Cable runs close to", "पूरा भारमा तार आफ्नो अधिकतम तापक्रम नजिक चल्छ।"],
+  ["No size up to", "कुनै पनि मानक साइज पुगेन: उच्च भोल्टेज, छोटो बाटो वा तामा प्रयोग गर्नुहोस्।"],
+];
+const warnText = (w) => (S.lang === "ne" && !eng() ? (WARN_NE.find(([k]) => w.startsWith(k))?.[1] ?? w) : w);
 
 function renderResult() {
   const { res, err, notes, A } = last;
   const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
+  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
+  $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`;
+  $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
   if (err) {
-    ans.innerHTML = `<p class="err">${esc(err)}</p>`; work.innerHTML = ""; sticky.textContent = ""; drawCable($("#xsec"), null); $("#xsec-cap").textContent = "";
+    ans.innerHTML = `<p class="err">${ic("alert", 16)} ${esc(err)}</p>`; work.innerHTML = ""; sticky.textContent = ""; drawCable($("#xsec"), null); $("#xsec-cap").textContent = "";
     return;
   }
-  const c = res.chosen, s = res.spec, hv = S.level === "HV";
+  const c = res.chosen, s = res.spec, hv = s.voltage > 1100;
   const grade = A.voltageGrade instanceof Function ? A.voltageGrade(s) : A.voltageGrade;
   drawCable($("#xsec"), c ? { cores: s.cores, size: c.size, material: s.material, armoured: s.armoured, hv, kv: s.voltage / 1000, single: s.cores === "1" } : null);
-  $("#xsec-cap").textContent = c ? `Cross-section of one ${s.cores === "1" ? "core" : "cable"}, drawn to scale (approx.)` : "";
+  $("#xsec-cap").textContent = c ? (s.cores === "1" ? tr("xsecCore") : tr("xsecCable")) : "";
   let h = "";
   if (!c) {
-    h = `<div class="fail-box"><p class="buy">No standard cable works for this.</p>${res.warnings.map((w) => `<p>${esc(w)}</p>`).join("")}</div>`;
-    sticky.textContent = "No standard cable works — see the working";
+    h = `<div class="fail-box"><p class="buy">${ic("alert", 20)} ${tr("noCable")}</p>${res.warnings.map((w) => `<p>${esc(warnText(w))}</p>`).join("")}</div>`;
+    sticky.textContent = tr("noCable");
   } else {
-    const buy = cableDescription(res, grade);
-    const extra = Math.ceil(s.lengthM * 1.1);
-    h += `<p class="buy">${esc(buy)}</p><p class="buy-sub">Order about ${extra} m per run (10 % extra for bends and terminations).</p>`;
-    h += `<dl class="kv">`;
-    h += `<dt>Load current</dt><dd>${fmt(res.current.I)} A</dd>`;
-    if (Math.abs(res.current.Ib - res.current.I) > 0.01) h += `<dt>Design current</dt><dd>${fmt(res.current.Ib)} A</dd>`;
-    if (res.current.In) h += `<dt>${S.loadType === "motor" ? "Breaker (minimum)" : "Breaker / fuse"}</dt><dd>${res.current.In} A${s.system === "1ph" ? " DP" : s.system === "3ph" ? (s.cores === "3" ? " TP" : " TPN") : ""}</dd>`;
-    if (hv) h += `<dt>Relay setting must not exceed</dt><dd>${fmt(c.iz * res.runs, 0)} A</dd>`;
-    if (hv) h += `<dt>Metallic screen</dt><dd>check earth-fault rating</dd>`;
-    else h += `<dt>Earth conductor</dt><dd>${res.earthSize} mm² ${s.material === "cu" ? "Cu" : "Al"}</dd>`;
-    h += `</dl>`;
-    h += meter("Current vs cable capacity", res.current.basis / res.runs, c.iz, "A", c.pass.ampacity);
-    h += meter("Voltage drop", c.vdPct, s.vdLimitPct, "%", c.pass.voltageDrop);
-    if (c.vdStartPct != null) h += meter("Dip at motor start", c.vdStartPct, s.vdStartLimitPct, "%", c.pass.motorStart);
-    if (c.scMin != null) h += meter("Size needed for the fault", c.scMin, c.size, "mm²", c.pass.shortCircuit);
+    h += `<p class="ask">${ic("cart", 16)} ${tr("askFor")}</p><p class="buy">${esc(cableDescription(res, grade))}</p>`;
+    h += `<div class="kvs">`;
+    h += kvRow("ruler", tr("order"), `${Math.ceil(s.lengthM * 1.1)} m${res.runs > 1 ? ` × ${res.runs}` : ""}`);
+    h += kvRow("zap", tr("loadI"), `${fmt(res.current.I)} A`);
+    if (Math.abs(res.current.Ib - res.current.I) > 0.01) h += kvRow("zap", tr("designI"), `${fmt(res.current.Ib)} A`);
+    if (res.current.In) h += kvRow("shield", tr("breaker"), `${res.current.In} A${s.system === "1ph" ? " DP" : s.system === "3ph" ? (s.cores === "3" ? " TP" : " TPN") : ""}`);
+    if (hv) h += kvRow("shield", tr("relayMax"), `${fmt(c.iz * res.runs, 0)} A`);
+    if (hv) h += kvRow("earth", tr("screen"), tr("screenChk"));
+    else h += kvRow("earth", tr("earth"), `${res.earthSize} mm² ${s.material === "cu" ? "Cu" : "Al"}`);
+    h += `</div>`;
+    h += meter(tr("mI"), res.current.basis / res.runs, c.iz, "A", c.pass.ampacity);
+    h += meter(tr("mVd"), c.vdPct, s.vdLimitPct, "%", c.pass.voltageDrop);
+    if (c.vdStartPct != null) h += meter(tr("mStart"), c.vdStartPct, s.vdStartLimitPct, "%", c.pass.motorStart);
+    if (c.scMin != null) h += meter(tr("mFault"), c.scMin, c.size, "mm²", c.pass.shortCircuit);
     const DEC_NE = { "current-carrying capacity": "करेन्ट बोक्ने क्षमता", "voltage drop": "भोल्टेज ड्रप", "motor starting voltage dip": "मोटर सुरु हुँदा भोल्टेज झर्ने", "short-circuit withstand": "सर्ट सर्किट सहने क्षमता", "smallest size in the table": "तालिकाको सबैभन्दा सानो साइज" };
-    const dec = res.decidedBy.map((d) => (!eng() && S.lang === "ne" ? (DEC_NE[d] || (d.startsWith("the minimum size rule") ? "न्यूनतम साइजको नियम (NBC 207 / IEC)" : d)) : d));
-    h += `<p class="decided">${tr("decided")} <b>${esc(dec.join(S.lang === "ne" && !eng() ? " र " : " and "))}</b>.</p>`;
+    const ne = S.lang === "ne" && !eng();
+    const dec = res.decidedBy.map((d) => (ne ? (DEC_NE[d] || (d.startsWith("the minimum size rule") ? "न्यूनतम साइजको नियम (NBC 207 / IEC)" : d)) : d));
+    h += `<p class="decided">${ic("info", 16)}<span>${tr("decided")} <b>${esc(dec.join(ne ? " र " : " and "))}</b>.</span></p>`;
     if (last.simple) h += renderSimpleResult(res, last.simple);
-    const allNotes = [...(last.simple ? [] : notes.filter((n) => !n.startsWith("Climate") || !eng())), ...res.warnings];
-    if (allNotes.length) h += `<ul class="notes">${allNotes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`;
-    sticky.textContent = `${res.runs > 1 ? res.runs + " × " : ""}${c.size} mm² ${s.material === "cu" ? "Cu" : "Al"}${res.current.In ? ` · ${res.current.In} A breaker` : ""}`;
+    const allNotes = [...(last.simple ? [] : notes.filter((n) => !n.startsWith("Climate") || !eng())), ...res.warnings.map(warnText)];
+    if (allNotes.length) h += `<ul class="notes">${allNotes.map((n) => `<li>${ic("alert", 15)}<span>${esc(n)}</span></li>`).join("")}</ul>`;
+    sticky.textContent = `${res.runs > 1 ? res.runs + " × " : ""}${c.size} mm² ${s.material === "cu" ? "Cu" : "Al"}${res.current.In ? ` · ${res.current.In} A` : ""}`;
   }
   ans.innerHTML = h;
   work.innerHTML = renderWorking(res, A);
@@ -283,29 +300,93 @@ function renderResult() {
 function renderWorking(res, A) {
   const s = res.spec, c = res.chosen;
   const sys = s.system === "3ph" ? "I = P / (√3 × U × pf × η)" : s.system === "dc" ? "I = P / (U × η)" : "I = P / (U × pf × η)";
-  let h = `<h3>Step by step</h3><ol class="trail">`;
-  h += `<li><b>Load current.</b> ${sys} = <b>${fmt(res.current.I, 2)} A</b> (${fmt(s.load.power)} ${s.load.unit}, ${fmt(s.voltage, 0)} V${s.load.unit !== "kVA" && s.load.unit !== "A" ? `, pf ${s.load.pf}` : ""}).</li>`;
-  if (Math.abs(res.current.Ib - res.current.I) > 0.01) h += `<li><b>Design current</b> Ib = I × (1 + margin ${fmt(s.designMargin * 100, 0)} %) × motor factor ${s.motorFactor} = <b>${fmt(res.current.Ib, 2)} A</b>.</li>`;
-  if (res.current.In) h += `<li><b>Protective device.</b> Next standard rating at or above Ib: <b>In = ${res.current.In} A</b>. The cable must carry at least In after derating (Ib ≤ In ≤ Iz, IEC 60364-4-43 / IS 732).</li>`;
-  else h += `<li><b>Sizing basis.</b> The cable must carry the design current Ib after derating; protection relays are then set at or below the cable's derated rating.</li>`;
+  let h = `<p class="lead-s">${tr("calcLead")}</p><h3>${tr("steps")}</h3><ol class="trail">`;
+  h += `<li><b>${tr("w1")}</b> ${sys} = <b>${fmt(res.current.I, 2)} A</b> (${fmt(s.load.power)} ${s.load.unit}, ${fmt(s.voltage, 0)} V${s.load.unit !== "kVA" && s.load.unit !== "A" ? `, pf ${s.load.pf}` : ""}).</li>`;
+  if (Math.abs(res.current.Ib - res.current.I) > 0.01) h += `<li><b>${tr("w2")}</b> Ib = I × (1 + ${fmt(s.designMargin * 100, 0)} %) × ${s.motorFactor} = <b>${fmt(res.current.Ib, 2)} A</b>.</li>`;
+  if (res.current.In) h += `<li><b>${tr("w3")}</b> In = <b>${res.current.In} A</b>. ${tr("w3b")}</li>`;
+  else h += `<li><b>${tr("w3hv")}</b> ${tr("w3hvb")}</li>`;
   if (c) {
-    h += `<li><b>Rating factors</b> for the chosen size (they depend on the installation):<div class="tablewrap"><table><thead><tr><th>Factor</th><th class="l">Basis</th><th>Value</th></tr></thead><tbody>${c.factors.map((f) => `<tr><td>${esc(f.label)}</td><td class="l">${esc(f.basis)}</td><td>${f.value.toFixed(3)}</td></tr>`).join("")}<tr><td><b>Total k</b></td><td class="l">product of all factors</td><td><b>${c.k.toFixed(3)}</b></td></tr></tbody></table></div></li>`;
-    h += `<li><b>Required table rating</b> = ${fmt(res.current.basis / res.runs, 1)} A ÷ ${c.k.toFixed(3)} = <b>${fmt(res.current.basis / res.runs / c.k, 1)} A</b>${res.runs > 1 ? ` per run (${res.runs} runs in parallel)` : ""}.</li>`;
-    h += `<li><b>Voltage drop</b> ΔU = ${s.system === "3ph" ? "√3" : "2"} × I × L × (R cos φ + X sin φ) with R at maximum conductor temperature = <b>${fmt(c.vd, 2)} V (${fmt(c.vdPct, 2)} %)</b>.</li>`;
-    if (c.scMin != null && s.fault.i2t) h += `<li><b>Short circuit</b> (current-limiting device) S ≥ √(I²t) / k = √${s.fault.i2t} ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
-    else if (c.scMin != null) h += `<li><b>Short circuit</b> S ≥ I·√t / k = ${s.fault.ka * 1000} A × √${s.fault.timeS} s ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
-    else if (S.level !== "HV") h += `<li><b>Short circuit</b> not checked. For final circuits protected by an MCB/MCCB with instantaneous trip, the breaker's low let-through energy normally protects any cable it can overload-protect. Check it for transformer feeders, fuse-protected or time-delayed circuits.</li>`;
-    h += `<li><b>Smallest size passing every check: ${c.size} mm²</b>, estimated conductor temperature at full load ${fmt(c.theta, 0)} °C.</li>`;
+    h += `<li><b>${tr("w4")}</b><div class="tablewrap"><table><thead><tr><th>${tr("tFactor")}</th><th class="l">${tr("tBasis")}</th><th>${tr("tValue")}</th></tr></thead><tbody>${c.factors.map((f) => `<tr><td>${esc(f.label)}</td><td class="l">${esc(f.basis)}</td><td>${f.value.toFixed(3)}</td></tr>`).join("")}<tr><td><b>k</b></td><td class="l">${tr("tProduct")}</td><td><b>${c.k.toFixed(3)}</b></td></tr></tbody></table></div></li>`;
+    h += `<li><b>${tr("w5")}</b> = ${fmt(res.current.basis / res.runs, 1)} A ÷ ${c.k.toFixed(3)} = <b>${fmt(res.current.basis / res.runs / c.k, 1)} A</b>${res.runs > 1 ? ` (${res.runs} × ${tr("parallel")})` : ""}.</li>`;
+    h += `<li><b>${tr("w6")}</b> ΔU = ${s.system === "3ph" ? "√3" : "2"} × I × L × (R cos φ + X sin φ) = <b>${fmt(c.vd, 2)} V (${fmt(c.vdPct, 2)} %)</b>.</li>`;
+    if (c.scMin != null && s.fault.i2t) h += `<li><b>${tr("w7")}</b> S ≥ √(I²t) / k = √${s.fault.i2t} ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
+    else if (c.scMin != null) h += `<li><b>${tr("w7")}</b> S ≥ I·√t / k = ${s.fault.ka * 1000} A × √${s.fault.timeS} s ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
+    else if (s.voltage <= 1100) h += `<li><b>${tr("w7")}</b> ${tr("w7none")}</li>`;
+    h += `<li><b>${tr("w8")} ${c.size} mm²</b> (${tr("w8b")} ${fmt(c.theta, 0)} °C).</li>`;
   }
-  h += `</ol><h3>Every size tried</h3><div class="tablewrap"><table><thead><tr><th>Size mm²</th><th>Table A</th><th>× k</th><th>Derated A</th><th>Needs A</th><th>VD %</th>${res.candidates.some((x) => x.vdStartPct != null) ? "<th>Start dip %</th>" : ""}${res.candidates.some((x) => x.scMin != null) ? "<th>Fault needs mm²</th>" : ""}<th class="l">Result</th></tr></thead><tbody>`;
+  const hasStart = res.candidates.some((x) => x.vdStartPct != null), hasSc = res.candidates.some((x) => x.scMin != null);
+  h += `</ol><h3>${ic("table", 20)} ${tr("tried")}</h3><p>${tr("triedLead")}</p>`;
+  const cols = [["tSize", "lSize"], ["tTable", "lTable"], ["tK", "lK"], ["tDerated", "lDerated"], ["tNeeds", "lNeeds"], ["tVd", "lVd"],
+    ...(hasStart ? [["tStart", "lStart"]] : []), ...(hasSc ? [["tFault", "lFault"]] : []), ["tResult", "lResult"]];
+  h += `<dl class="legend">${cols.map(([t, l]) => `<dt>${tr(t)}</dt><dd>${tr(l)}</dd>`).join("")}</dl>`;
+  h += `<div class="tablewrap"><table><thead><tr>${cols.map(([t], i) => `<th${i === cols.length - 1 ? ' class="l"' : ""}>${tr(t)}</th>`).join("")}</tr></thead><tbody>`;
   const need = res.current.basis / res.runs;
+  const WHYK = { ampacity: "fHot", voltageDrop: "fVd", motorStart: "fStart", shortCircuit: "fFault" };
   for (const x of res.candidates) {
-    const why = Object.entries(x.pass).filter(([, v]) => !v).map(([k]) => ({ ampacity: "too hot", voltageDrop: "voltage drop", motorStart: "start dip", shortCircuit: "fault" }[k]));
-    h += `<tr class="${x === c ? "chosen" : ""}"><td>${x.size}</td><td>${fmt(x.amp, 0)}</td><td>${x.k.toFixed(3)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.iz, 1)}</td><td>${fmt(need, 1)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.vdPct, 2)}</td>${x.vdStartPct != null ? `<td class="${x.pass.motorStart ? "" : "no"}">${fmt(x.vdStartPct, 1)}</td>` : ""}${x.scMin != null ? `<td class="${x.pass.shortCircuit ? "" : "no"}">${fmt(x.scMin, 1)}</td>` : ""}<td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "chosen" : "passes") : "fails: " + why.join(", ")}</td></tr>`;
+    const why = Object.entries(x.pass).filter(([, v]) => !v).map(([k]) => tr(WHYK[k]));
+    h += `<tr class="${x === c ? "chosen" : ""}"><td>${x.size}</td><td>${fmt(x.amp, 0)}</td><td>${x.k.toFixed(3)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.iz, 1)}</td><td>${fmt(need, 1)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.vdPct, 2)}</td>${hasStart ? `<td class="${x.pass.motorStart ? "" : "no"}">${fmt(x.vdStartPct, 1)}</td>` : ""}${hasSc ? `<td class="${x.pass.shortCircuit ? "" : "no"}">${fmt(x.scMin, 1)}</td>` : ""}<td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "✓ " + tr("rChosen") : tr("rPass")) : "✗ " + why.join(", ")}</td></tr>`;
   }
-  h += `</tbody></table></div><p><small>Data: ${esc(A.title)}. Method and sources: <a href="guide.html">How it works</a>.</small></p>`;
+  h += `</tbody></table></div><p><small>${tr("dataSrc")} ${esc(A.title)}. <a href="guide.html">${tr("guideLink")}</a></small></p>`;
   return h;
 }
+
+// Result and calculation strings (merged into UI below).
+const RT = {
+  en: { calcTitle: "How this answer was calculated", copy: "Copy result", print: "Print or save PDF",
+    xsecCore: "One core, drawn to scale (approx.)", xsecCable: "Cable cross-section, drawn to scale (approx.)",
+    noCable: "No standard cable works for this.", askFor: "Ask the shop for", order: "Length to order (10 % spare)",
+    loadI: "Load current", designI: "Design current", breaker: "Breaker / fuse", relayMax: "Relay setting, at most",
+    screen: "Metallic screen", screenChk: "check earth-fault rating", earth: "Earth wire",
+    mI: "Current vs cable capacity", mVd: "Voltage drop", mStart: "Dip when the motor starts", mFault: "Size needed for a fault",
+    calcLead: "Every number above comes from these steps. Engineers can check each one against the standard named.",
+    steps: "Step by step", w1: "Load current.", w2: "Design current (spare and motor factor).", w3: "Breaker rating:",
+    w3b: "the next standard size. The cable must carry at least this after derating (Ib ≤ In ≤ Iz, IEC 60364-4-43).",
+    w3hv: "Sizing basis.", w3hvb: "HV cables are sized on the load current; the relay is then set at or below the cable's rating.",
+    w4: "Rating factors for the chosen size:", tFactor: "Factor", tBasis: "Basis", tValue: "Value", tProduct: "all factors multiplied",
+    w5: "Required table rating", parallel: "cables in parallel", w6: "Voltage drop:", w7: "Short circuit:",
+    w7none: "not checked. A fast MCB/MCCB limits the fault energy for final circuits; check it for transformer feeders and fuse-protected circuits.",
+    w8: "Smallest size passing every check:", w8b: "estimated conductor temperature at full load",
+    tried: "Every cable size tested",
+    triedLead: "The calculator tries every standard size from the smallest up and keeps the first one that passes all checks. Red numbers show which check a size fails.",
+    tSize: "Size mm²", lSize: "cross-section of each conductor",
+    tTable: "Table A", lTable: "current it carries in standard conditions (catalogue/standard table)",
+    tK: "× k", lK: "total derating factor for your temperature, soil, depth and neighbouring cables",
+    tDerated: "Derated A", lDerated: "Table A × k: what it can safely carry where you install it",
+    tNeeds: "Needs A", lNeeds: "what it must carry: the breaker rating (LV) or the load current (HV)",
+    tVd: "VD %", lVd: "voltage lost along the cable at full load",
+    tStart: "Start dip %", lStart: "voltage lost for a moment while the motor starts",
+    tFault: "Fault needs mm²", lFault: "smallest size that survives a short circuit until it is cleared",
+    tResult: "Result", lResult: "the chosen size is the smallest one that passes everything",
+    fHot: "overheats", fVd: "too much voltage drop", fStart: "motor start dip", fFault: "fails short circuit",
+    rChosen: "chosen", rPass: "passes", dataSrc: "Data:", guideLink: "How cable sizing works" },
+  ne: { calcTitle: "यो उत्तर कसरी निकालियो", copy: "नतिजा कपी गर्नुहोस्", print: "प्रिन्ट वा PDF",
+    xsecCore: "एउटा कोर, नापअनुसार (अनुमानित)", xsecCable: "केबलको काटिएको भाग, नापअनुसार (अनुमानित)",
+    noCable: "यसका लागि कुनै मानक तार पुग्दैन।", askFor: "पसलमा यसरी माग्नुहोस्", order: "किन्ने लम्बाइ (१० % थप)",
+    loadI: "भारको करेन्ट", designI: "डिजाइन करेन्ट", breaker: "ब्रेकर / फ्यूज", relayMax: "रिले सेटिङ, बढीमा",
+    screen: "मेटालिक स्क्रिन", screenChk: "अर्थ-फल्ट रेटिङ जाँच्नुहोस्", earth: "अर्थ तार",
+    mI: "करेन्ट र तारको क्षमता", mVd: "भोल्टेज ड्रप", mStart: "मोटर सुरु हुँदा भोल्टेज झर्ने", mFault: "फल्टका लागि चाहिने साइज",
+    calcLead: "माथिका सबै अंक यी चरणबाट निकालिएका हुन्। इन्जिनियरले हरेक चरण उल्लेखित मापदण्डसँग जाँच्न सक्छन्।",
+    steps: "चरणबद्ध", w1: "भारको करेन्ट।", w2: "डिजाइन करेन्ट (थप र मोटर फ्याक्टर)।", w3: "ब्रेकर रेटिङ:",
+    w3b: "अर्को मानक साइज। घटाएपछि पनि तारले कम्तीमा यति बोक्नुपर्छ (Ib ≤ In ≤ Iz)।",
+    w3hv: "नाप्ने आधार।", w3hvb: "HV तार भारको करेन्टमा नापिन्छ; रिले तारको क्षमताभन्दा कममा सेट गरिन्छ।",
+    w4: "छानिएको साइजका रेटिङ फ्याक्टर:", tFactor: "फ्याक्टर", tBasis: "आधार", tValue: "मान", tProduct: "सबै फ्याक्टरको गुणनफल",
+    w5: "चाहिने तालिका रेटिङ", parallel: "समानान्तर तार", w6: "भोल्टेज ड्रप:", w7: "सर्ट सर्किट:",
+    w7none: "जाँच गरिएन। छिटो काट्ने MCB/MCCB ले फल्टको ऊर्जा सीमित गर्छ; ट्रान्सफर्मरबाट आउने वा फ्यूज भएको सर्किटमा जाँच्नुहोस्।",
+    w8: "सबै जाँच पास गर्ने सबैभन्दा सानो साइज:", w8b: "पूरा भारमा तारको अनुमानित तापक्रम",
+    tried: "जाँचिएका सबै साइज",
+    triedLead: "सबैभन्दा सानो साइजदेखि माथि हरेक मानक साइज जाँचिन्छ र सबै जाँच पास गर्ने पहिलो साइज छानिन्छ। रातो अंकले कुन जाँचमा फेल भयो देखाउँछ।",
+    tSize: "साइज mm²", lSize: "हरेक कन्डक्टरको क्षेत्रफल",
+    tTable: "तालिका A", lTable: "मानक अवस्थामा बोक्ने करेन्ट (क्याटलग/मापदण्डको तालिका)",
+    tK: "× k", lK: "तापक्रम, माटो, गहिराइ र छेउका तारअनुसार घटाउने कुल फ्याक्टर",
+    tDerated: "घटाएपछि A", lDerated: "तालिका A × k: तपाईंको ठाउँमा सुरक्षित बोक्ने करेन्ट",
+    tNeeds: "चाहिने A", lNeeds: "बोक्नुपर्ने करेन्ट: ब्रेकर रेटिङ (LV) वा भारको करेन्ट (HV)",
+    tVd: "VD %", lVd: "पूरा भारमा तारमा गुम्ने भोल्टेज",
+    tStart: "सुरुको झराइ %", lStart: "मोटर सुरु हुँदा क्षणभर गुम्ने भोल्टेज",
+    tFault: "फल्टका लागि mm²", lFault: "सर्ट सर्किट नकाटिउन्जेल नबिग्रिने सबैभन्दा सानो साइज",
+    tResult: "नतिजा", lResult: "सबै जाँच पास गर्ने सबैभन्दा सानो साइज छानिन्छ",
+    fHot: "धेरै तातिन्छ", fVd: "भोल्टेज ड्रप बढी", fStart: "मोटर सुरुमा झराइ बढी", fFault: "सर्ट सर्किटमा फेल",
+    rChosen: "छानिएको", rPass: "पास", dataSrc: "डाटा:", guideLink: "तार नाप्ने तरिका" },
+};
 
 
 // ======================================================================
@@ -357,11 +438,15 @@ const UI = {
       "देखाइएको लम्बाइ (१० % थप) किन्नुहोस्। सही साइजको लग क्रिम्प गर्नुहोस्; एल्युमिनियम-तामा बीच बाइमेटालिक लग।",
       "चलाउनुअघि ५०० V टेस्टरले इन्सुलेसन जाँच (कम्तीमा १ MΩ) र RCD को टेस्ट बटन थिच्नुहोस्।"] },
 };
+Object.assign(UI.en, RT.en); Object.assign(UI.ne, RT.ne);
 const tr = (k) => (eng() ? UI.en : UI[S.lang] || UI.en)[k] ?? UI.en[k] ?? k;
 const L2 = (o) => (S.lang === "ne" && o.ne ? o.ne : o.en);
 const STEP_EN = ["What the cable will power", "Where the cable runs", "The cable", "Checks"];
 function setStepTitles(t) {
-  ["#s1", "#s2", "#s3", "#s4"].forEach((id, i) => { const n = document.querySelector(id); if (n) n.innerHTML = `<span class="n">${i + 1}</span> ${esc(t[i])}`; });
+  const icons = ["plug", "route", "cable", "gauge"];
+  ["#s1", "#s2", "#s3", "#s4"].forEach((id, i) => { const n = document.querySelector(id); if (n) n.innerHTML = `<span class="n">${ic(icons[i], 20)}</span> ${esc(t[i])}`; });
+  const ne = !eng() && S.lang === "ne";
+  document.querySelectorAll("[data-en]").forEach((el) => { el.innerHTML = ne && el.dataset.ne ? el.dataset.ne : el.dataset.en; });
   const s4 = document.querySelector("#s4")?.closest("section");
   if (s4) s4.hidden = t[3] === "";
 }
@@ -385,7 +470,7 @@ function renderSimple() {
   let h = `<fieldset class="field jobs"><legend class="lbl">${tr("job")}</legend><div class="jobgrid">` +
     Object.entries(JOBS).map(([k, j]) => `<label class="jobcard"><input type="radio" name="job" value="${k}"${S.job === k ? " checked" : ""} data-struct>${icon(j.icon)}<span>${esc(L2(j))}</span></label>`).join("") +
     `</div></fieldset>`;
-  if (job.level === "LV") h += `<div class="figwrap map">${houseMap(ROUTE_HL[S.job])}</div>${explainHtml("run", lang)}`;
+  if (job.level === "LV") h += `<div class="figwrap map">${houseMap(ROUTE_HL[S.job], lang)}</div>${explainHtml("run", lang)}`;
   else h += explainHtml("hv", lang);
   const F = {
     phase: () => sel("phase", tr("phase"), [["1ph", tr("ph1")], ["3ph", tr("ph3")]], { struct: true }),
@@ -395,14 +480,14 @@ function renderSimple() {
     kwFuture: () => num("kwFuture", tr("kwFuture"), { suffix: "kW" }),
     kw: () => num("kw", tr("kw"), { suffix: "kW" }),
     acBasis: () => sel("acBasis", tr("acBasis"), [["ton", tr("acTon")], ["amps", tr("amps")]], { struct: true }),
-    acTon: () => sel("acTon", tr("acTon"), [["1", "1 ton (12 000 BTU)"], ["1.5", "1.5 ton (18 000 BTU)"], ["2", "2 ton (24 000 BTU)"]]),
+    acTon: () => sel("acTon", tr("acTon"), S.lang === "ne" ? [["1", "१ टन (१२ ००० BTU)"], ["1.5", "१.५ टन (१८ ००० BTU)"], ["2", "२ टन (२४ ००० BTU)"]] : [["1", "1 ton (12 000 BTU)"], ["1.5", "1.5 ton (18 000 BTU)"], ["2", "2 ton (24 000 BTU)"]]),
     amps: () => num("amps", tr("amps"), { suffix: "A" }),
     acInverter: () => sel("acInverter", tr("acInverter"), [["yes", tr("yes")], ["no", tr("no")]]),
     pumpType: () => sel("pumpType", tr("pumpType"), Object.entries(PUMPS).map(([k, p]) => [k, L2(p)])),
     motorBasis: () => sel("motorBasis", tr("motorBasis"), [["hp", tr("mbHp")], ["amps", tr("mbAmps")]], { struct: true }),
     hp: () => num("hp", tr("hp"), { suffix: "HP" }),
     starter: () => sel("starter", tr("starter"), Object.entries(STARTERS).map(([k, p]) => [k, L2(p)])),
-    evKw: () => sel("evKw", tr("evKw"), Object.entries(EV).map(([k, e]) => [k, e.en])),
+    evKw: () => sel("evKw", tr("evKw"), Object.entries(EV).map(([k, e]) => [k, S.lang === "ne" ? `${e.kw} kW ${e.system === "1ph" ? "सिङ्गल फेज" : "थ्री फेज"} (${e.amps} A)` : e.en])),
     hvKv: () => sel("hvKv", tr("hvKv"), [["11", "11 kV"], ["33", "33 kV"]], { struct: true }),
     kva: () => num("kva", tr("kva"), { suffix: "kVA" }),
     faultKa: () => num("faultKa", tr("faultKa"), { suffix: "kA" }),
@@ -460,16 +545,16 @@ function renderSimpleResult(res, sm) {
   let h = "";
   const v = voltageAtLoad(res);
   const bad = v.lowAtLoad < v.minOk;
-  h += `<div class="volt${bad ? " bad" : ""}"><h3 class="rh">${sm.job.level === "HV" ? (S.lang === "ne" ? "ट्रान्सफर्मरमा पुग्ने भोल्टेज" : "Voltage at the transformer") : tr("vTitle")}</h3><dl class="kv">
+  h += `<div class="volt${bad ? " bad" : ""}"><h3 class="rh">${ic("gauge", 18)} ${sm.job.level === "HV" ? (S.lang === "ne" ? "ट्रान्सफर्मरमा पुग्ने भोल्टेज" : "Voltage at the transformer") : tr("vTitle")}</h3><dl class="kv">
     <dt>${tr("vNom")} ${fmt(v.nominal, 0)} V</dt><dd>${fmt(v.atLoad, 0)} V</dd>
     <dt>${tr("vLow")} (${fmt(v.low, 0)} V)</dt><dd>${fmt(v.lowAtLoad, 0)} V</dd></dl>
     ${v.unit !== "V" ? `<p class="hint">${tr("ph3note")}</p>` : ""}${bad ? `<p class="err">${tr("vBad")}</p>` : ""}</div>`;
   const prot = protectionFor(sm.t.kind, res, sm.t.starter);
-  h += `<h3 class="rh">${tr("prot")}</h3><ul class="plain">${prot.map((p) => `<li>${esc(L2(p))}</li>`).join("")}${sm.job.level === "LV" ? `<li>${tr("earth")}: ${res.earthSize} mm² ${res.spec.material === "cu" ? "Cu" : "Al"}</li>` : ""}</ul>`;
+  h += `<h3 class="rh">${ic("shield", 18)} ${tr("prot")}</h3><ul class="plain">${prot.map((p) => `<li>${esc(L2(p))}</li>`).join("")}${sm.job.level === "LV" ? `<li>${tr("earth")}: ${res.earthSize} mm² ${res.spec.material === "cu" ? "Cu" : "Al"}</li>` : ""}</ul>`;
   const sm1 = smallerSize(res);
-  if (sm1 && sm1.why.length) h += `<p class="smaller"><b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;
-  h += `<details class="why"><summary>${tr("assum")}</summary><ul class="plain">${last.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></details>`;
-  if (sm.job.level === "LV") h += `<details class="why"><summary>${tr("shop")}</summary><ul class="plain">${tr("shopList").map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
+  if (sm1 && sm1.why.length) h += `<p class="smaller">${ic("alert", 16)} <b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;
+  h += `<details class="box"><summary>${ic("info", 17)} ${tr("assum")}</summary><ul class="plain">${last.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></details>`;
+  if (sm.job.level === "LV") h += `<details class="box"><summary>${ic("cart", 17)} ${tr("shop")}</summary><ul class="plain">${tr("shopList").map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
   return h;
 }
 

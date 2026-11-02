@@ -801,7 +801,7 @@ const A = (en, ne) => ({ en, ne });
 const JOBS = {
   house: {
     level: "LV", icon: "house",
-    en: "Main cable of a house or flat (meter to board)", ne: "घर वा फ्ल्याटको मुख्य तार (मिटरदेखि बोर्डसम्म)",
+    en: "House main cable (meter to board)", ne: "घरको मुख्य तार (मिटरदेखि बोर्ड)",
     fields: (a) => ["phase", "houseBasis", ...(a.houseBasis === "meter" ? ["meterA"] : ["kwNow", "kwFuture"])],
     defaults: { phase: "1ph", houseBasis: "meter", meterA: 30, kwNow: 4, kwFuture: 3 },
     toInput(a) {
@@ -856,7 +856,7 @@ const JOBS = {
 
   pump: {
     level: "LV", icon: "pump",
-    en: "Water pump or motor (borewell, tank, mill)", ne: "पानी पम्प वा मोटर (बोरिङ, ट्याङ्की, मिल)",
+    en: "Water pump or motor", ne: "पानी पम्प वा मोटर",
     fields: (a) => ["phase", "pumpType", "motorBasis", ...(a.motorBasis === "amps" ? ["amps"] : ["hp"]), "starter"],
     defaults: { phase: "1ph", pumpType: "sub", motorBasis: "hp", hp: 1, amps: 7, starter: "dol" },
     toInput(a) {
@@ -900,7 +900,7 @@ const JOBS = {
 
   shop: {
     level: "LV", icon: "shop",
-    en: "Shop, office, school or small industry supply", ne: "पसल, अफिस, विद्यालय वा सानो उद्योगको सप्लाई",
+    en: "Shop, office or small industry", ne: "पसल, अफिस वा सानो उद्योग",
     fields: () => ["phase", "kw"],
     defaults: { phase: "3ph", kw: 20 },
     toInput(a) {
@@ -912,7 +912,7 @@ const JOBS = {
 
   hvfeed: {
     level: "HV", icon: "hv",
-    en: "11 kV or 33 kV cable to a transformer (industry, hospital, hydropower)", ne: "ट्रान्सफर्मरसम्मको ११ वा ३३ kV केबल (उद्योग, अस्पताल, जलविद्युत)",
+    en: "11 or 33 kV cable to a transformer", ne: "ट्रान्सफर्मरसम्म ११/३३ kV केबल",
     fields: () => ["hvKv", "kva", "faultKa", "faultT"],
     defaults: { hvKv: "11", kva: 500, faultKa: 13.1, faultT: 1 },
     toInput(a) {
@@ -1025,7 +1025,42 @@ function smallerSize(res) {
 
 return { STARTERS, PUMPS, AC_TON_KW, EV, NEA_METERS, JOBS, ROUTES, REGIONS, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize };
 })();
+__m["icons.js"] = (() => {
+// Line icons in the Lucide style (lucide.dev, ISC licence), inlined so the site works offline.
+const P = {
+  zap: '<path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/>',
+  shield: '<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/>',
+  ruler: '<path d="M21.3 15.3a2.4 2.4 0 0 1 0 3.4l-2.6 2.6a2.4 2.4 0 0 1-3.4 0L2.7 8.7a2.41 2.41 0 0 1 0-3.4l2.6-2.6a2.41 2.41 0 0 1 3.4 0Z"/><path d="m14.5 12.5 2-2"/><path d="m11.5 9.5 2-2"/><path d="m8.5 6.5 2-2"/><path d="m17.5 15.5 2-2"/>',
+  gauge: '<path d="m12 14 4-4"/><path d="M3.34 19a10 10 0 1 1 17.32 0"/>',
+  thermo: '<path d="M14 4v10.54a4 4 0 1 1-4 0V4a2 2 0 0 1 4 0Z"/>',
+  pin: '<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  cart: '<circle cx="8" cy="21" r="1"/><circle cx="19" cy="21" r="1"/><path d="M2.05 2.05h2l2.66 12.42a2 2 0 0 0 2 1.58h9.78a2 2 0 0 0 1.95-1.57l1.65-7.43H5.12"/>',
+  help: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+  info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/>',
+  alert: '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/>',
+  check: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  x: '<circle cx="12" cy="12" r="10"/><path d="m15 9-6 6"/><path d="m9 9 6 6"/>',
+  plug: '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8Z"/>',
+  earth: '<path d="M12 3v9"/><path d="M5 12h14"/><path d="M8 16h8"/><path d="M11 20h2"/>',
+  copy: '<rect width="14" height="14" x="8" y="8" rx="2"/><path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"/>',
+  print: '<path d="M6 9V2h12v7"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect width="12" height="8" x="6" y="14"/>',
+  calc: '<rect width="16" height="20" x="4" y="2" rx="2"/><path d="M8 6h8"/><path d="M16 14v4"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/>',
+  book: '<path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/>',
+  route: '<circle cx="6" cy="19" r="3"/><path d="M9 19h8.5a3.5 3.5 0 0 0 0-7h-11a3.5 3.5 0 0 1 0-7H15"/><circle cx="18" cy="5" r="3"/>',
+  cable: '<path d="M4 9a2 2 0 0 1-2-2V5h6v2a2 2 0 0 1-2 2Z"/><path d="M3 5V3"/><path d="M7 5V3"/><path d="M19 15V6.5a3.5 3.5 0 0 0-7 0v11a3.5 3.5 0 0 1-7 0V9"/><path d="M17 21v-2"/><path d="M21 21v-2"/><path d="M22 19h-6v-2a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2Z"/>',
+  layers: '<path d="m12 2 10 5-10 5L2 7l10-5Z"/><path d="m2 17 10 5 10-5"/><path d="m2 12 10 5 10-5"/>',
+  wrench: '<path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/>',
+  table: '<path d="M12 3v18"/><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18"/><path d="M3 15h18"/>',
+  tower: '<path d="M12 2 7 22"/><path d="m12 2 5 20"/><path d="M4 7h16"/><path d="M6 12h12"/><path d="M8.5 17h7"/>',
+};
+function ic(name, size = 18, cls = "ic") {
+  return `<svg class="${cls}" width="${size}" height="${size}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[name] || ""}</svg>`;
+}
+
+return { ic };
+})();
 __m["explain.js"] = (() => {
+const { ic } = __m["icons.js"];
 // "Why?" explainers: one short, plain answer per concept (English + Nepali) and, where a picture
 // says it faster, a small line figure. Figures use currentColor so they work in light and dark.
 
@@ -1035,31 +1070,40 @@ const T = (x, y, s, a = "start", extra = "") => `<text x="${x}" y="${y}" fill="c
 const ACC = 'class="acc"'; // accent stroke (phase yellow), styled in CSS
 
 /** House wiring map, Nepal style, with the run being sized highlighted. */
-function houseMap(highlight = "main") {
+function houseMap(highlight = "main", lang = "en") {
+  const L = lang === "ne" ? { pole: "NEA पोल", meter: "मिटर", main: "मुख्य", board: "बोर्ड", lights: "बत्ती", sockets: "सकेट", heater: "गिजर / AC", ev: "EV चार्जर", pump: "पम्प", cap: "हरेक लाइन छुट्टै नापिने एउटा तार हो" }
+    : { pole: "NEA pole", meter: "Meter", main: "main", board: "Board", lights: "lights", sockets: "sockets", heater: "geyser / AC", ev: "EV charger", pump: "pump", cap: "each line is one cable run, sized on its own" };
   const hl = (k) => (k === highlight ? ACC + ' stroke-width="3.5"' : "");
   return svg(380, 190, `
-    <line x1="20" y1="20" x2="20" y2="130"/><line x1="10" y1="28" x2="30" y2="28"/>${T(20, 148, "NEA pole", "middle")}
-    <path d="M20 30 C 50 40, 70 44, 92 62" ${hl("service")}/>
-    <rect x="92" y="55" width="34" height="30"/>${T(109, 99, "Meter", "middle")}
-    <path d="M126 70 H170" ${hl("main")}/>${T(148, 63, "main", "middle")}
-    <rect x="170" y="40" width="40" height="66"/>${T(190, 120, "Board", "middle")}${T(190, 132, "(MCB, RCD)", "middle", 'font-size="9"')}
-    <path d="M210 48 H300" ${hl("lights")}/>${T(306, 52, "lights")}
-    <path d="M210 64 H300" ${hl("sockets")}/>${T(306, 68, "sockets")}
-    <path d="M210 80 H300" ${hl("heater")}/>${T(306, 84, "geyser / AC")}
-    <path d="M210 96 H300" ${hl("ev")}/>${T(306, 100, "EV charger")}
-    <path d="M190 106 V155 H300" ${hl("pump")} stroke-dasharray="${highlight === "pump" ? "0" : "4 3"}"/>${T(306, 159, "pump")}
-    ${T(250, 182, "each line is one cable run, sized on its own", "middle", 'font-size="10"')}`, "House wiring map");
+    <line x1="24" y1="20" x2="24" y2="130"/><line x1="14" y1="28" x2="34" y2="28"/>${T(6, 148, L.pole)}
+    <path d="M24 30 C 50 40, 70 44, 92 62" ${hl("service")}/>
+    <rect x="92" y="55" width="34" height="30"/>${T(109, 99, L.meter, "middle")}
+    <path d="M126 70 H170" ${hl("main")}/>${T(148, 63, L.main, "middle")}
+    <rect x="170" y="40" width="40" height="66"/>${T(150, 120, L.board, "middle")}${T(150, 132, "MCB, RCD", "middle", 'font-size="9"')}
+    <path d="M210 48 H300" ${hl(L.lights)}/>${T(306, 52, "lights")}
+    <path d="M210 64 H300" ${hl(L.sockets)}/>${T(306, 68, "sockets")}
+    <path d="M210 80 H300" ${hl("heater")}/>${T(306, 84, L.heater)}
+    <path d="M210 96 H300" ${hl("ev")}/>${T(306, 100, L.ev)}
+    <path d="M200 106 V155 H300" ${hl(L.pump)} stroke-dasharray="${highlight === "pump" ? "0" : "4 3"}"/>${T(306, 159, "pump")}
+    ${T(250, 182, L.cap, "middle", 'font-size="10"')}`, "House wiring map");
 }
 
+const WIRE = (cx, cy, r, col) => `<circle cx="${cx}" cy="${cy}" r="${r}" fill="${col}" stroke="none"/>`;
+const SOIL = '<rect x="0" y="16" width="64" height="40" class="soil" stroke="none"/><path d="M0 16 H64" /><path d="M6 16 l-2 -4 M14 16 l1 -4 M40 16 l-2 -4 M52 16 l2 -4" />';
 const routePics = {
-  clipped: `<rect x="4" y="4" width="10" height="52" fill="currentColor" opacity=".15" stroke="none"/><circle cx="24" cy="30" r="7"/><path d="M14 22 H32 M14 38 H32" opacity=".6"/>`,
-  conduit: `<rect x="4" y="4" width="10" height="52" fill="currentColor" opacity=".15" stroke="none"/><circle cx="28" cy="30" r="13"/><circle cx="24" cy="27" r="3.5"/><circle cx="32" cy="27" r="3.5"/><circle cx="28" cy="34" r="3.5"/>`,
-  tray: `<path d="M6 40 H54 M6 40 V34 M54 40 V34" /><circle cx="18" cy="31" r="7"/><circle cx="33" cy="31" r="7"/><path d="M10 46 h4 m6 0 h4 m6 0 h4 m6 0 h4" opacity=".6"/>`,
-  buried: `<path d="M2 12 H58" stroke-dasharray="3 3"/>${""}<rect x="22" y="40" width="16" height="5" fill="currentColor" opacity=".35" stroke="none"/><circle cx="30" cy="50" r="4"/><path d="M18 56 H42" opacity=".5"/>`,
-  duct: `<path d="M2 12 H58" stroke-dasharray="3 3"/><circle cx="30" cy="45" r="10"/><circle cx="30" cy="45" r="4"/>`,
+  clipped: `<rect x="0" y="0" width="12" height="56" class="wall" stroke="none"/><path d="M12 0 V56"/>
+    <circle cx="30" cy="28" r="9" class="sheath"/>${WIRE(27, 28, 3, "#C62828")}${WIRE(33, 28, 3, "#222")}
+    <path d="M12 19 H21 M12 37 H21" /><path d="M21 19 a9 9 0 0 1 18 9 a9 9 0 0 1 -18 9" fill="none" stroke-width="1.2" opacity=".55"/>`,
+  conduit: `<rect x="0" y="0" width="12" height="56" class="wall" stroke="none"/><path d="M12 0 V56"/>
+    <circle cx="32" cy="28" r="15" fill="none"/>${WIRE(27, 25, 4, "#C62828")}${WIRE(37, 25, 4, "#222")}${WIRE(32, 34, 4, "#2E7D4F")}`,
+  tray: `<path d="M4 40 H60 M4 40 V30 M60 40 V30" stroke-width="2"/><path d="M10 44 v4 M20 44 v4 M30 44 v4 M40 44 v4 M50 44 v4" opacity=".5"/>
+    <circle cx="18" cy="32" r="7" class="sheath"/><circle cx="33" cy="32" r="7" class="sheath"/><circle cx="48" cy="32" r="7" class="sheath"/>`,
+  buried: `${SOIL}<rect x="20" y="30" width="24" height="5" class="brick" stroke="none"/><rect x="18" y="37" width="28" height="14" class="sand" stroke="none"/>
+    <circle cx="32" cy="44" r="5" class="sheath"/>`,
+  duct: `${SOIL}<circle cx="32" cy="40" r="11" fill="none" stroke-width="2"/><circle cx="32" cy="43" r="5.5" class="sheath"/>`,
 };
 function routePic(k) {
-  return svg(60, 60, routePics[k] || "", "");
+  return svg(64, 56, routePics[k] || "", "");
 }
 
 const FIG = {
@@ -1161,7 +1205,8 @@ function explainHtml(key, lang = "en") {
   if (!e) return "";
   const [t, b] = e[lang] || e.en;
   const fig = e.fig && FIG[e.fig] ? `<div class="figwrap">${FIG[e.fig]()}</div>` : "";
-  return `<details class="why"><summary>${lang === "ne" ? "किन? / के हो?" : "What is this?"}</summary><p><b>${t}.</b> ${b}</p>${fig}</details>`;
+  const lbl = lang === "ne" ? `${t} — व्याख्या` : `Explain: ${t}`;
+  return `<details class="why"><summary title="${lbl}" aria-label="${lbl}">${ic("help", 18)}</summary><div class="why-body"><p><b>${t}.</b> ${b}</p>${fig}</div></details>`;
 }
 
 return { houseMap, routePic, EXPLAIN, explainHtml };
@@ -1174,6 +1219,7 @@ const { round, kValue } = __m["core.js"];
 const { drawCable } = __m["xsec.js"];
 const { JOBS, ROUTES, REGIONS: NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } = __m["jobs.js"];
 const { explainHtml, routePic, houseMap } = __m["explain.js"];
+const { ic } = __m["icons.js"];
 const $ = (s, el = document) => el.querySelector(s);
 const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]));
 const fmt = (v, d = 1) => (v == null || !isFinite(v) ? "–" : Number(round(v, d)).toLocaleString("en-IN"));
@@ -1231,8 +1277,11 @@ function sel(name, label, opts, { hint, struct } = {}) {
   const o = opts.map(([v, t]) => `<option value="${esc(v)}"${String(S[name]) === String(v) ? " selected" : ""}>${esc(t)}</option>`).join("");
   return `<div class="field"><label for="${name}">${label}</label><select id="${name}" name="${name}"${struct ? " data-struct" : ""}>${o}</select>${hint ? `<span class="hint">${hint}</span>` : ""}${why(name, S.lang)}</div>`;
 }
+const METHOD_PIC = { ground: "buried", duct: "duct", air: "tray", D2: "buried", D1: "duct", A1: "conduit", A2: "conduit", B1: "conduit", B2: "conduit",
+  C: "clipped", E: "tray", F: "tray", F_flat_touching: "tray", G_horizontal_spaced: "tray", G_vertical_spaced: "tray" };
 function choices(name, label, opts, struct = true) {
-  const items = opts.map(([v, t, d]) => `<label class="choice"><input type="radio" name="${name}" value="${esc(v)}"${String(S[name]) === String(v) ? " checked" : ""}${struct ? " data-struct" : ""}><div><b>${esc(t)}</b>${d ? `<span>${esc(d)}</span>` : ""}</div></label>`).join("");
+  const pic = (v) => (name === "method" && METHOD_PIC[v] ? `<span class="mpic">${routePic(METHOD_PIC[v])}</span>` : "");
+  const items = opts.map(([v, t, d]) => `<label class="choice${name === "method" ? " withpic" : ""}"><input type="radio" name="${name}" value="${esc(v)}"${String(S[name]) === String(v) ? " checked" : ""}${struct ? " data-struct" : ""}>${pic(v)}<div><b>${esc(t)}</b>${d ? `<span>${esc(d)}</span>` : ""}</div></label>`).join("");
   return `<fieldset class="field" style="border:0;padding:0;margin:0 0 16px"><legend class="lbl" style="padding:0;margin-bottom:4px">${label}</legend><div class="choices">${items}</div></fieldset>`;
 }
 const check = (name, label, struct = true) =>
@@ -1271,7 +1320,7 @@ function renderForm() {
       num("power", S.loadType === "amps" && !eng() ? "Current" : "Load", { suffix: unitSel(units), hint: eng() ? "" : S.std === "IEC" ? L.hint?.replace("the NEA sanctioned load", "your sanctioned (contracted) load") : L.hint }));
     if (eng()) {
       h += row(num("pf", "Power factor", { step: 0.01 }), num("eff", "Motor efficiency", { step: 0.01, hint: "Used for HP, and for kW when it is a motor's output." }),
-        num("margin", "Future growth allowance", { suffix: "%" }), num("motorFactor", "Motor branch factor", { step: 0.05, hint: "1.25 for a single motor (IS 732 / NEC practice), else 1." }));
+        num("margin", "Future growth allowance", { suffix: "%" }), num("motorFactor", "Motor branch factor", { step: 0.05, hint: "1.25 for a single motor (NEC 430.22 practice), else 1." }));
     }
   }
   $("#load-fields").innerHTML = h;
@@ -1402,47 +1451,60 @@ function compute() {
 
 function meter(label, value, limit, unit, good) {
   const pct = Math.max(2, Math.min(100, (value / limit) * 100));
-  return `<div class="meter${good ? "" : " bad"}"><div class="top-line"><span>${label}</span><b>${fmt(value)} / ${fmt(limit)} ${unit}</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
+  return `<div class="meter${good ? "" : " bad"}"><div class="top-line"><span>${good ? ic("check", 15) : ic("x", 15)} ${label}</span><b>${fmt(value)} / ${fmt(limit)} ${unit}</b></div><div class="bar"><i style="width:${pct}%"></i></div></div>`;
 }
+const kvRow = (icon, label, value) => `<div class="kvr">${ic(icon, 17)}<span>${label}</span><b>${value}</b></div>`;
+
+// Engine warnings are English; translate the common ones for Nepali Simple mode.
+const WARN_NE = [
+  ["Motor circuits:", "मोटर सर्किट: मोटरका लागि बनेको MCCB/MPCB वा फ्यूज + ओभरलोड रिले छान्नुहोस्; देखाइएको रेटिङ तारका लागि न्यूनतम हो।"],
+  ["Single-core AC cables", "सिङ्गल-कोर AC केबलमा स्टिल आर्मर हुनु हुँदैन; एल्युमिनियम आर्मर प्रयोग गर्नुहोस्।"],
+  ["Cable runs close to", "पूरा भारमा तार आफ्नो अधिकतम तापक्रम नजिक चल्छ।"],
+  ["No size up to", "कुनै पनि मानक साइज पुगेन: उच्च भोल्टेज, छोटो बाटो वा तामा प्रयोग गर्नुहोस्।"],
+];
+const warnText = (w) => (S.lang === "ne" && !eng() ? (WARN_NE.find(([k]) => w.startsWith(k))?.[1] ?? w) : w);
 
 function renderResult() {
   const { res, err, notes, A } = last;
   const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
+  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
+  $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`;
+  $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
   if (err) {
-    ans.innerHTML = `<p class="err">${esc(err)}</p>`; work.innerHTML = ""; sticky.textContent = ""; drawCable($("#xsec"), null); $("#xsec-cap").textContent = "";
+    ans.innerHTML = `<p class="err">${ic("alert", 16)} ${esc(err)}</p>`; work.innerHTML = ""; sticky.textContent = ""; drawCable($("#xsec"), null); $("#xsec-cap").textContent = "";
     return;
   }
-  const c = res.chosen, s = res.spec, hv = S.level === "HV";
+  const c = res.chosen, s = res.spec, hv = s.voltage > 1100;
   const grade = A.voltageGrade instanceof Function ? A.voltageGrade(s) : A.voltageGrade;
   drawCable($("#xsec"), c ? { cores: s.cores, size: c.size, material: s.material, armoured: s.armoured, hv, kv: s.voltage / 1000, single: s.cores === "1" } : null);
-  $("#xsec-cap").textContent = c ? `Cross-section of one ${s.cores === "1" ? "core" : "cable"}, drawn to scale (approx.)` : "";
+  $("#xsec-cap").textContent = c ? (s.cores === "1" ? tr("xsecCore") : tr("xsecCable")) : "";
   let h = "";
   if (!c) {
-    h = `<div class="fail-box"><p class="buy">No standard cable works for this.</p>${res.warnings.map((w) => `<p>${esc(w)}</p>`).join("")}</div>`;
-    sticky.textContent = "No standard cable works — see the working";
+    h = `<div class="fail-box"><p class="buy">${ic("alert", 20)} ${tr("noCable")}</p>${res.warnings.map((w) => `<p>${esc(warnText(w))}</p>`).join("")}</div>`;
+    sticky.textContent = tr("noCable");
   } else {
-    const buy = cableDescription(res, grade);
-    const extra = Math.ceil(s.lengthM * 1.1);
-    h += `<p class="buy">${esc(buy)}</p><p class="buy-sub">Order about ${extra} m per run (10 % extra for bends and terminations).</p>`;
-    h += `<dl class="kv">`;
-    h += `<dt>Load current</dt><dd>${fmt(res.current.I)} A</dd>`;
-    if (Math.abs(res.current.Ib - res.current.I) > 0.01) h += `<dt>Design current</dt><dd>${fmt(res.current.Ib)} A</dd>`;
-    if (res.current.In) h += `<dt>${S.loadType === "motor" ? "Breaker (minimum)" : "Breaker / fuse"}</dt><dd>${res.current.In} A${s.system === "1ph" ? " DP" : s.system === "3ph" ? (s.cores === "3" ? " TP" : " TPN") : ""}</dd>`;
-    if (hv) h += `<dt>Relay setting must not exceed</dt><dd>${fmt(c.iz * res.runs, 0)} A</dd>`;
-    if (hv) h += `<dt>Metallic screen</dt><dd>check earth-fault rating</dd>`;
-    else h += `<dt>Earth conductor</dt><dd>${res.earthSize} mm² ${s.material === "cu" ? "Cu" : "Al"}</dd>`;
-    h += `</dl>`;
-    h += meter("Current vs cable capacity", res.current.basis / res.runs, c.iz, "A", c.pass.ampacity);
-    h += meter("Voltage drop", c.vdPct, s.vdLimitPct, "%", c.pass.voltageDrop);
-    if (c.vdStartPct != null) h += meter("Dip at motor start", c.vdStartPct, s.vdStartLimitPct, "%", c.pass.motorStart);
-    if (c.scMin != null) h += meter("Size needed for the fault", c.scMin, c.size, "mm²", c.pass.shortCircuit);
+    h += `<p class="ask">${ic("cart", 16)} ${tr("askFor")}</p><p class="buy">${esc(cableDescription(res, grade))}</p>`;
+    h += `<div class="kvs">`;
+    h += kvRow("ruler", tr("order"), `${Math.ceil(s.lengthM * 1.1)} m${res.runs > 1 ? ` × ${res.runs}` : ""}`);
+    h += kvRow("zap", tr("loadI"), `${fmt(res.current.I)} A`);
+    if (Math.abs(res.current.Ib - res.current.I) > 0.01) h += kvRow("zap", tr("designI"), `${fmt(res.current.Ib)} A`);
+    if (res.current.In) h += kvRow("shield", tr("breaker"), `${res.current.In} A${s.system === "1ph" ? " DP" : s.system === "3ph" ? (s.cores === "3" ? " TP" : " TPN") : ""}`);
+    if (hv) h += kvRow("shield", tr("relayMax"), `${fmt(c.iz * res.runs, 0)} A`);
+    if (hv) h += kvRow("earth", tr("screen"), tr("screenChk"));
+    else h += kvRow("earth", tr("earth"), `${res.earthSize} mm² ${s.material === "cu" ? "Cu" : "Al"}`);
+    h += `</div>`;
+    h += meter(tr("mI"), res.current.basis / res.runs, c.iz, "A", c.pass.ampacity);
+    h += meter(tr("mVd"), c.vdPct, s.vdLimitPct, "%", c.pass.voltageDrop);
+    if (c.vdStartPct != null) h += meter(tr("mStart"), c.vdStartPct, s.vdStartLimitPct, "%", c.pass.motorStart);
+    if (c.scMin != null) h += meter(tr("mFault"), c.scMin, c.size, "mm²", c.pass.shortCircuit);
     const DEC_NE = { "current-carrying capacity": "करेन्ट बोक्ने क्षमता", "voltage drop": "भोल्टेज ड्रप", "motor starting voltage dip": "मोटर सुरु हुँदा भोल्टेज झर्ने", "short-circuit withstand": "सर्ट सर्किट सहने क्षमता", "smallest size in the table": "तालिकाको सबैभन्दा सानो साइज" };
-    const dec = res.decidedBy.map((d) => (!eng() && S.lang === "ne" ? (DEC_NE[d] || (d.startsWith("the minimum size rule") ? "न्यूनतम साइजको नियम (NBC 207 / IEC)" : d)) : d));
-    h += `<p class="decided">${tr("decided")} <b>${esc(dec.join(S.lang === "ne" && !eng() ? " र " : " and "))}</b>.</p>`;
+    const ne = S.lang === "ne" && !eng();
+    const dec = res.decidedBy.map((d) => (ne ? (DEC_NE[d] || (d.startsWith("the minimum size rule") ? "न्यूनतम साइजको नियम (NBC 207 / IEC)" : d)) : d));
+    h += `<p class="decided">${ic("info", 16)}<span>${tr("decided")} <b>${esc(dec.join(ne ? " र " : " and "))}</b>.</span></p>`;
     if (last.simple) h += renderSimpleResult(res, last.simple);
-    const allNotes = [...(last.simple ? [] : notes.filter((n) => !n.startsWith("Climate") || !eng())), ...res.warnings];
-    if (allNotes.length) h += `<ul class="notes">${allNotes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul>`;
-    sticky.textContent = `${res.runs > 1 ? res.runs + " × " : ""}${c.size} mm² ${s.material === "cu" ? "Cu" : "Al"}${res.current.In ? ` · ${res.current.In} A breaker` : ""}`;
+    const allNotes = [...(last.simple ? [] : notes.filter((n) => !n.startsWith("Climate") || !eng())), ...res.warnings.map(warnText)];
+    if (allNotes.length) h += `<ul class="notes">${allNotes.map((n) => `<li>${ic("alert", 15)}<span>${esc(n)}</span></li>`).join("")}</ul>`;
+    sticky.textContent = `${res.runs > 1 ? res.runs + " × " : ""}${c.size} mm² ${s.material === "cu" ? "Cu" : "Al"}${res.current.In ? ` · ${res.current.In} A` : ""}`;
   }
   ans.innerHTML = h;
   work.innerHTML = renderWorking(res, A);
@@ -1451,29 +1513,93 @@ function renderResult() {
 function renderWorking(res, A) {
   const s = res.spec, c = res.chosen;
   const sys = s.system === "3ph" ? "I = P / (√3 × U × pf × η)" : s.system === "dc" ? "I = P / (U × η)" : "I = P / (U × pf × η)";
-  let h = `<h3>Step by step</h3><ol class="trail">`;
-  h += `<li><b>Load current.</b> ${sys} = <b>${fmt(res.current.I, 2)} A</b> (${fmt(s.load.power)} ${s.load.unit}, ${fmt(s.voltage, 0)} V${s.load.unit !== "kVA" && s.load.unit !== "A" ? `, pf ${s.load.pf}` : ""}).</li>`;
-  if (Math.abs(res.current.Ib - res.current.I) > 0.01) h += `<li><b>Design current</b> Ib = I × (1 + margin ${fmt(s.designMargin * 100, 0)} %) × motor factor ${s.motorFactor} = <b>${fmt(res.current.Ib, 2)} A</b>.</li>`;
-  if (res.current.In) h += `<li><b>Protective device.</b> Next standard rating at or above Ib: <b>In = ${res.current.In} A</b>. The cable must carry at least In after derating (Ib ≤ In ≤ Iz, IEC 60364-4-43 / IS 732).</li>`;
-  else h += `<li><b>Sizing basis.</b> The cable must carry the design current Ib after derating; protection relays are then set at or below the cable's derated rating.</li>`;
+  let h = `<p class="lead-s">${tr("calcLead")}</p><h3>${tr("steps")}</h3><ol class="trail">`;
+  h += `<li><b>${tr("w1")}</b> ${sys} = <b>${fmt(res.current.I, 2)} A</b> (${fmt(s.load.power)} ${s.load.unit}, ${fmt(s.voltage, 0)} V${s.load.unit !== "kVA" && s.load.unit !== "A" ? `, pf ${s.load.pf}` : ""}).</li>`;
+  if (Math.abs(res.current.Ib - res.current.I) > 0.01) h += `<li><b>${tr("w2")}</b> Ib = I × (1 + ${fmt(s.designMargin * 100, 0)} %) × ${s.motorFactor} = <b>${fmt(res.current.Ib, 2)} A</b>.</li>`;
+  if (res.current.In) h += `<li><b>${tr("w3")}</b> In = <b>${res.current.In} A</b>. ${tr("w3b")}</li>`;
+  else h += `<li><b>${tr("w3hv")}</b> ${tr("w3hvb")}</li>`;
   if (c) {
-    h += `<li><b>Rating factors</b> for the chosen size (they depend on the installation):<div class="tablewrap"><table><thead><tr><th>Factor</th><th class="l">Basis</th><th>Value</th></tr></thead><tbody>${c.factors.map((f) => `<tr><td>${esc(f.label)}</td><td class="l">${esc(f.basis)}</td><td>${f.value.toFixed(3)}</td></tr>`).join("")}<tr><td><b>Total k</b></td><td class="l">product of all factors</td><td><b>${c.k.toFixed(3)}</b></td></tr></tbody></table></div></li>`;
-    h += `<li><b>Required table rating</b> = ${fmt(res.current.basis / res.runs, 1)} A ÷ ${c.k.toFixed(3)} = <b>${fmt(res.current.basis / res.runs / c.k, 1)} A</b>${res.runs > 1 ? ` per run (${res.runs} runs in parallel)` : ""}.</li>`;
-    h += `<li><b>Voltage drop</b> ΔU = ${s.system === "3ph" ? "√3" : "2"} × I × L × (R cos φ + X sin φ) with R at maximum conductor temperature = <b>${fmt(c.vd, 2)} V (${fmt(c.vdPct, 2)} %)</b>.</li>`;
-    if (c.scMin != null && s.fault.i2t) h += `<li><b>Short circuit</b> (current-limiting device) S ≥ √(I²t) / k = √${s.fault.i2t} ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
-    else if (c.scMin != null) h += `<li><b>Short circuit</b> S ≥ I·√t / k = ${s.fault.ka * 1000} A × √${s.fault.timeS} s ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
-    else if (S.level !== "HV") h += `<li><b>Short circuit</b> not checked. For final circuits protected by an MCB/MCCB with instantaneous trip, the breaker's low let-through energy normally protects any cable it can overload-protect. Check it for transformer feeders, fuse-protected or time-delayed circuits.</li>`;
-    h += `<li><b>Smallest size passing every check: ${c.size} mm²</b>, estimated conductor temperature at full load ${fmt(c.theta, 0)} °C.</li>`;
+    h += `<li><b>${tr("w4")}</b><div class="tablewrap"><table><thead><tr><th>${tr("tFactor")}</th><th class="l">${tr("tBasis")}</th><th>${tr("tValue")}</th></tr></thead><tbody>${c.factors.map((f) => `<tr><td>${esc(f.label)}</td><td class="l">${esc(f.basis)}</td><td>${f.value.toFixed(3)}</td></tr>`).join("")}<tr><td><b>k</b></td><td class="l">${tr("tProduct")}</td><td><b>${c.k.toFixed(3)}</b></td></tr></tbody></table></div></li>`;
+    h += `<li><b>${tr("w5")}</b> = ${fmt(res.current.basis / res.runs, 1)} A ÷ ${c.k.toFixed(3)} = <b>${fmt(res.current.basis / res.runs / c.k, 1)} A</b>${res.runs > 1 ? ` (${res.runs} × ${tr("parallel")})` : ""}.</li>`;
+    h += `<li><b>${tr("w6")}</b> ΔU = ${s.system === "3ph" ? "√3" : "2"} × I × L × (R cos φ + X sin φ) = <b>${fmt(c.vd, 2)} V (${fmt(c.vdPct, 2)} %)</b>.</li>`;
+    if (c.scMin != null && s.fault.i2t) h += `<li><b>${tr("w7")}</b> S ≥ √(I²t) / k = √${s.fault.i2t} ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
+    else if (c.scMin != null) h += `<li><b>${tr("w7")}</b> S ≥ I·√t / k = ${s.fault.ka * 1000} A × √${s.fault.timeS} s ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
+    else if (s.voltage <= 1100) h += `<li><b>${tr("w7")}</b> ${tr("w7none")}</li>`;
+    h += `<li><b>${tr("w8")} ${c.size} mm²</b> (${tr("w8b")} ${fmt(c.theta, 0)} °C).</li>`;
   }
-  h += `</ol><h3>Every size tried</h3><div class="tablewrap"><table><thead><tr><th>Size mm²</th><th>Table A</th><th>× k</th><th>Derated A</th><th>Needs A</th><th>VD %</th>${res.candidates.some((x) => x.vdStartPct != null) ? "<th>Start dip %</th>" : ""}${res.candidates.some((x) => x.scMin != null) ? "<th>Fault needs mm²</th>" : ""}<th class="l">Result</th></tr></thead><tbody>`;
+  const hasStart = res.candidates.some((x) => x.vdStartPct != null), hasSc = res.candidates.some((x) => x.scMin != null);
+  h += `</ol><h3>${ic("table", 20)} ${tr("tried")}</h3><p>${tr("triedLead")}</p>`;
+  const cols = [["tSize", "lSize"], ["tTable", "lTable"], ["tK", "lK"], ["tDerated", "lDerated"], ["tNeeds", "lNeeds"], ["tVd", "lVd"],
+    ...(hasStart ? [["tStart", "lStart"]] : []), ...(hasSc ? [["tFault", "lFault"]] : []), ["tResult", "lResult"]];
+  h += `<dl class="legend">${cols.map(([t, l]) => `<dt>${tr(t)}</dt><dd>${tr(l)}</dd>`).join("")}</dl>`;
+  h += `<div class="tablewrap"><table><thead><tr>${cols.map(([t], i) => `<th${i === cols.length - 1 ? ' class="l"' : ""}>${tr(t)}</th>`).join("")}</tr></thead><tbody>`;
   const need = res.current.basis / res.runs;
+  const WHYK = { ampacity: "fHot", voltageDrop: "fVd", motorStart: "fStart", shortCircuit: "fFault" };
   for (const x of res.candidates) {
-    const why = Object.entries(x.pass).filter(([, v]) => !v).map(([k]) => ({ ampacity: "too hot", voltageDrop: "voltage drop", motorStart: "start dip", shortCircuit: "fault" }[k]));
-    h += `<tr class="${x === c ? "chosen" : ""}"><td>${x.size}</td><td>${fmt(x.amp, 0)}</td><td>${x.k.toFixed(3)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.iz, 1)}</td><td>${fmt(need, 1)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.vdPct, 2)}</td>${x.vdStartPct != null ? `<td class="${x.pass.motorStart ? "" : "no"}">${fmt(x.vdStartPct, 1)}</td>` : ""}${x.scMin != null ? `<td class="${x.pass.shortCircuit ? "" : "no"}">${fmt(x.scMin, 1)}</td>` : ""}<td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "chosen" : "passes") : "fails: " + why.join(", ")}</td></tr>`;
+    const why = Object.entries(x.pass).filter(([, v]) => !v).map(([k]) => tr(WHYK[k]));
+    h += `<tr class="${x === c ? "chosen" : ""}"><td>${x.size}</td><td>${fmt(x.amp, 0)}</td><td>${x.k.toFixed(3)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.iz, 1)}</td><td>${fmt(need, 1)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.vdPct, 2)}</td>${hasStart ? `<td class="${x.pass.motorStart ? "" : "no"}">${fmt(x.vdStartPct, 1)}</td>` : ""}${hasSc ? `<td class="${x.pass.shortCircuit ? "" : "no"}">${fmt(x.scMin, 1)}</td>` : ""}<td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "✓ " + tr("rChosen") : tr("rPass")) : "✗ " + why.join(", ")}</td></tr>`;
   }
-  h += `</tbody></table></div><p><small>Data: ${esc(A.title)}. Method and sources: <a href="guide.html">How it works</a>.</small></p>`;
+  h += `</tbody></table></div><p><small>${tr("dataSrc")} ${esc(A.title)}. <a href="guide.html">${tr("guideLink")}</a></small></p>`;
   return h;
 }
+
+// Result and calculation strings (merged into UI below).
+const RT = {
+  en: { calcTitle: "How this answer was calculated", copy: "Copy result", print: "Print or save PDF",
+    xsecCore: "One core, drawn to scale (approx.)", xsecCable: "Cable cross-section, drawn to scale (approx.)",
+    noCable: "No standard cable works for this.", askFor: "Ask the shop for", order: "Length to order (10 % spare)",
+    loadI: "Load current", designI: "Design current", breaker: "Breaker / fuse", relayMax: "Relay setting, at most",
+    screen: "Metallic screen", screenChk: "check earth-fault rating", earth: "Earth wire",
+    mI: "Current vs cable capacity", mVd: "Voltage drop", mStart: "Dip when the motor starts", mFault: "Size needed for a fault",
+    calcLead: "Every number above comes from these steps. Engineers can check each one against the standard named.",
+    steps: "Step by step", w1: "Load current.", w2: "Design current (spare and motor factor).", w3: "Breaker rating:",
+    w3b: "the next standard size. The cable must carry at least this after derating (Ib ≤ In ≤ Iz, IEC 60364-4-43).",
+    w3hv: "Sizing basis.", w3hvb: "HV cables are sized on the load current; the relay is then set at or below the cable's rating.",
+    w4: "Rating factors for the chosen size:", tFactor: "Factor", tBasis: "Basis", tValue: "Value", tProduct: "all factors multiplied",
+    w5: "Required table rating", parallel: "cables in parallel", w6: "Voltage drop:", w7: "Short circuit:",
+    w7none: "not checked. A fast MCB/MCCB limits the fault energy for final circuits; check it for transformer feeders and fuse-protected circuits.",
+    w8: "Smallest size passing every check:", w8b: "estimated conductor temperature at full load",
+    tried: "Every cable size tested",
+    triedLead: "The calculator tries every standard size from the smallest up and keeps the first one that passes all checks. Red numbers show which check a size fails.",
+    tSize: "Size mm²", lSize: "cross-section of each conductor",
+    tTable: "Table A", lTable: "current it carries in standard conditions (catalogue/standard table)",
+    tK: "× k", lK: "total derating factor for your temperature, soil, depth and neighbouring cables",
+    tDerated: "Derated A", lDerated: "Table A × k: what it can safely carry where you install it",
+    tNeeds: "Needs A", lNeeds: "what it must carry: the breaker rating (LV) or the load current (HV)",
+    tVd: "VD %", lVd: "voltage lost along the cable at full load",
+    tStart: "Start dip %", lStart: "voltage lost for a moment while the motor starts",
+    tFault: "Fault needs mm²", lFault: "smallest size that survives a short circuit until it is cleared",
+    tResult: "Result", lResult: "the chosen size is the smallest one that passes everything",
+    fHot: "overheats", fVd: "too much voltage drop", fStart: "motor start dip", fFault: "fails short circuit",
+    rChosen: "chosen", rPass: "passes", dataSrc: "Data:", guideLink: "How cable sizing works" },
+  ne: { calcTitle: "यो उत्तर कसरी निकालियो", copy: "नतिजा कपी गर्नुहोस्", print: "प्रिन्ट वा PDF",
+    xsecCore: "एउटा कोर, नापअनुसार (अनुमानित)", xsecCable: "केबलको काटिएको भाग, नापअनुसार (अनुमानित)",
+    noCable: "यसका लागि कुनै मानक तार पुग्दैन।", askFor: "पसलमा यसरी माग्नुहोस्", order: "किन्ने लम्बाइ (१० % थप)",
+    loadI: "भारको करेन्ट", designI: "डिजाइन करेन्ट", breaker: "ब्रेकर / फ्यूज", relayMax: "रिले सेटिङ, बढीमा",
+    screen: "मेटालिक स्क्रिन", screenChk: "अर्थ-फल्ट रेटिङ जाँच्नुहोस्", earth: "अर्थ तार",
+    mI: "करेन्ट र तारको क्षमता", mVd: "भोल्टेज ड्रप", mStart: "मोटर सुरु हुँदा भोल्टेज झर्ने", mFault: "फल्टका लागि चाहिने साइज",
+    calcLead: "माथिका सबै अंक यी चरणबाट निकालिएका हुन्। इन्जिनियरले हरेक चरण उल्लेखित मापदण्डसँग जाँच्न सक्छन्।",
+    steps: "चरणबद्ध", w1: "भारको करेन्ट।", w2: "डिजाइन करेन्ट (थप र मोटर फ्याक्टर)।", w3: "ब्रेकर रेटिङ:",
+    w3b: "अर्को मानक साइज। घटाएपछि पनि तारले कम्तीमा यति बोक्नुपर्छ (Ib ≤ In ≤ Iz)।",
+    w3hv: "नाप्ने आधार।", w3hvb: "HV तार भारको करेन्टमा नापिन्छ; रिले तारको क्षमताभन्दा कममा सेट गरिन्छ।",
+    w4: "छानिएको साइजका रेटिङ फ्याक्टर:", tFactor: "फ्याक्टर", tBasis: "आधार", tValue: "मान", tProduct: "सबै फ्याक्टरको गुणनफल",
+    w5: "चाहिने तालिका रेटिङ", parallel: "समानान्तर तार", w6: "भोल्टेज ड्रप:", w7: "सर्ट सर्किट:",
+    w7none: "जाँच गरिएन। छिटो काट्ने MCB/MCCB ले फल्टको ऊर्जा सीमित गर्छ; ट्रान्सफर्मरबाट आउने वा फ्यूज भएको सर्किटमा जाँच्नुहोस्।",
+    w8: "सबै जाँच पास गर्ने सबैभन्दा सानो साइज:", w8b: "पूरा भारमा तारको अनुमानित तापक्रम",
+    tried: "जाँचिएका सबै साइज",
+    triedLead: "सबैभन्दा सानो साइजदेखि माथि हरेक मानक साइज जाँचिन्छ र सबै जाँच पास गर्ने पहिलो साइज छानिन्छ। रातो अंकले कुन जाँचमा फेल भयो देखाउँछ।",
+    tSize: "साइज mm²", lSize: "हरेक कन्डक्टरको क्षेत्रफल",
+    tTable: "तालिका A", lTable: "मानक अवस्थामा बोक्ने करेन्ट (क्याटलग/मापदण्डको तालिका)",
+    tK: "× k", lK: "तापक्रम, माटो, गहिराइ र छेउका तारअनुसार घटाउने कुल फ्याक्टर",
+    tDerated: "घटाएपछि A", lDerated: "तालिका A × k: तपाईंको ठाउँमा सुरक्षित बोक्ने करेन्ट",
+    tNeeds: "चाहिने A", lNeeds: "बोक्नुपर्ने करेन्ट: ब्रेकर रेटिङ (LV) वा भारको करेन्ट (HV)",
+    tVd: "VD %", lVd: "पूरा भारमा तारमा गुम्ने भोल्टेज",
+    tStart: "सुरुको झराइ %", lStart: "मोटर सुरु हुँदा क्षणभर गुम्ने भोल्टेज",
+    tFault: "फल्टका लागि mm²", lFault: "सर्ट सर्किट नकाटिउन्जेल नबिग्रिने सबैभन्दा सानो साइज",
+    tResult: "नतिजा", lResult: "सबै जाँच पास गर्ने सबैभन्दा सानो साइज छानिन्छ",
+    fHot: "धेरै तातिन्छ", fVd: "भोल्टेज ड्रप बढी", fStart: "मोटर सुरुमा झराइ बढी", fFault: "सर्ट सर्किटमा फेल",
+    rChosen: "छानिएको", rPass: "पास", dataSrc: "डाटा:", guideLink: "तार नाप्ने तरिका" },
+};
 
 
 // ======================================================================
@@ -1525,11 +1651,15 @@ const UI = {
       "देखाइएको लम्बाइ (१० % थप) किन्नुहोस्। सही साइजको लग क्रिम्प गर्नुहोस्; एल्युमिनियम-तामा बीच बाइमेटालिक लग।",
       "चलाउनुअघि ५०० V टेस्टरले इन्सुलेसन जाँच (कम्तीमा १ MΩ) र RCD को टेस्ट बटन थिच्नुहोस्।"] },
 };
+Object.assign(UI.en, RT.en); Object.assign(UI.ne, RT.ne);
 const tr = (k) => (eng() ? UI.en : UI[S.lang] || UI.en)[k] ?? UI.en[k] ?? k;
 const L2 = (o) => (S.lang === "ne" && o.ne ? o.ne : o.en);
 const STEP_EN = ["What the cable will power", "Where the cable runs", "The cable", "Checks"];
 function setStepTitles(t) {
-  ["#s1", "#s2", "#s3", "#s4"].forEach((id, i) => { const n = document.querySelector(id); if (n) n.innerHTML = `<span class="n">${i + 1}</span> ${esc(t[i])}`; });
+  const icons = ["plug", "route", "cable", "gauge"];
+  ["#s1", "#s2", "#s3", "#s4"].forEach((id, i) => { const n = document.querySelector(id); if (n) n.innerHTML = `<span class="n">${ic(icons[i], 20)}</span> ${esc(t[i])}`; });
+  const ne = !eng() && S.lang === "ne";
+  document.querySelectorAll("[data-en]").forEach((el) => { el.innerHTML = ne && el.dataset.ne ? el.dataset.ne : el.dataset.en; });
   const s4 = document.querySelector("#s4")?.closest("section");
   if (s4) s4.hidden = t[3] === "";
 }
@@ -1553,7 +1683,7 @@ function renderSimple() {
   let h = `<fieldset class="field jobs"><legend class="lbl">${tr("job")}</legend><div class="jobgrid">` +
     Object.entries(JOBS).map(([k, j]) => `<label class="jobcard"><input type="radio" name="job" value="${k}"${S.job === k ? " checked" : ""} data-struct>${icon(j.icon)}<span>${esc(L2(j))}</span></label>`).join("") +
     `</div></fieldset>`;
-  if (job.level === "LV") h += `<div class="figwrap map">${houseMap(ROUTE_HL[S.job])}</div>${explainHtml("run", lang)}`;
+  if (job.level === "LV") h += `<div class="figwrap map">${houseMap(ROUTE_HL[S.job], lang)}</div>${explainHtml("run", lang)}`;
   else h += explainHtml("hv", lang);
   const F = {
     phase: () => sel("phase", tr("phase"), [["1ph", tr("ph1")], ["3ph", tr("ph3")]], { struct: true }),
@@ -1563,14 +1693,14 @@ function renderSimple() {
     kwFuture: () => num("kwFuture", tr("kwFuture"), { suffix: "kW" }),
     kw: () => num("kw", tr("kw"), { suffix: "kW" }),
     acBasis: () => sel("acBasis", tr("acBasis"), [["ton", tr("acTon")], ["amps", tr("amps")]], { struct: true }),
-    acTon: () => sel("acTon", tr("acTon"), [["1", "1 ton (12 000 BTU)"], ["1.5", "1.5 ton (18 000 BTU)"], ["2", "2 ton (24 000 BTU)"]]),
+    acTon: () => sel("acTon", tr("acTon"), S.lang === "ne" ? [["1", "१ टन (१२ ००० BTU)"], ["1.5", "१.५ टन (१८ ००० BTU)"], ["2", "२ टन (२४ ००० BTU)"]] : [["1", "1 ton (12 000 BTU)"], ["1.5", "1.5 ton (18 000 BTU)"], ["2", "2 ton (24 000 BTU)"]]),
     amps: () => num("amps", tr("amps"), { suffix: "A" }),
     acInverter: () => sel("acInverter", tr("acInverter"), [["yes", tr("yes")], ["no", tr("no")]]),
     pumpType: () => sel("pumpType", tr("pumpType"), Object.entries(PUMPS).map(([k, p]) => [k, L2(p)])),
     motorBasis: () => sel("motorBasis", tr("motorBasis"), [["hp", tr("mbHp")], ["amps", tr("mbAmps")]], { struct: true }),
     hp: () => num("hp", tr("hp"), { suffix: "HP" }),
     starter: () => sel("starter", tr("starter"), Object.entries(STARTERS).map(([k, p]) => [k, L2(p)])),
-    evKw: () => sel("evKw", tr("evKw"), Object.entries(EV).map(([k, e]) => [k, e.en])),
+    evKw: () => sel("evKw", tr("evKw"), Object.entries(EV).map(([k, e]) => [k, S.lang === "ne" ? `${e.kw} kW ${e.system === "1ph" ? "सिङ्गल फेज" : "थ्री फेज"} (${e.amps} A)` : e.en])),
     hvKv: () => sel("hvKv", tr("hvKv"), [["11", "11 kV"], ["33", "33 kV"]], { struct: true }),
     kva: () => num("kva", tr("kva"), { suffix: "kVA" }),
     faultKa: () => num("faultKa", tr("faultKa"), { suffix: "kA" }),
@@ -1628,16 +1758,16 @@ function renderSimpleResult(res, sm) {
   let h = "";
   const v = voltageAtLoad(res);
   const bad = v.lowAtLoad < v.minOk;
-  h += `<div class="volt${bad ? " bad" : ""}"><h3 class="rh">${sm.job.level === "HV" ? (S.lang === "ne" ? "ट्रान्सफर्मरमा पुग्ने भोल्टेज" : "Voltage at the transformer") : tr("vTitle")}</h3><dl class="kv">
+  h += `<div class="volt${bad ? " bad" : ""}"><h3 class="rh">${ic("gauge", 18)} ${sm.job.level === "HV" ? (S.lang === "ne" ? "ट्रान्सफर्मरमा पुग्ने भोल्टेज" : "Voltage at the transformer") : tr("vTitle")}</h3><dl class="kv">
     <dt>${tr("vNom")} ${fmt(v.nominal, 0)} V</dt><dd>${fmt(v.atLoad, 0)} V</dd>
     <dt>${tr("vLow")} (${fmt(v.low, 0)} V)</dt><dd>${fmt(v.lowAtLoad, 0)} V</dd></dl>
     ${v.unit !== "V" ? `<p class="hint">${tr("ph3note")}</p>` : ""}${bad ? `<p class="err">${tr("vBad")}</p>` : ""}</div>`;
   const prot = protectionFor(sm.t.kind, res, sm.t.starter);
-  h += `<h3 class="rh">${tr("prot")}</h3><ul class="plain">${prot.map((p) => `<li>${esc(L2(p))}</li>`).join("")}${sm.job.level === "LV" ? `<li>${tr("earth")}: ${res.earthSize} mm² ${res.spec.material === "cu" ? "Cu" : "Al"}</li>` : ""}</ul>`;
+  h += `<h3 class="rh">${ic("shield", 18)} ${tr("prot")}</h3><ul class="plain">${prot.map((p) => `<li>${esc(L2(p))}</li>`).join("")}${sm.job.level === "LV" ? `<li>${tr("earth")}: ${res.earthSize} mm² ${res.spec.material === "cu" ? "Cu" : "Al"}</li>` : ""}</ul>`;
   const sm1 = smallerSize(res);
-  if (sm1 && sm1.why.length) h += `<p class="smaller"><b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;
-  h += `<details class="why"><summary>${tr("assum")}</summary><ul class="plain">${last.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></details>`;
-  if (sm.job.level === "LV") h += `<details class="why"><summary>${tr("shop")}</summary><ul class="plain">${tr("shopList").map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
+  if (sm1 && sm1.why.length) h += `<p class="smaller">${ic("alert", 16)} <b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;
+  h += `<details class="box"><summary>${ic("info", 17)} ${tr("assum")}</summary><ul class="plain">${last.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></details>`;
+  if (sm.job.level === "LV") h += `<details class="box"><summary>${ic("cart", 17)} ${tr("shop")}</summary><ul class="plain">${tr("shopList").map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
   return h;
 }
 
