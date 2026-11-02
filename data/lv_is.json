@@ -1,0 +1,5229 @@
+{
+ "source": "conductor calculator.xlsx (manufacturer catalogue tables to IS 1554-1 PVC and IS 7098-1 XLPE, 1.1 kV)",
+ "units": {
+  "rdc20": "ohm/km at 20 C",
+  "rac": "ohm/km AC at max conductor temp (PVC 70 C, XLPE 90 C)",
+  "amp": "A, continuous, standard conditions",
+  "isc1s": "kA for 1 s"
+ },
+ "standard_conditions": {
+  "ground_temp_c": 30,
+  "air_temp_c": 40,
+  "soil_resistivity_kmw": 1.5,
+  "depth_mm": 750,
+  "note": "IS 3961 / IS 1554 / IS 7098-1 base conditions"
+ },
+ "errata_applied": [
+  {
+   "insulation": "XLPE",
+   "cores": "3",
+   "size": 25,
+   "field": "amp.duct.al",
+   "source_value": 65,
+   "used_value": 85,
+   "reason": "65 A breaks the rising sequence (51, 66, 65, 102); identical 3.5C and 4C tables give 85 A."
+  },
+  {
+   "insulation": "XLPE",
+   "cores": "2",
+   "size": 630,
+   "field": "rac.al",
+   "source_value": 0.606,
+   "used_value": 0.0606,
+   "reason": "Decimal slip: 0.606 > 500 mm2 value 0.0782."
+  },
+  {
+   "insulation": "XLPE",
+   "cores": "3.5",
+   "size": 25,
+   "field": "rac.al",
+   "source_value": 1.538,
+   "used_value": 1.53,
+   "reason": "3C and 4C tables give 1.53."
+  },
+  {
+   "insulation": "XLPE",
+   "cores": "3",
+   "size": 630,
+   "field": "amp.ground.cu",
+   "source_value": 944,
+   "used_value": null,
+   "reason": "944 A is impossible (Al = 529 A, 500 mm2 Cu = 582 A). Unknown true value -> size withdrawn for this case."
+  },
+  {
+   "insulation": "XLPE",
+   "cores": "3.5",
+   "size": 630,
+   "field": "amp.ground.cu",
+   "source_value": 944,
+   "used_value": null,
+   "reason": "Same typo as 3C table."
+  },
+  {
+   "insulation": "XLPE",
+   "cores": "4",
+   "size": 630,
+   "field": "amp.ground.cu",
+   "source_value": 944,
+   "used_value": null,
+   "reason": "Same typo as 3C table."
+  },
+  {
+   "insulation": "PVC",
+   "cores": "1",
+   "size": 500,
+   "field": "rdc20.al",
+   "source_value": 0.0065,
+   "used_value": 0.0605,
+   "reason": "IS 8130 value for 500 mm2 Al is 0.0605."
+  },
+  {
+   "insulation": "PVC",
+   "cores": "1",
+   "size": 630,
+   "field": "rdc20.cu",
+   "source_value": 0.0233,
+   "used_value": 0.0283,
+   "reason": "IS 8130 value for 630 mm2 Cu is 0.0283."
+  },
+  {
+   "insulation": "PVC",
+   "cores": "2",
+   "size": 95,
+   "field": "isc1s.cu",
+   "source_value": 10.09,
+   "used_value": 10.9,
+   "reason": "1C and 4C tables give 10.9 kA (= 0.115 x 95)."
+  },
+  {
+   "insulation": "PVC",
+   "cores": "3",
+   "size": 95,
+   "field": "isc1s.cu",
+   "source_value": 10.09,
+   "used_value": 10.9,
+   "reason": "1C and 4C tables give 10.9 kA (= 0.115 x 95)."
+  },
+  {
+   "insulation": "PVC",
+   "cores": "3.5",
+   "size": 95,
+   "field": "isc1s.cu",
+   "source_value": 10.09,
+   "used_value": 10.9,
+   "reason": "1C and 4C tables give 10.9 kA (= 0.115 x 95)."
+  },
+  {
+   "insulation": "PVC",
+   "cores": "4",
+   "size": 500,
+   "field": "amp.air.al",
+   "source_value": 540,
+   "used_value": 405,
+   "reason": "540 A Al exceeds the 500 A Cu value; every other 4C row equals the 3C table, which gives 405 A."
+  }
+ ],
+ "remaining_warnings": [],
+ "tables": {
+  "XLPE": {
+   "1": {
+    "title": "TABLE 22: SINGLE CORE XLPE INSULATED ARMOURED & UNARMOURED CABLE WITH ALUMINIUM/ COPPER CONDUCTOR. (AS-IS: 7098(1))",
+    "rows": [
+     {
+      "size": 1.5,
+      "rdc20": {
+       "al": null,
+       "cu": 12.1
+      },
+      "rac": {
+       "al": null,
+       "cu": 15.5
+      },
+      "amp": {
+       "ground": {
+        "al": null,
+        "cu": 27
+       },
+       "duct": {
+        "al": null,
+        "cu": 24
+       },
+       "air": {
+        "al": null,
+        "cu": 22
+       }
+      },
+      "isc1s": {
+       "al": null,
+       "cu": 0.21
+      }
+     },
+     {
+      "size": 2.5,
+      "rdc20": {
+       "al": null,
+       "cu": 7.41
+      },
+      "rac": {
+       "al": null,
+       "cu": 9.5
+      },
+      "amp": {
+       "ground": {
+        "al": null,
+        "cu": 36
+       },
+       "duct": {
+        "al": null,
+        "cu": 32
+       },
+       "air": {
+        "al": null,
+        "cu": 29
+       }
+      },
+      "isc1s": {
+       "al": null,
+       "cu": 0.36
+      }
+     },
+     {
+      "size": 4,
+      "rdc20": {
+       "al": 7.41,
+       "cu": 4.61
+      },
+      "rac": {
+       "al": 9.5,
+       "cu": 5.9
+      },
+      "amp": {
+       "ground": {
+        "al": 36,
+        "cu": 46
+       },
+       "duct": {
+        "al": 32,
+        "cu": 41
+       },
+       "air": {
+        "al": 31,
+        "cu": 40
+       }
+      },
+      "isc1s": {
+       "al": 0.38,
+       "cu": 0.57
+      }
+     },
+     {
+      "size": 6,
+      "rdc20": {
+       "al": 4.61,
+       "cu": 3.08
+      },
+      "rac": {
+       "al": 5.9,
+       "cu": 3.94
+      },
+      "amp": {
+       "ground": {
+        "al": 44,
+        "cu": 57
+       },
+       "duct": {
+        "al": 40,
+        "cu": 51
+       },
+       "air": {
+        "al": 39,
+        "cu": 51
+       }
+      },
+      "isc1s": {
+       "al": 0.57,
+       "cu": 0.86
+      }
+     },
+     {
+      "size": 10,
+      "rdc20": {
+       "al": 3.08,
+       "cu": 1.83
+      },
+      "rac": {
+       "al": 3.94,
+       "cu": 2.34
+      },
+      "amp": {
+       "ground": {
+        "al": 59,
+        "cu": 76
+       },
+       "duct": {
+        "al": 53,
+        "cu": 68
+       },
+       "air": {
+        "al": 53,
+        "cu": 71
+       }
+      },
+      "isc1s": {
+       "al": 0.94,
+       "cu": 1.4
+      }
+     },
+     {
+      "size": 16,
+      "rdc20": {
+       "al": 1.91,
+       "cu": 1.15
+      },
+      "rac": {
+       "al": 2.44,
+       "cu": 1.47
+      },
+      "amp": {
+       "ground": {
+        "al": 76,
+        "cu": 97
+       },
+       "duct": {
+        "al": 68,
+        "cu": 87
+       },
+       "air": {
+        "al": 73,
+        "cu": 95
+       }
+      },
+      "isc1s": {
+       "al": 1.5,
+       "cu": 2.3
+      }
+     },
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.53,
+       "cu": 0.931
+      },
+      "amp": {
+       "ground": {
+        "al": 96,
+        "cu": 124
+       },
+       "duct": {
+        "al": 86,
+        "cu": 112
+       },
+       "air": {
+        "al": 98,
+        "cu": 126
+       }
+      },
+      "isc1s": {
+       "al": 2.4,
+       "cu": 3.6
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.11,
+       "cu": 0.671
+      },
+      "amp": {
+       "ground": {
+        "al": 114,
+        "cu": 148
+       },
+       "duct": {
+        "al": 103,
+        "cu": 133
+       },
+       "air": {
+        "al": 121,
+        "cu": 152
+       }
+      },
+      "isc1s": {
+       "al": 3.3,
+       "cu": 5
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.818,
+       "cu": 0.496
+      },
+      "amp": {
+       "ground": {
+        "al": 135,
+        "cu": 174
+       },
+       "duct": {
+        "al": 122,
+        "cu": 157
+       },
+       "air": {
+        "al": 150,
+        "cu": 189
+       }
+      },
+      "isc1s": {
+       "al": 4.7,
+       "cu": 7.1
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.565,
+       "cu": 0.344
+      },
+      "amp": {
+       "ground": {
+        "al": 166,
+        "cu": 213
+       },
+       "duct": {
+        "al": 149,
+        "cu": 192
+       },
+       "air": {
+        "al": 187,
+        "cu": 240
+       }
+      },
+      "isc1s": {
+       "al": 6.6,
+       "cu": 10
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.409,
+       "cu": 0.248
+      },
+      "amp": {
+       "ground": {
+        "al": 198,
+        "cu": 256
+       },
+       "duct": {
+        "al": 178,
+        "cu": 230
+       },
+       "air": {
+        "al": 230,
+        "cu": 297
+       }
+      },
+      "isc1s": {
+       "al": 9,
+       "cu": 13.6
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.323,
+       "cu": 0.197
+      },
+      "amp": {
+       "ground": {
+        "al": 225,
+        "cu": 289
+       },
+       "duct": {
+        "al": 203,
+        "cu": 260
+       },
+       "air": {
+        "al": 268,
+        "cu": 346
+       }
+      },
+      "isc1s": {
+       "al": 11.3,
+       "cu": 17.1
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.264,
+       "cu": 0.16
+      },
+      "amp": {
+       "ground": {
+        "al": 253,
+        "cu": 326
+       },
+       "duct": {
+        "al": 228,
+        "cu": 293
+       },
+       "air": {
+        "al": 309,
+        "cu": 390
+       }
+      },
+      "isc1s": {
+       "al": 14.2,
+       "cu": 21.4
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.21,
+       "cu": 0.129
+      },
+      "amp": {
+       "ground": {
+        "al": 286,
+        "cu": 366
+       },
+       "duct": {
+        "al": 257,
+        "cu": 329
+       },
+       "air": {
+        "al": 360,
+        "cu": 460
+       }
+      },
+      "isc1s": {
+       "al": 17.5,
+       "cu": 26.4
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.161,
+       "cu": 0.099
+      },
+      "amp": {
+       "ground": {
+        "al": 332,
+        "cu": 425
+       },
+       "duct": {
+        "al": 299,
+        "cu": 383
+       },
+       "air": {
+        "al": 433,
+        "cu": 552
+       }
+      },
+      "isc1s": {
+       "al": 22.6,
+       "cu": 34.3
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.129,
+       "cu": 0.08
+      },
+      "amp": {
+       "ground": {
+        "al": 376,
+        "cu": 479
+       },
+       "duct": {
+        "al": 338,
+        "cu": 431
+       },
+       "air": {
+        "al": 501,
+        "cu": 640
+       }
+      },
+      "isc1s": {
+       "al": 28.3,
+       "cu": 42.9
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.102,
+       "cu": 0.064
+      },
+      "amp": {
+       "ground": {
+        "al": 431,
+        "cu": 544
+       },
+       "duct": {
+        "al": 388,
+        "cu": 490
+       },
+       "air": {
+        "al": 596,
+        "cu": 753
+       }
+      },
+      "isc1s": {
+       "al": 37.7,
+       "cu": 57.1
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.0782,
+       "cu": 0.052
+      },
+      "amp": {
+       "ground": {
+        "al": 490,
+        "cu": 611
+       },
+       "duct": {
+        "al": 441,
+        "cu": 550
+       },
+       "air": {
+        "al": 693,
+        "cu": 865
+       }
+      },
+      "isc1s": {
+       "al": 47.2,
+       "cu": 71.4
+      }
+     },
+     {
+      "size": 630,
+      "rdc20": {
+       "al": 0.0469,
+       "cu": 0.0283
+      },
+      "rac": {
+       "al": 0.0606,
+       "cu": 0.0368
+      },
+      "amp": {
+       "ground": {
+        "al": 557,
+        "cu": 684
+       },
+       "duct": {
+        "al": 501,
+        "cu": 616
+       },
+       "air": {
+        "al": 814,
+        "cu": 1001
+       }
+      },
+      "isc1s": {
+       "al": 59.4,
+       "cu": 90
+      }
+     },
+     {
+      "size": 800,
+      "rdc20": {
+       "al": 0.0367,
+       "cu": 0.0221
+      },
+      "rac": {
+       "al": 0.047,
+       "cu": 0.0287
+      },
+      "amp": {
+       "ground": {
+        "al": 632,
+        "cu": 762
+       },
+       "duct": {
+        "al": 569,
+        "cu": 686
+       },
+       "air": {
+        "al": 968,
+        "cu": 1176
+       }
+      },
+      "isc1s": {
+       "al": 75.5,
+       "cu": 114.3
+      }
+     },
+     {
+      "size": 1000,
+      "rdc20": {
+       "al": 0.0291,
+       "cu": 0.0176
+      },
+      "rac": {
+       "al": 0.038,
+       "cu": 0.0229
+      },
+      "amp": {
+       "ground": {
+        "al": 701,
+        "cu": 828
+       },
+       "duct": {
+        "al": 631,
+        "cu": 745
+       },
+       "air": {
+        "al": 1102,
+        "cu": 1299
+       }
+      },
+      "isc1s": {
+       "al": 94.3,
+       "cu": 142.9
+      }
+     }
+    ]
+   },
+   "2": {
+    "title": "TABLE 23: 2 CORE XLPE INSULATED ARMOURED & UNARMOURED CABLE WITH  ALUMINIUM/ COPPER CONDUCTOR.(AS-IS:7098(1))",
+    "rows": [
+     {
+      "size": 1.5,
+      "rdc20": {
+       "al": null,
+       "cu": 12.1
+      },
+      "rac": {
+       "al": null,
+       "cu": 15.5
+      },
+      "amp": {
+       "ground": {
+        "al": null,
+        "cu": 33
+       },
+       "duct": {
+        "al": null,
+        "cu": 30
+       },
+       "air": {
+        "al": null,
+        "cu": 29
+       }
+      },
+      "isc1s": {
+       "al": null,
+       "cu": 0.21
+      }
+     },
+     {
+      "size": 2.5,
+      "rdc20": {
+       "al": null,
+       "cu": 7.41
+      },
+      "rac": {
+       "al": null,
+       "cu": 9.5
+      },
+      "amp": {
+       "ground": {
+        "al": null,
+        "cu": 43
+       },
+       "duct": {
+        "al": null,
+        "cu": 39
+       },
+       "air": {
+        "al": null,
+        "cu": 39
+       }
+      },
+      "isc1s": {
+       "al": null,
+       "cu": 0.36
+      }
+     },
+     {
+      "size": 4,
+      "rdc20": {
+       "al": 7.41,
+       "cu": 4.61
+      },
+      "rac": {
+       "al": 9.5,
+       "cu": 5.9
+      },
+      "amp": {
+       "ground": {
+        "al": 43,
+        "cu": 56
+       },
+       "duct": {
+        "al": 39,
+        "cu": 50
+       },
+       "air": {
+        "al": 39,
+        "cu": 51
+       }
+      },
+      "isc1s": {
+       "al": 0.38,
+       "cu": 0.57
+      }
+     },
+     {
+      "size": 6,
+      "rdc20": {
+       "al": 4.61,
+       "cu": 3.08
+      },
+      "rac": {
+       "al": 5.9,
+       "cu": 3.94
+      },
+      "amp": {
+       "ground": {
+        "al": 55,
+        "cu": 71
+       },
+       "duct": {
+        "al": 50,
+        "cu": 64
+       },
+       "air": {
+        "al": 50,
+        "cu": 64
+       }
+      },
+      "isc1s": {
+       "al": 0.57,
+       "cu": 0.86
+      }
+     },
+     {
+      "size": 10,
+      "rdc20": {
+       "al": 3.08,
+       "cu": 1.83
+      },
+      "rac": {
+       "al": 3.94,
+       "cu": 2.34
+      },
+      "amp": {
+       "ground": {
+        "al": 74,
+        "cu": 92
+       },
+       "duct": {
+        "al": 64,
+        "cu": 83
+       },
+       "air": {
+        "al": 67,
+        "cu": 88
+       }
+      },
+      "isc1s": {
+       "al": 0.94,
+       "cu": 1.4
+      }
+     },
+     {
+      "size": 16,
+      "rdc20": {
+       "al": 1.91,
+       "cu": 1.15
+      },
+      "rac": {
+       "al": 2.44,
+       "cu": 1.47
+      },
+      "amp": {
+       "ground": {
+        "al": 91,
+        "cu": 116
+       },
+       "duct": {
+        "al": 82,
+        "cu": 104
+       },
+       "air": {
+        "al": 88,
+        "cu": 113
+       }
+      },
+      "isc1s": {
+       "al": 1.5,
+       "cu": 2.3
+      }
+     },
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.53,
+       "cu": 0.931
+      },
+      "amp": {
+       "ground": {
+        "al": 120,
+        "cu": 152
+       },
+       "duct": {
+        "al": 108,
+        "cu": 137
+       },
+       "air": {
+        "al": 117,
+        "cu": 153
+       }
+      },
+      "isc1s": {
+       "al": 2.4,
+       "cu": 3.6
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.11,
+       "cu": 0.671
+      },
+      "amp": {
+       "ground": {
+        "al": 143,
+        "cu": 180
+       },
+       "duct": {
+        "al": 129,
+        "cu": 162
+       },
+       "air": {
+        "al": 145,
+        "cu": 186
+       }
+      },
+      "isc1s": {
+       "al": 3.3,
+       "cu": 5
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.818,
+       "cu": 0.496
+      },
+      "amp": {
+       "ground": {
+        "al": 167,
+        "cu": 218
+       },
+       "duct": {
+        "al": 150,
+        "cu": 196
+       },
+       "air": {
+        "al": 176,
+        "cu": 226
+       }
+      },
+      "isc1s": {
+       "al": 4.7,
+       "cu": 7.1
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.565,
+       "cu": 0.344
+      },
+      "amp": {
+       "ground": {
+        "al": 204,
+        "cu": 264
+       },
+       "duct": {
+        "al": 184,
+        "cu": 238
+       },
+       "air": {
+        "al": 221,
+        "cu": 284
+       }
+      },
+      "isc1s": {
+       "al": 6.6,
+       "cu": 10
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.409,
+       "cu": 0.248
+      },
+      "amp": {
+       "ground": {
+        "al": 245,
+        "cu": 314
+       },
+       "duct": {
+        "al": 221,
+        "cu": 283
+       },
+       "air": {
+        "al": 271,
+        "cu": 348
+       }
+      },
+      "isc1s": {
+       "al": 9,
+       "cu": 13
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.323,
+       "cu": 0.197
+      },
+      "amp": {
+       "ground": {
+        "al": 278,
+        "cu": 357
+       },
+       "duct": {
+        "al": 250,
+        "cu": 321
+       },
+       "air": {
+        "al": 316,
+        "cu": 402
+       }
+      },
+      "isc1s": {
+       "al": 11.3,
+       "cu": 17.1
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.264,
+       "cu": 0.16
+      },
+      "amp": {
+       "ground": {
+        "al": 315,
+        "cu": 403
+       },
+       "duct": {
+        "al": 284,
+        "cu": 363
+       },
+       "air": {
+        "al": 362,
+        "cu": 461
+       }
+      },
+      "isc1s": {
+       "al": 14.2,
+       "cu": 21.4
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.21,
+       "cu": 0.129
+      },
+      "amp": {
+       "ground": {
+        "al": 356,
+        "cu": 453
+       },
+       "duct": {
+        "al": 320,
+        "cu": 408
+       },
+       "air": {
+        "al": 420,
+        "cu": 533
+       }
+      },
+      "isc1s": {
+       "al": 17.5,
+       "cu": 26.4
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.161,
+       "cu": 0.099
+      },
+      "amp": {
+       "ground": {
+        "al": 407,
+        "cu": 518
+       },
+       "duct": {
+        "al": 366,
+        "cu": 466
+       },
+       "air": {
+        "al": 497,
+        "cu": 633
+       }
+      },
+      "isc1s": {
+       "al": 22.6,
+       "cu": 34.3
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.129,
+       "cu": 0.08
+      },
+      "amp": {
+       "ground": {
+        "al": 463,
+        "cu": 583
+       },
+       "duct": {
+        "al": 417,
+        "cu": 525
+       },
+       "air": {
+        "al": 578,
+        "cu": 732
+       }
+      },
+      "isc1s": {
+       "al": 28.3,
+       "cu": 42.9
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.102,
+       "cu": 0.064
+      },
+      "amp": {
+       "ground": {
+        "al": 528,
+        "cu": 658
+       },
+       "duct": {
+        "al": 475,
+        "cu": 592
+       },
+       "air": {
+        "al": 678,
+        "cu": 841
+       }
+      },
+      "isc1s": {
+       "al": 37.7,
+       "cu": 57.1
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.0782,
+       "cu": 0.052
+      },
+      "amp": {
+       "ground": {
+        "al": 592,
+        "cu": 730
+       },
+       "duct": {
+        "al": 533,
+        "cu": 657
+       },
+       "air": {
+        "al": 786,
+        "cu": 967
+       }
+      },
+      "isc1s": {
+       "al": 47.2,
+       "cu": 71.4
+      }
+     },
+     {
+      "size": 630,
+      "rdc20": {
+       "al": 0.0469,
+       "cu": 0.0283
+      },
+      "rac": {
+       "al": 0.0606,
+       "cu": 0.043
+      },
+      "amp": {
+       "ground": {
+        "al": 676,
+        "cu": 814
+       },
+       "duct": {
+        "al": 608,
+        "cu": 733
+       },
+       "air": {
+        "al": 913,
+        "cu": 1103
+       }
+      },
+      "isc1s": {
+       "al": 59.4,
+       "cu": 90
+      }
+     }
+    ]
+   },
+   "3": {
+    "title": "TABLE 24: 3 CORE XLPE INSULATED ARMOURED & UNARMOURED CABLE WITH  ALUMINIUM/ COPPER CONDUCTOR.(AS-IS:7098(1))",
+    "rows": [
+     {
+      "size": 1.5,
+      "rdc20": {
+       "al": null,
+       "cu": 12.1
+      },
+      "rac": {
+       "al": null,
+       "cu": 15.5
+      },
+      "amp": {
+       "ground": {
+        "al": null,
+        "cu": 25
+       },
+       "duct": {
+        "al": null,
+        "cu": 23
+       },
+       "air": {
+        "al": null,
+        "cu": 22
+       }
+      },
+      "isc1s": {
+       "al": null,
+       "cu": 0.21
+      }
+     },
+     {
+      "size": 2.5,
+      "rdc20": {
+       "al": null,
+       "cu": 7.41
+      },
+      "rac": {
+       "al": null,
+       "cu": 9.5
+      },
+      "amp": {
+       "ground": {
+        "al": null,
+        "cu": 34
+       },
+       "duct": {
+        "al": null,
+        "cu": 31
+       },
+       "air": {
+        "al": null,
+        "cu": 30
+       }
+      },
+      "isc1s": {
+       "al": null,
+       "cu": 0.36
+      }
+     },
+     {
+      "size": 4,
+      "rdc20": {
+       "al": 7.41,
+       "cu": 4.61
+      },
+      "rac": {
+       "al": 9.5,
+       "cu": 5.9
+      },
+      "amp": {
+       "ground": {
+        "al": 34,
+        "cu": 44
+       },
+       "duct": {
+        "al": 31,
+        "cu": 40
+       },
+       "air": {
+        "al": 31,
+        "cu": 40
+       }
+      },
+      "isc1s": {
+       "al": 0.38,
+       "cu": 0.57
+      }
+     },
+     {
+      "size": 6,
+      "rdc20": {
+       "al": 4.61,
+       "cu": 3.08
+      },
+      "rac": {
+       "al": 5.9,
+       "cu": 3.94
+      },
+      "amp": {
+       "ground": {
+        "al": 43,
+        "cu": 55
+       },
+       "duct": {
+        "al": 39,
+        "cu": 50
+       },
+       "air": {
+        "al": 40,
+        "cu": 51
+       }
+      },
+      "isc1s": {
+       "al": 0.57,
+       "cu": 0.86
+      }
+     },
+     {
+      "size": 10,
+      "rdc20": {
+       "al": 3.08,
+       "cu": 1.83
+      },
+      "rac": {
+       "al": 3.94,
+       "cu": 2.34
+      },
+      "amp": {
+       "ground": {
+        "al": 57,
+        "cu": 73
+       },
+       "duct": {
+        "al": 51,
+        "cu": 66
+       },
+       "air": {
+        "al": 53,
+        "cu": 70
+       }
+      },
+      "isc1s": {
+       "al": 0.94,
+       "cu": 1.4
+      }
+     },
+     {
+      "size": 16,
+      "rdc20": {
+       "al": 1.91,
+       "cu": 1.15
+      },
+      "rac": {
+       "al": 2.44,
+       "cu": 1.47
+      },
+      "amp": {
+       "ground": {
+        "al": 73,
+        "cu": 97
+       },
+       "duct": {
+        "al": 66,
+        "cu": 87
+       },
+       "air": {
+        "al": 70,
+        "cu": 90
+       }
+      },
+      "isc1s": {
+       "al": 1.5,
+       "cu": 2.3
+      }
+     },
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.53,
+       "cu": 0.931
+      },
+      "amp": {
+       "ground": {
+        "al": 94,
+        "cu": 122
+       },
+       "duct": {
+        "al": 85,
+        "cu": 110
+       },
+       "air": {
+        "al": 96,
+        "cu": 123
+       }
+      },
+      "isc1s": {
+       "al": 2.4,
+       "cu": 3.6
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.11,
+       "cu": 0.671
+      },
+      "amp": {
+       "ground": {
+        "al": 113,
+        "cu": 146
+       },
+       "duct": {
+        "al": 102,
+        "cu": 131
+       },
+       "air": {
+        "al": 117,
+        "cu": 151
+       }
+      },
+      "isc1s": {
+       "al": 3.3,
+       "cu": 5
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.818,
+       "cu": 0.496
+      },
+      "amp": {
+       "ground": {
+        "al": 133,
+        "cu": 172
+       },
+       "duct": {
+        "al": 120,
+        "cu": 155
+       },
+       "air": {
+        "al": 142,
+        "cu": 183
+       }
+      },
+      "isc1s": {
+       "al": 4.7,
+       "cu": 7.1
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.565,
+       "cu": 0.344
+      },
+      "amp": {
+       "ground": {
+        "al": 164,
+        "cu": 211
+       },
+       "duct": {
+        "al": 148,
+        "cu": 190
+       },
+       "air": {
+        "al": 179,
+        "cu": 231
+       }
+      },
+      "isc1s": {
+       "al": 6.6,
+       "cu": 10
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.409,
+       "cu": 0.248
+      },
+      "amp": {
+       "ground": {
+        "al": 196,
+        "cu": 253
+       },
+       "duct": {
+        "al": 176,
+        "cu": 228
+       },
+       "air": {
+        "al": 221,
+        "cu": 285
+       }
+      },
+      "isc1s": {
+       "al": 9,
+       "cu": 13.6
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.323,
+       "cu": 0.197
+      },
+      "amp": {
+       "ground": {
+        "al": 223,
+        "cu": 287
+       },
+       "duct": {
+        "al": 201,
+        "cu": 258
+       },
+       "air": {
+        "al": 257,
+        "cu": 330
+       }
+      },
+      "isc1s": {
+       "al": 11.3,
+       "cu": 17.1
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.264,
+       "cu": 0.16
+      },
+      "amp": {
+       "ground": {
+        "al": 249,
+        "cu": 321
+       },
+       "duct": {
+        "al": 224,
+        "cu": 289
+       },
+       "air": {
+        "al": 292,
+        "cu": 375
+       }
+      },
+      "isc1s": {
+       "al": 14.2,
+       "cu": 21.4
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.21,
+       "cu": 0.129
+      },
+      "amp": {
+       "ground": {
+        "al": 282,
+        "cu": 361
+       },
+       "duct": {
+        "al": 254,
+        "cu": 325
+       },
+       "air": {
+        "al": 337,
+        "cu": 430
+       }
+      },
+      "isc1s": {
+       "al": 17.5,
+       "cu": 26.4
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.161,
+       "cu": 0.099
+      },
+      "amp": {
+       "ground": {
+        "al": 326,
+        "cu": 416
+       },
+       "duct": {
+        "al": 293,
+        "cu": 374
+       },
+       "air": {
+        "al": 399,
+        "cu": 508
+       }
+      },
+      "isc1s": {
+       "al": 22.6,
+       "cu": 34.3
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.129,
+       "cu": 0.08
+      },
+      "amp": {
+       "ground": {
+        "al": 367,
+        "cu": 464
+       },
+       "duct": {
+        "al": 330,
+        "cu": 418
+       },
+       "air": {
+        "al": 456,
+        "cu": 575
+       }
+      },
+      "isc1s": {
+       "al": 28.3,
+       "cu": 42.9
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.102,
+       "cu": 0.064
+      },
+      "amp": {
+       "ground": {
+        "al": 418,
+        "cu": 521
+       },
+       "duct": {
+        "al": 376,
+        "cu": 469
+       },
+       "air": {
+        "al": 530,
+        "cu": 661
+       }
+      },
+      "isc1s": {
+       "al": 37.7,
+       "cu": 57.1
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.0782,
+       "cu": 0.052
+      },
+      "amp": {
+       "ground": {
+        "al": 470,
+        "cu": 582
+       },
+       "duct": {
+        "al": 423,
+        "cu": 524
+       },
+       "air": {
+        "al": 612,
+        "cu": 753
+       }
+      },
+      "isc1s": {
+       "al": 47.2,
+       "cu": 71.4
+      }
+     },
+     {
+      "size": 630,
+      "rdc20": {
+       "al": 0.0469,
+       "cu": 0.0283
+      },
+      "rac": {
+       "al": 0.0606,
+       "cu": 0.043
+      },
+      "amp": {
+       "ground": {
+        "al": 529,
+        "cu": null
+       },
+       "duct": {
+        "al": 476,
+        "cu": 580
+       },
+       "air": {
+        "al": 707,
+        "cu": 851
+       }
+      },
+      "isc1s": {
+       "al": 59.4,
+       "cu": 90
+      }
+     }
+    ]
+   },
+   "3.5": {
+    "title": "TABLE 25: 3.5 CORE XLPE INSULATED ARMOURED & UNARMOURED CABLE WITH ALUMINIUM/ COPPER CONDUCTOR. (AS-IS: 7098(1))",
+    "rows": [
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.53,
+       "cu": 0.931
+      },
+      "amp": {
+       "ground": {
+        "al": 94,
+        "cu": 122
+       },
+       "duct": {
+        "al": 85,
+        "cu": 110
+       },
+       "air": {
+        "al": 96,
+        "cu": 123
+       }
+      },
+      "isc1s": {
+       "al": 2.4,
+       "cu": 3.6
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.11,
+       "cu": 0.671
+      },
+      "amp": {
+       "ground": {
+        "al": 113,
+        "cu": 146
+       },
+       "duct": {
+        "al": 102,
+        "cu": 131
+       },
+       "air": {
+        "al": 117,
+        "cu": 151
+       }
+      },
+      "isc1s": {
+       "al": 3.3,
+       "cu": 5
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.818,
+       "cu": 0.496
+      },
+      "amp": {
+       "ground": {
+        "al": 133,
+        "cu": 172
+       },
+       "duct": {
+        "al": 120,
+        "cu": 155
+       },
+       "air": {
+        "al": 142,
+        "cu": 183
+       }
+      },
+      "isc1s": {
+       "al": 4.7,
+       "cu": 7.1
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.565,
+       "cu": 0.344
+      },
+      "amp": {
+       "ground": {
+        "al": 164,
+        "cu": 211
+       },
+       "duct": {
+        "al": 148,
+        "cu": 190
+       },
+       "air": {
+        "al": 179,
+        "cu": 231
+       }
+      },
+      "isc1s": {
+       "al": 6.6,
+       "cu": 10
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.409,
+       "cu": 0.248
+      },
+      "amp": {
+       "ground": {
+        "al": 196,
+        "cu": 253
+       },
+       "duct": {
+        "al": 176,
+        "cu": 228
+       },
+       "air": {
+        "al": 221,
+        "cu": 285
+       }
+      },
+      "isc1s": {
+       "al": 9,
+       "cu": 13.6
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.323,
+       "cu": 0.197
+      },
+      "amp": {
+       "ground": {
+        "al": 223,
+        "cu": 287
+       },
+       "duct": {
+        "al": 201,
+        "cu": 258
+       },
+       "air": {
+        "al": 257,
+        "cu": 330
+       }
+      },
+      "isc1s": {
+       "al": 11.3,
+       "cu": 17.1
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.264,
+       "cu": 0.16
+      },
+      "amp": {
+       "ground": {
+        "al": 249,
+        "cu": 321
+       },
+       "duct": {
+        "al": 224,
+        "cu": 289
+       },
+       "air": {
+        "al": 292,
+        "cu": 375
+       }
+      },
+      "isc1s": {
+       "al": 14.2,
+       "cu": 21.4
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.21,
+       "cu": 0.129
+      },
+      "amp": {
+       "ground": {
+        "al": 282,
+        "cu": 361
+       },
+       "duct": {
+        "al": 254,
+        "cu": 325
+       },
+       "air": {
+        "al": 337,
+        "cu": 430
+       }
+      },
+      "isc1s": {
+       "al": 17.5,
+       "cu": 26.4
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.161,
+       "cu": 0.099
+      },
+      "amp": {
+       "ground": {
+        "al": 326,
+        "cu": 416
+       },
+       "duct": {
+        "al": 293,
+        "cu": 374
+       },
+       "air": {
+        "al": 399,
+        "cu": 508
+       }
+      },
+      "isc1s": {
+       "al": 22.6,
+       "cu": 34.3
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.129,
+       "cu": 0.08
+      },
+      "amp": {
+       "ground": {
+        "al": 367,
+        "cu": 464
+       },
+       "duct": {
+        "al": 330,
+        "cu": 418
+       },
+       "air": {
+        "al": 456,
+        "cu": 575
+       }
+      },
+      "isc1s": {
+       "al": 28.3,
+       "cu": 42.9
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.102,
+       "cu": 0.064
+      },
+      "amp": {
+       "ground": {
+        "al": 418,
+        "cu": 521
+       },
+       "duct": {
+        "al": 376,
+        "cu": 469
+       },
+       "air": {
+        "al": 530,
+        "cu": 661
+       }
+      },
+      "isc1s": {
+       "al": 37.7,
+       "cu": 57.1
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.0782,
+       "cu": 0.052
+      },
+      "amp": {
+       "ground": {
+        "al": 470,
+        "cu": 582
+       },
+       "duct": {
+        "al": 423,
+        "cu": 524
+       },
+       "air": {
+        "al": 612,
+        "cu": 753
+       }
+      },
+      "isc1s": {
+       "al": 47.2,
+       "cu": 71.4
+      }
+     },
+     {
+      "size": 630,
+      "rdc20": {
+       "al": 0.0469,
+       "cu": 0.0283
+      },
+      "rac": {
+       "al": 0.061,
+       "cu": 0.043
+      },
+      "amp": {
+       "ground": {
+        "al": 529,
+        "cu": null
+       },
+       "duct": {
+        "al": 476,
+        "cu": 580
+       },
+       "air": {
+        "al": 707,
+        "cu": 851
+       }
+      },
+      "isc1s": {
+       "al": 59.4,
+       "cu": 90
+      }
+     }
+    ]
+   },
+   "4": {
+    "title": "TABLE 26: 4 CORE XLPE INSULATED ARMOURED & UNARMOURED CABLE WITH ALUMINIUM/COPPER CONDUCTOR. (AS-IS: 7098(1)",
+    "rows": [
+     {
+      "size": 1.5,
+      "rdc20": {
+       "al": null,
+       "cu": 12.1
+      },
+      "rac": {
+       "al": null,
+       "cu": 15.5
+      },
+      "amp": {
+       "ground": {
+        "al": null,
+        "cu": 25
+       },
+       "duct": {
+        "al": null,
+        "cu": 23
+       },
+       "air": {
+        "al": null,
+        "cu": 22
+       }
+      },
+      "isc1s": {
+       "al": null,
+       "cu": 0.21
+      }
+     },
+     {
+      "size": 2.5,
+      "rdc20": {
+       "al": null,
+       "cu": 7.41
+      },
+      "rac": {
+       "al": null,
+       "cu": 9.5
+      },
+      "amp": {
+       "ground": {
+        "al": null,
+        "cu": 34
+       },
+       "duct": {
+        "al": null,
+        "cu": 31
+       },
+       "air": {
+        "al": null,
+        "cu": 30
+       }
+      },
+      "isc1s": {
+       "al": null,
+       "cu": 0.36
+      }
+     },
+     {
+      "size": 4,
+      "rdc20": {
+       "al": 7.41,
+       "cu": 4.61
+      },
+      "rac": {
+       "al": 9.5,
+       "cu": 5.9
+      },
+      "amp": {
+       "ground": {
+        "al": 34,
+        "cu": 44
+       },
+       "duct": {
+        "al": 31,
+        "cu": 40
+       },
+       "air": {
+        "al": 31,
+        "cu": 40
+       }
+      },
+      "isc1s": {
+       "al": 0.38,
+       "cu": 0.57
+      }
+     },
+     {
+      "size": 6,
+      "rdc20": {
+       "al": 4.61,
+       "cu": 3.08
+      },
+      "rac": {
+       "al": 5.9,
+       "cu": 3.94
+      },
+      "amp": {
+       "ground": {
+        "al": 43,
+        "cu": 55
+       },
+       "duct": {
+        "al": 39,
+        "cu": 50
+       },
+       "air": {
+        "al": 40,
+        "cu": 51
+       }
+      },
+      "isc1s": {
+       "al": 0.57,
+       "cu": 0.86
+      }
+     },
+     {
+      "size": 10,
+      "rdc20": {
+       "al": 3.08,
+       "cu": 1.83
+      },
+      "rac": {
+       "al": 3.94,
+       "cu": 2.34
+      },
+      "amp": {
+       "ground": {
+        "al": 57,
+        "cu": 73
+       },
+       "duct": {
+        "al": 51,
+        "cu": 66
+       },
+       "air": {
+        "al": 53,
+        "cu": 70
+       }
+      },
+      "isc1s": {
+       "al": 0.94,
+       "cu": 1.4
+      }
+     },
+     {
+      "size": 16,
+      "rdc20": {
+       "al": 1.91,
+       "cu": 1.15
+      },
+      "rac": {
+       "al": 2.44,
+       "cu": 1.47
+      },
+      "amp": {
+       "ground": {
+        "al": 73,
+        "cu": 97
+       },
+       "duct": {
+        "al": 66,
+        "cu": 87
+       },
+       "air": {
+        "al": 70,
+        "cu": 90
+       }
+      },
+      "isc1s": {
+       "al": 1.5,
+       "cu": 2.3
+      }
+     },
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.53,
+       "cu": 0.931
+      },
+      "amp": {
+       "ground": {
+        "al": 94,
+        "cu": 122
+       },
+       "duct": {
+        "al": 85,
+        "cu": 110
+       },
+       "air": {
+        "al": 96,
+        "cu": 123
+       }
+      },
+      "isc1s": {
+       "al": 2.4,
+       "cu": 3.6
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.11,
+       "cu": 0.671
+      },
+      "amp": {
+       "ground": {
+        "al": 113,
+        "cu": 146
+       },
+       "duct": {
+        "al": 102,
+        "cu": 131
+       },
+       "air": {
+        "al": 117,
+        "cu": 151
+       }
+      },
+      "isc1s": {
+       "al": 3.3,
+       "cu": 5
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.818,
+       "cu": 0.496
+      },
+      "amp": {
+       "ground": {
+        "al": 133,
+        "cu": 172
+       },
+       "duct": {
+        "al": 120,
+        "cu": 155
+       },
+       "air": {
+        "al": 142,
+        "cu": 183
+       }
+      },
+      "isc1s": {
+       "al": 4.7,
+       "cu": 7.1
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.565,
+       "cu": 0.344
+      },
+      "amp": {
+       "ground": {
+        "al": 164,
+        "cu": 211
+       },
+       "duct": {
+        "al": 148,
+        "cu": 190
+       },
+       "air": {
+        "al": 179,
+        "cu": 231
+       }
+      },
+      "isc1s": {
+       "al": 6.6,
+       "cu": 10
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.409,
+       "cu": 0.248
+      },
+      "amp": {
+       "ground": {
+        "al": 196,
+        "cu": 253
+       },
+       "duct": {
+        "al": 176,
+        "cu": 228
+       },
+       "air": {
+        "al": 221,
+        "cu": 285
+       }
+      },
+      "isc1s": {
+       "al": 9,
+       "cu": 13.6
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.323,
+       "cu": 0.197
+      },
+      "amp": {
+       "ground": {
+        "al": 223,
+        "cu": 287
+       },
+       "duct": {
+        "al": 201,
+        "cu": 258
+       },
+       "air": {
+        "al": 257,
+        "cu": 330
+       }
+      },
+      "isc1s": {
+       "al": 11.3,
+       "cu": 17.1
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.264,
+       "cu": 0.16
+      },
+      "amp": {
+       "ground": {
+        "al": 249,
+        "cu": 321
+       },
+       "duct": {
+        "al": 224,
+        "cu": 289
+       },
+       "air": {
+        "al": 292,
+        "cu": 375
+       }
+      },
+      "isc1s": {
+       "al": 14.2,
+       "cu": 21.4
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.21,
+       "cu": 0.129
+      },
+      "amp": {
+       "ground": {
+        "al": 282,
+        "cu": 361
+       },
+       "duct": {
+        "al": 254,
+        "cu": 325
+       },
+       "air": {
+        "al": 337,
+        "cu": 430
+       }
+      },
+      "isc1s": {
+       "al": 17.5,
+       "cu": 26.4
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.161,
+       "cu": 0.099
+      },
+      "amp": {
+       "ground": {
+        "al": 326,
+        "cu": 416
+       },
+       "duct": {
+        "al": 293,
+        "cu": 374
+       },
+       "air": {
+        "al": 399,
+        "cu": 508
+       }
+      },
+      "isc1s": {
+       "al": 22.6,
+       "cu": 34.3
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.129,
+       "cu": 0.08
+      },
+      "amp": {
+       "ground": {
+        "al": 367,
+        "cu": 464
+       },
+       "duct": {
+        "al": 330,
+        "cu": 418
+       },
+       "air": {
+        "al": 456,
+        "cu": 575
+       }
+      },
+      "isc1s": {
+       "al": 28.3,
+       "cu": 42.9
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.102,
+       "cu": 0.064
+      },
+      "amp": {
+       "ground": {
+        "al": 418,
+        "cu": 521
+       },
+       "duct": {
+        "al": 376,
+        "cu": 469
+       },
+       "air": {
+        "al": 530,
+        "cu": 661
+       }
+      },
+      "isc1s": {
+       "al": 37.7,
+       "cu": 57.1
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.0782,
+       "cu": 0.052
+      },
+      "amp": {
+       "ground": {
+        "al": 470,
+        "cu": 582
+       },
+       "duct": {
+        "al": 423,
+        "cu": 524
+       },
+       "air": {
+        "al": 612,
+        "cu": 753
+       }
+      },
+      "isc1s": {
+       "al": 47.2,
+       "cu": 71.4
+      }
+     },
+     {
+      "size": 630,
+      "rdc20": {
+       "al": 0.0469,
+       "cu": 0.0283
+      },
+      "rac": {
+       "al": 0.0606,
+       "cu": 0.043
+      },
+      "amp": {
+       "ground": {
+        "al": 529,
+        "cu": null
+       },
+       "duct": {
+        "al": 476,
+        "cu": 580
+       },
+       "air": {
+        "al": 707,
+        "cu": 851
+       }
+      },
+      "isc1s": {
+       "al": 59.4,
+       "cu": 90
+      }
+     }
+    ]
+   }
+  },
+  "PVC": {
+   "1": {
+    "title": "TABLE 14: SINGLE CORE PVC INSULATED ARMOURED & UNARMOURED CABLE WITH ALUMINIUM/ COPPER CONDUCTOR (AS- IS:1554(1))",
+    "rows": [
+     {
+      "size": 4,
+      "rdc20": {
+       "al": 7.41,
+       "cu": 4.61
+      },
+      "rac": {
+       "al": 8.9,
+       "cu": 5.52
+      },
+      "amp": {
+       "ground": {
+        "al": 31,
+        "cu": 39
+       },
+       "duct": {
+        "al": 30,
+        "cu": 38
+       },
+       "air": {
+        "al": 27,
+        "cu": 35
+       }
+      },
+      "isc1s": {
+       "al": 0.304,
+       "cu": 0.46
+      }
+     },
+     {
+      "size": 6,
+      "rdc20": {
+       "al": 4.61,
+       "cu": 3.08
+      },
+      "rac": {
+       "al": 5.54,
+       "cu": 3.69
+      },
+      "amp": {
+       "ground": {
+        "al": 39,
+        "cu": 49
+       },
+       "duct": {
+        "al": 37,
+        "cu": 48
+       },
+       "air": {
+        "al": 35,
+        "cu": 44
+       }
+      },
+      "isc1s": {
+       "al": 0.456,
+       "cu": 0.69
+      }
+     },
+     {
+      "size": 10,
+      "rdc20": {
+       "al": 3.08,
+       "cu": 1.83
+      },
+      "rac": {
+       "al": 3.7,
+       "cu": 2.19
+      },
+      "amp": {
+       "ground": {
+        "al": 51,
+        "cu": 65
+       },
+       "duct": {
+        "al": 51,
+        "cu": 64
+       },
+       "air": {
+        "al": 47,
+        "cu": 60
+       }
+      },
+      "isc1s": {
+       "al": 0.76,
+       "cu": 1.15
+      }
+     },
+     {
+      "size": 16,
+      "rdc20": {
+       "al": 1.91,
+       "cu": 1.15
+      },
+      "rac": {
+       "al": 2.3,
+       "cu": 1.38
+      },
+      "amp": {
+       "ground": {
+        "al": 66,
+        "cu": 85
+       },
+       "duct": {
+        "al": 65,
+        "cu": 83
+       },
+       "air": {
+        "al": 64,
+        "cu": 82
+       }
+      },
+      "isc1s": {
+       "al": 1.22,
+       "cu": 1.84
+      }
+     },
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.44,
+       "cu": 0.87
+      },
+      "amp": {
+       "ground": {
+        "al": 86,
+        "cu": 110
+       },
+       "duct": {
+        "al": 84,
+        "cu": 110
+       },
+       "air": {
+        "al": 84,
+        "cu": 110
+       }
+      },
+      "isc1s": {
+       "al": 1.9,
+       "cu": 2.88
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.04,
+       "cu": 0.627
+      },
+      "amp": {
+       "ground": {
+        "al": 100,
+        "cu": 130
+       },
+       "duct": {
+        "al": 100,
+        "cu": 125
+       },
+       "air": {
+        "al": 105,
+        "cu": 130
+       }
+      },
+      "isc1s": {
+       "al": 2.66,
+       "cu": 4.03
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.77,
+       "cu": 0.463
+      },
+      "amp": {
+       "ground": {
+        "al": 120,
+        "cu": 155
+       },
+       "duct": {
+        "al": 115,
+        "cu": 150
+       },
+       "air": {
+        "al": 130,
+        "cu": 165
+       }
+      },
+      "isc1s": {
+       "al": 3.8,
+       "cu": 5.75
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.532,
+       "cu": 0.321
+      },
+      "amp": {
+       "ground": {
+        "al": 140,
+        "cu": 190
+       },
+       "duct": {
+        "al": 135,
+        "cu": 175
+       },
+       "air": {
+        "al": 155,
+        "cu": 205
+       }
+      },
+      "isc1s": {
+       "al": 5.32,
+       "cu": 8.05
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.385,
+       "cu": 0.231
+      },
+      "amp": {
+       "ground": {
+        "al": 175,
+        "cu": 220
+       },
+       "duct": {
+        "al": 155,
+        "cu": 200
+       },
+       "air": {
+        "al": 190,
+        "cu": 245
+       }
+      },
+      "isc1s": {
+       "al": 7.22,
+       "cu": 10.9
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.305,
+       "cu": 0.184
+      },
+      "amp": {
+       "ground": {
+        "al": 195,
+        "cu": 250
+       },
+       "duct": {
+        "al": 170,
+        "cu": 220
+       },
+       "air": {
+        "al": 220,
+        "cu": 280
+       }
+      },
+      "isc1s": {
+       "al": 9.12,
+       "cu": 13.8
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.249,
+       "cu": 0.149
+      },
+      "amp": {
+       "ground": {
+        "al": 220,
+        "cu": 280
+       },
+       "duct": {
+        "al": 190,
+        "cu": 245
+       },
+       "air": {
+        "al": 250,
+        "cu": 320
+       }
+      },
+      "isc1s": {
+       "al": 11.4,
+       "cu": 17.3
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.199,
+       "cu": 0.12
+      },
+      "amp": {
+       "ground": {
+        "al": 240,
+        "cu": 305
+       },
+       "duct": {
+        "al": 210,
+        "cu": 260
+       },
+       "air": {
+        "al": 290,
+        "cu": 370
+       }
+      },
+      "isc1s": {
+       "al": 14.1,
+       "cu": 21.3
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.152,
+       "cu": 0.0912
+      },
+      "amp": {
+       "ground": {
+        "al": 270,
+        "cu": 345
+       },
+       "duct": {
+        "al": 225,
+        "cu": 285
+       },
+       "air": {
+        "al": 335,
+        "cu": 425
+       }
+      },
+      "isc1s": {
+       "al": 18.2,
+       "cu": 27.6
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.123,
+       "cu": 0.0739
+      },
+      "amp": {
+       "ground": {
+        "al": 295,
+        "cu": 375
+       },
+       "duct": {
+        "al": 245,
+        "cu": 310
+       },
+       "air": {
+        "al": 380,
+        "cu": 475
+       }
+      },
+      "isc1s": {
+       "al": 22.8,
+       "cu": 34.5
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.0975,
+       "cu": 0.0592
+      },
+      "amp": {
+       "ground": {
+        "al": 325,
+        "cu": 400
+       },
+       "duct": {
+        "al": 275,
+        "cu": 335
+       },
+       "air": {
+        "al": 435,
+        "cu": 550
+       }
+      },
+      "isc1s": {
+       "al": 30.4,
+       "cu": 46
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.0767,
+       "cu": 0.0468
+      },
+      "amp": {
+       "ground": {
+        "al": 345,
+        "cu": 425
+       },
+       "duct": {
+        "al": 295,
+        "cu": 355
+       },
+       "air": {
+        "al": 480,
+        "cu": 590
+       }
+      },
+      "isc1s": {
+       "al": 38,
+       "cu": 57.7
+      }
+     },
+     {
+      "size": 630,
+      "rdc20": {
+       "al": 0.0469,
+       "cu": 0.0283
+      },
+      "rac": {
+       "al": 0.0614,
+       "cu": 0.0379
+      },
+      "amp": {
+       "ground": {
+        "al": 390,
+        "cu": 470
+       },
+       "duct": {
+        "al": 320,
+        "cu": 375
+       },
+       "air": {
+        "al": 550,
+        "cu": 660
+       }
+      },
+      "isc1s": {
+       "al": 47.9,
+       "cu": 72.5
+      }
+     },
+     {
+      "size": 800,
+      "rdc20": {
+       "al": 0.0367,
+       "cu": 0.0221
+      },
+      "rac": {
+       "al": 0.051,
+       "cu": 0.0314
+      },
+      "amp": {
+       "ground": {
+        "al": 440,
+        "cu": 530
+       },
+       "duct": {
+        "al": 345,
+        "cu": 405
+       },
+       "air": {
+        "al": 600,
+        "cu": 725
+       }
+      },
+      "isc1s": {
+       "al": 60.8,
+       "cu": 92
+      }
+     },
+     {
+      "size": 1000,
+      "rdc20": {
+       "al": 0.0291,
+       "cu": 0.0176
+      },
+      "rac": {
+       "al": 0.042,
+       "cu": 0.0271
+      },
+      "amp": {
+       "ground": {
+        "al": 490,
+        "cu": 590
+       },
+       "duct": {
+        "al": 370,
+        "cu": 435
+       },
+       "air": {
+        "al": 720,
+        "cu": 870
+       }
+      },
+      "isc1s": {
+       "al": 76,
+       "cu": 115
+      }
+     }
+    ]
+   },
+   "2": {
+    "title": "TABLE 15: 2 CORE PVC INSULATED ARMOURED & UNARMOURED CABLE WITH ALUMINIUM/COPPER CONDUCTOR (AS-IS:1554(1))",
+    "rows": [
+     {
+      "size": 2.5,
+      "rdc20": {
+       "al": 12.1,
+       "cu": 7.41
+      },
+      "rac": {
+       "al": 14.5,
+       "cu": 8.87
+      },
+      "amp": {
+       "ground": {
+        "al": 25,
+        "cu": 32
+       },
+       "duct": {
+        "al": 21,
+        "cu": 27
+       },
+       "air": {
+        "al": 21,
+        "cu": 27
+       }
+      },
+      "isc1s": {
+       "al": 0.19,
+       "cu": 0.288
+      }
+     },
+     {
+      "size": 4,
+      "rdc20": {
+       "al": 7.41,
+       "cu": 4.61
+      },
+      "rac": {
+       "al": 8.9,
+       "cu": 5.52
+      },
+      "amp": {
+       "ground": {
+        "al": 32,
+        "cu": 41
+       },
+       "duct": {
+        "al": 27,
+        "cu": 35
+       },
+       "air": {
+        "al": 27,
+        "cu": 35
+       }
+      },
+      "isc1s": {
+       "al": 0.304,
+       "cu": 0.46
+      }
+     },
+     {
+      "size": 6,
+      "rdc20": {
+       "al": 4.61,
+       "cu": 3.08
+      },
+      "rac": {
+       "al": 5.54,
+       "cu": 3.69
+      },
+      "amp": {
+       "ground": {
+        "al": 40,
+        "cu": 50
+       },
+       "duct": {
+        "al": 34,
+        "cu": 44
+       },
+       "air": {
+        "al": 35,
+        "cu": 45
+       }
+      },
+      "isc1s": {
+       "al": 0.456,
+       "cu": 0.69
+      }
+     },
+     {
+      "size": 10,
+      "rdc20": {
+       "al": 3.08,
+       "cu": 1.83
+      },
+      "rac": {
+       "al": 3.7,
+       "cu": 2.19
+      },
+      "amp": {
+       "ground": {
+        "al": 55,
+        "cu": 70
+       },
+       "duct": {
+        "al": 45,
+        "cu": 58
+       },
+       "air": {
+        "al": 47,
+        "cu": 60
+       }
+      },
+      "isc1s": {
+       "al": 0.76,
+       "cu": 1.15
+      }
+     },
+     {
+      "size": 16,
+      "rdc20": {
+       "al": 1.91,
+       "cu": 1.15
+      },
+      "rac": {
+       "al": 2.3,
+       "cu": 1.38
+      },
+      "amp": {
+       "ground": {
+        "al": 70,
+        "cu": 90
+       },
+       "duct": {
+        "al": 58,
+        "cu": 75
+       },
+       "air": {
+        "al": 59,
+        "cu": 78
+       }
+      },
+      "isc1s": {
+       "al": 1.22,
+       "cu": 1.84
+      }
+     },
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.44,
+       "cu": 0.87
+      },
+      "amp": {
+       "ground": {
+        "al": 90,
+        "cu": 115
+       },
+       "duct": {
+        "al": 76,
+        "cu": 97
+       },
+       "air": {
+        "al": 78,
+        "cu": 105
+       }
+      },
+      "isc1s": {
+       "al": 1.9,
+       "cu": 2.88
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.04,
+       "cu": 0.627
+      },
+      "amp": {
+       "ground": {
+        "al": 110,
+        "cu": 140
+       },
+       "duct": {
+        "al": 92,
+        "cu": 120
+       },
+       "air": {
+        "al": 99,
+        "cu": 125
+       }
+      },
+      "isc1s": {
+       "al": 2.66,
+       "cu": 4.03
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.77,
+       "cu": 0.463
+      },
+      "amp": {
+       "ground": {
+        "al": 135,
+        "cu": 165
+       },
+       "duct": {
+        "al": 115,
+        "cu": 145
+       },
+       "air": {
+        "al": 125,
+        "cu": 155
+       }
+      },
+      "isc1s": {
+       "al": 3.8,
+       "cu": 5.75
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.532,
+       "cu": 0.321
+      },
+      "amp": {
+       "ground": {
+        "al": 160,
+        "cu": 205
+       },
+       "duct": {
+        "al": 140,
+        "cu": 180
+       },
+       "air": {
+        "al": 150,
+        "cu": 195
+       }
+      },
+      "isc1s": {
+       "al": 5.32,
+       "cu": 8.05
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.384,
+       "cu": 0.231
+      },
+      "amp": {
+       "ground": {
+        "al": 190,
+        "cu": 240
+       },
+       "duct": {
+        "al": 170,
+        "cu": 215
+       },
+       "air": {
+        "al": 185,
+        "cu": 230
+       }
+      },
+      "isc1s": {
+       "al": 7.22,
+       "cu": 10.9
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.304,
+       "cu": 0.184
+      },
+      "amp": {
+       "ground": {
+        "al": 210,
+        "cu": 275
+       },
+       "duct": {
+        "al": 190,
+        "cu": 235
+       },
+       "air": {
+        "al": 210,
+        "cu": 265
+       }
+      },
+      "isc1s": {
+       "al": 9.12,
+       "cu": 13.8
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.248,
+       "cu": 0.149
+      },
+      "amp": {
+       "ground": {
+        "al": 240,
+        "cu": 310
+       },
+       "duct": {
+        "al": 210,
+        "cu": 270
+       },
+       "air": {
+        "al": 240,
+        "cu": 305
+       }
+      },
+      "isc1s": {
+       "al": 11.4,
+       "cu": 17.3
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.198,
+       "cu": 0.12
+      },
+      "amp": {
+       "ground": {
+        "al": 275,
+        "cu": 350
+       },
+       "duct": {
+        "al": 240,
+        "cu": 300
+       },
+       "air": {
+        "al": 275,
+        "cu": 350
+       }
+      },
+      "isc1s": {
+       "al": 14.1,
+       "cu": 21.3
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.152,
+       "cu": 0.0912
+      },
+      "amp": {
+       "ground": {
+        "al": 320,
+        "cu": 405
+       },
+       "duct": {
+        "al": 275,
+        "cu": 345
+       },
+       "air": {
+        "al": 325,
+        "cu": 410
+       }
+      },
+      "isc1s": {
+       "al": 18.2,
+       "cu": 27.6
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.122,
+       "cu": 0.0739
+      },
+      "amp": {
+       "ground": {
+        "al": 355,
+        "cu": 430
+       },
+       "duct": {
+        "al": 305,
+        "cu": 385
+       },
+       "air": {
+        "al": 365,
+        "cu": 465
+       }
+      },
+      "isc1s": {
+       "al": 22.8,
+       "cu": 34.5
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.096,
+       "cu": 0.0592
+      },
+      "amp": {
+       "ground": {
+        "al": 385,
+        "cu": 490
+       },
+       "duct": {
+        "al": 345,
+        "cu": 425
+       },
+       "air": {
+        "al": 420,
+        "cu": 530
+       }
+      },
+      "isc1s": {
+       "al": 30.4,
+       "cu": 46
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.076,
+       "cu": 0.0468
+      },
+      "amp": {
+       "ground": {
+        "al": 415,
+        "cu": 520
+       },
+       "duct": {
+        "al": 365,
+        "cu": 460
+       },
+       "air": {
+        "al": 455,
+        "cu": 575
+       }
+      },
+      "isc1s": {
+       "al": 38,
+       "cu": 57.5
+      }
+     },
+     {
+      "size": 630,
+      "rdc20": {
+       "al": 0.0469,
+       "cu": 0.0283
+      },
+      "rac": {
+       "al": 0.061,
+       "cu": 0.0379
+      },
+      "amp": {
+       "ground": {
+        "al": 460,
+        "cu": 565
+       },
+       "duct": {
+        "al": 405,
+        "cu": 510
+       },
+       "air": {
+        "al": 520,
+        "cu": 655
+       }
+      },
+      "isc1s": {
+       "al": 47.9,
+       "cu": 72.5
+      }
+     }
+    ]
+   },
+   "3": {
+    "title": "TABLE 16: 3 CORE PVC INSULATED ARMOURED & UNARMOURED CABLE WITH ALUMINIUM/ COPPER CONDUCTOR. (AS-IS:1554(1))",
+    "rows": [
+     {
+      "size": 2.5,
+      "rdc20": {
+       "al": 12.1,
+       "cu": 7.41
+      },
+      "rac": {
+       "al": 14.5,
+       "cu": 8.87
+      },
+      "amp": {
+       "ground": {
+        "al": 21,
+        "cu": 27
+       },
+       "duct": {
+        "al": 18,
+        "cu": 24
+       },
+       "air": {
+        "al": 18,
+        "cu": 24
+       }
+      },
+      "isc1s": {
+       "al": 0.19,
+       "cu": 0.288
+      }
+     },
+     {
+      "size": 4,
+      "rdc20": {
+       "al": 7.41,
+       "cu": 4.61
+      },
+      "rac": {
+       "al": 8.9,
+       "cu": 5.52
+      },
+      "amp": {
+       "ground": {
+        "al": 28,
+        "cu": 36
+       },
+       "duct": {
+        "al": 23,
+        "cu": 30
+       },
+       "air": {
+        "al": 23,
+        "cu": 30
+       }
+      },
+      "isc1s": {
+       "al": 0.304,
+       "cu": 0.46
+      }
+     },
+     {
+      "size": 6,
+      "rdc20": {
+       "al": 4.61,
+       "cu": 3.08
+      },
+      "rac": {
+       "al": 5.54,
+       "cu": 3.69
+      },
+      "amp": {
+       "ground": {
+        "al": 35,
+        "cu": 45
+       },
+       "duct": {
+        "al": 30,
+        "cu": 38
+       },
+       "air": {
+        "al": 30,
+        "cu": 38
+       }
+      },
+      "isc1s": {
+       "al": 0.456,
+       "cu": 0.69
+      }
+     },
+     {
+      "size": 10,
+      "rdc20": {
+       "al": 3.08,
+       "cu": 1.83
+      },
+      "rac": {
+       "al": 3.7,
+       "cu": 2.19
+      },
+      "amp": {
+       "ground": {
+        "al": 46,
+        "cu": 60
+       },
+       "duct": {
+        "al": 39,
+        "cu": 50
+       },
+       "air": {
+        "al": 40,
+        "cu": 52
+       }
+      },
+      "isc1s": {
+       "al": 0.76,
+       "cu": 1.15
+      }
+     },
+     {
+      "size": 16,
+      "rdc20": {
+       "al": 1.91,
+       "cu": 1.15
+      },
+      "rac": {
+       "al": 2.3,
+       "cu": 1.38
+      },
+      "amp": {
+       "ground": {
+        "al": 60,
+        "cu": 77
+       },
+       "duct": {
+        "al": 50,
+        "cu": 64
+       },
+       "air": {
+        "al": 51,
+        "cu": 66
+       }
+      },
+      "isc1s": {
+       "al": 1.22,
+       "cu": 1.84
+      }
+     },
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.44,
+       "cu": 0.87
+      },
+      "amp": {
+       "ground": {
+        "al": 76,
+        "cu": 99
+       },
+       "duct": {
+        "al": 63,
+        "cu": 81
+       },
+       "air": {
+        "al": 70,
+        "cu": 90
+       }
+      },
+      "isc1s": {
+       "al": 1.9,
+       "cu": 2.88
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.04,
+       "cu": 0.627
+      },
+      "amp": {
+       "ground": {
+        "al": 92,
+        "cu": 120
+       },
+       "duct": {
+        "al": 77,
+        "cu": 99
+       },
+       "air": {
+        "al": 86,
+        "cu": 110
+       }
+      },
+      "isc1s": {
+       "al": 2.66,
+       "cu": 4.03
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.77,
+       "cu": 0.463
+      },
+      "amp": {
+       "ground": {
+        "al": 110,
+        "cu": 145
+       },
+       "duct": {
+        "al": 95,
+        "cu": 125
+       },
+       "air": {
+        "al": 105,
+        "cu": 135
+       }
+      },
+      "isc1s": {
+       "al": 3.8,
+       "cu": 5.75
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.532,
+       "cu": 0.321
+      },
+      "amp": {
+       "ground": {
+        "al": 135,
+        "cu": 175
+       },
+       "duct": {
+        "al": 115,
+        "cu": 150
+       },
+       "air": {
+        "al": 130,
+        "cu": 165
+       }
+      },
+      "isc1s": {
+       "al": 5.32,
+       "cu": 8.05
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.385,
+       "cu": 0.231
+      },
+      "amp": {
+       "ground": {
+        "al": 165,
+        "cu": 210
+       },
+       "duct": {
+        "al": 140,
+        "cu": 175
+       },
+       "air": {
+        "al": 155,
+        "cu": 200
+       }
+      },
+      "isc1s": {
+       "al": 7.22,
+       "cu": 10.9
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.305,
+       "cu": 0.184
+      },
+      "amp": {
+       "ground": {
+        "al": 185,
+        "cu": 240
+       },
+       "duct": {
+        "al": 155,
+        "cu": 195
+       },
+       "air": {
+        "al": 180,
+        "cu": 230
+       }
+      },
+      "isc1s": {
+       "al": 9.12,
+       "cu": 13.8
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.249,
+       "cu": 0.149
+      },
+      "amp": {
+       "ground": {
+        "al": 210,
+        "cu": 270
+       },
+       "duct": {
+        "al": 175,
+        "cu": 225
+       },
+       "air": {
+        "al": 205,
+        "cu": 265
+       }
+      },
+      "isc1s": {
+       "al": 11.4,
+       "cu": 17.3
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.198,
+       "cu": 0.12
+      },
+      "amp": {
+       "ground": {
+        "al": 235,
+        "cu": 300
+       },
+       "duct": {
+        "al": 200,
+        "cu": 255
+       },
+       "air": {
+        "al": 240,
+        "cu": 305
+       }
+      },
+      "isc1s": {
+       "al": 14.1,
+       "cu": 21.3
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.152,
+       "cu": 0.0912
+      },
+      "amp": {
+       "ground": {
+        "al": 275,
+        "cu": 345
+       },
+       "duct": {
+        "al": 235,
+        "cu": 295
+       },
+       "air": {
+        "al": 280,
+        "cu": 355
+       }
+      },
+      "isc1s": {
+       "al": 18.2,
+       "cu": 27.6
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.123,
+       "cu": 0.0739
+      },
+      "amp": {
+       "ground": {
+        "al": 305,
+        "cu": 385
+       },
+       "duct": {
+        "al": 260,
+        "cu": 335
+       },
+       "air": {
+        "al": 315,
+        "cu": 400
+       }
+      },
+      "isc1s": {
+       "al": 22.8,
+       "cu": 34.5
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.0975,
+       "cu": 0.0592
+      },
+      "amp": {
+       "ground": {
+        "al": 335,
+        "cu": 425
+       },
+       "duct": {
+        "al": 290,
+        "cu": 360
+       },
+       "air": {
+        "al": 375,
+        "cu": 455
+       }
+      },
+      "isc1s": {
+       "al": 30.4,
+       "cu": 46
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.0767,
+       "cu": 0.0468
+      },
+      "amp": {
+       "ground": {
+        "al": 355,
+        "cu": 440
+       },
+       "duct": {
+        "al": 315,
+        "cu": 390
+       },
+       "air": {
+        "al": 405,
+        "cu": 500
+       }
+      },
+      "isc1s": {
+       "al": 38,
+       "cu": 57.5
+      }
+     }
+    ]
+   },
+   "3.5": {
+    "title": "TABLE 17: 3.5 CORE PVC INSULATED ARMOURED & UNARMOURED CABLE WITH ALUMINIUM/ COPPER CONDUCTOR.(AS-IS:1554 (1))",
+    "rows": [
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.44,
+       "cu": 0.873
+      },
+      "amp": {
+       "ground": {
+        "al": 76,
+        "cu": 99
+       },
+       "duct": {
+        "al": 63,
+        "cu": 81
+       },
+       "air": {
+        "al": 70,
+        "cu": 90
+       }
+      },
+      "isc1s": {
+       "al": 1.9,
+       "cu": 2.88
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.525
+      },
+      "rac": {
+       "al": 1.04,
+       "cu": 0.629
+      },
+      "amp": {
+       "ground": {
+        "al": 92,
+        "cu": 120
+       },
+       "duct": {
+        "al": 77,
+        "cu": 99
+       },
+       "air": {
+        "al": 86,
+        "cu": 110
+       }
+      },
+      "isc1s": {
+       "al": 2.66,
+       "cu": 4.03
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.77,
+       "cu": 0.465
+      },
+      "amp": {
+       "ground": {
+        "al": 110,
+        "cu": 145
+       },
+       "duct": {
+        "al": 95,
+        "cu": 125
+       },
+       "air": {
+        "al": 105,
+        "cu": 135
+       }
+      },
+      "isc1s": {
+       "al": 3.8,
+       "cu": 5.75
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.532,
+       "cu": 0.322
+      },
+      "amp": {
+       "ground": {
+        "al": 135,
+        "cu": 175
+       },
+       "duct": {
+        "al": 115,
+        "cu": 150
+       },
+       "air": {
+        "al": 130,
+        "cu": 165
+       }
+      },
+      "isc1s": {
+       "al": 5.32,
+       "cu": 8.05
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.385,
+       "cu": 0.233
+      },
+      "amp": {
+       "ground": {
+        "al": 163,
+        "cu": 210
+       },
+       "duct": {
+        "al": 140,
+        "cu": 175
+       },
+       "air": {
+        "al": 155,
+        "cu": 200
+       }
+      },
+      "isc1s": {
+       "al": 7.22,
+       "cu": 10.9
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.305,
+       "cu": 0.185
+      },
+      "amp": {
+       "ground": {
+        "al": 185,
+        "cu": 240
+       },
+       "duct": {
+        "al": 155,
+        "cu": 195
+       },
+       "air": {
+        "al": 180,
+        "cu": 230
+       }
+      },
+      "isc1s": {
+       "al": 9.12,
+       "cu": 13.8
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.249,
+       "cu": 0.15
+      },
+      "amp": {
+       "ground": {
+        "al": 210,
+        "cu": 270
+       },
+       "duct": {
+        "al": 175,
+        "cu": 225
+       },
+       "air": {
+        "al": 205,
+        "cu": 265
+       }
+      },
+      "isc1s": {
+       "al": 11.4,
+       "cu": 17.3
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.198,
+       "cu": 0.121
+      },
+      "amp": {
+       "ground": {
+        "al": 235,
+        "cu": 300
+       },
+       "duct": {
+        "al": 200,
+        "cu": 255
+       },
+       "air": {
+        "al": 240,
+        "cu": 305
+       }
+      },
+      "isc1s": {
+       "al": 14.1,
+       "cu": 21.3
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.152,
+       "cu": 0.094
+      },
+      "amp": {
+       "ground": {
+        "al": 275,
+        "cu": 345
+       },
+       "duct": {
+        "al": 235,
+        "cu": 295
+       },
+       "air": {
+        "al": 280,
+        "cu": 355
+       }
+      },
+      "isc1s": {
+       "al": 18.2,
+       "cu": 27.6
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.123,
+       "cu": 0.075
+      },
+      "amp": {
+       "ground": {
+        "al": 305,
+        "cu": 385
+       },
+       "duct": {
+        "al": 260,
+        "cu": 335
+       },
+       "air": {
+        "al": 315,
+        "cu": 400
+       }
+      },
+      "isc1s": {
+       "al": 22.8,
+       "cu": 34.5
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.0975,
+       "cu": 0.061
+      },
+      "amp": {
+       "ground": {
+        "al": 335,
+        "cu": 425
+       },
+       "duct": {
+        "al": 290,
+        "cu": 360
+       },
+       "air": {
+        "al": 375,
+        "cu": 455
+       }
+      },
+      "isc1s": {
+       "al": 30.4,
+       "cu": 46
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.0767,
+       "cu": 0.049
+      },
+      "amp": {
+       "ground": {
+        "al": 355,
+        "cu": 440
+       },
+       "duct": {
+        "al": 315,
+        "cu": 390
+       },
+       "air": {
+        "al": 405,
+        "cu": 500
+       }
+      },
+      "isc1s": {
+       "al": 38,
+       "cu": 57.5
+      }
+     }
+    ]
+   },
+   "4": {
+    "title": "TABLE 18: 4 CORE PVC INSULATED ARMOURED & UNARMOURED CABLE WITH ALUMINIUM/ COPPER CONDUCTOR. (AS-IS:1554(1))",
+    "rows": [
+     {
+      "size": 2.5,
+      "rdc20": {
+       "al": 12.1,
+       "cu": 7.41
+      },
+      "rac": {
+       "al": 14.5,
+       "cu": 8.87
+      },
+      "amp": {
+       "ground": {
+        "al": 21,
+        "cu": 27
+       },
+       "duct": {
+        "al": 18,
+        "cu": 24
+       },
+       "air": {
+        "al": 18,
+        "cu": 24
+       }
+      },
+      "isc1s": {
+       "al": 0.19,
+       "cu": 0.288
+      }
+     },
+     {
+      "size": 4,
+      "rdc20": {
+       "al": 7.41,
+       "cu": 4.61
+      },
+      "rac": {
+       "al": 8.9,
+       "cu": 5.52
+      },
+      "amp": {
+       "ground": {
+        "al": 28,
+        "cu": 36
+       },
+       "duct": {
+        "al": 23,
+        "cu": 30
+       },
+       "air": {
+        "al": 23,
+        "cu": 30
+       }
+      },
+      "isc1s": {
+       "al": 0.3,
+       "cu": 0.46
+      }
+     },
+     {
+      "size": 6,
+      "rdc20": {
+       "al": 4.61,
+       "cu": 3.08
+      },
+      "rac": {
+       "al": 5.54,
+       "cu": 3.69
+      },
+      "amp": {
+       "ground": {
+        "al": 35,
+        "cu": 45
+       },
+       "duct": {
+        "al": 30,
+        "cu": 38
+       },
+       "air": {
+        "al": 30,
+        "cu": 39
+       }
+      },
+      "isc1s": {
+       "al": 0.46,
+       "cu": 0.69
+      }
+     },
+     {
+      "size": 10,
+      "rdc20": {
+       "al": 3.08,
+       "cu": 1.83
+      },
+      "rac": {
+       "al": 3.7,
+       "cu": 2.19
+      },
+      "amp": {
+       "ground": {
+        "al": 46,
+        "cu": 60
+       },
+       "duct": {
+        "al": 39,
+        "cu": 50
+       },
+       "air": {
+        "al": 40,
+        "cu": 52
+       }
+      },
+      "isc1s": {
+       "al": 0.76,
+       "cu": 1.15
+      }
+     },
+     {
+      "size": 16,
+      "rdc20": {
+       "al": 1.91,
+       "cu": 1.15
+      },
+      "rac": {
+       "al": 2.3,
+       "cu": 1.38
+      },
+      "amp": {
+       "ground": {
+        "al": 60,
+        "cu": 77
+       },
+       "duct": {
+        "al": 50,
+        "cu": 64
+       },
+       "air": {
+        "al": 51,
+        "cu": 66
+       }
+      },
+      "isc1s": {
+       "al": 1.22,
+       "cu": 1.84
+      }
+     },
+     {
+      "size": 25,
+      "rdc20": {
+       "al": 1.2,
+       "cu": 0.727
+      },
+      "rac": {
+       "al": 1.44,
+       "cu": 0.87
+      },
+      "amp": {
+       "ground": {
+        "al": 76,
+        "cu": 99
+       },
+       "duct": {
+        "al": 63,
+        "cu": 81
+       },
+       "air": {
+        "al": 70,
+        "cu": 90
+       }
+      },
+      "isc1s": {
+       "al": 1.9,
+       "cu": 2.88
+      }
+     },
+     {
+      "size": 35,
+      "rdc20": {
+       "al": 0.868,
+       "cu": 0.524
+      },
+      "rac": {
+       "al": 1.04,
+       "cu": 0.627
+      },
+      "amp": {
+       "ground": {
+        "al": 92,
+        "cu": 120
+       },
+       "duct": {
+        "al": 77,
+        "cu": 99
+       },
+       "air": {
+        "al": 86,
+        "cu": 110
+       }
+      },
+      "isc1s": {
+       "al": 2.66,
+       "cu": 4.03
+      }
+     },
+     {
+      "size": 50,
+      "rdc20": {
+       "al": 0.641,
+       "cu": 0.387
+      },
+      "rac": {
+       "al": 0.77,
+       "cu": 0.463
+      },
+      "amp": {
+       "ground": {
+        "al": 110,
+        "cu": 145
+       },
+       "duct": {
+        "al": 95,
+        "cu": 125
+       },
+       "air": {
+        "al": 105,
+        "cu": 135
+       }
+      },
+      "isc1s": {
+       "al": 3.8,
+       "cu": 5.75
+      }
+     },
+     {
+      "size": 70,
+      "rdc20": {
+       "al": 0.443,
+       "cu": 0.268
+      },
+      "rac": {
+       "al": 0.532,
+       "cu": 0.321
+      },
+      "amp": {
+       "ground": {
+        "al": 135,
+        "cu": 175
+       },
+       "duct": {
+        "al": 115,
+        "cu": 150
+       },
+       "air": {
+        "al": 130,
+        "cu": 165
+       }
+      },
+      "isc1s": {
+       "al": 5.32,
+       "cu": 8.05
+      }
+     },
+     {
+      "size": 95,
+      "rdc20": {
+       "al": 0.32,
+       "cu": 0.193
+      },
+      "rac": {
+       "al": 0.384,
+       "cu": 0.231
+      },
+      "amp": {
+       "ground": {
+        "al": 165,
+        "cu": 210
+       },
+       "duct": {
+        "al": 140,
+        "cu": 175
+       },
+       "air": {
+        "al": 155,
+        "cu": 200
+       }
+      },
+      "isc1s": {
+       "al": 7.22,
+       "cu": 10.9
+      }
+     },
+     {
+      "size": 120,
+      "rdc20": {
+       "al": 0.253,
+       "cu": 0.153
+      },
+      "rac": {
+       "al": 0.304,
+       "cu": 0.184
+      },
+      "amp": {
+       "ground": {
+        "al": 185,
+        "cu": 240
+       },
+       "duct": {
+        "al": 155,
+        "cu": 195
+       },
+       "air": {
+        "al": 180,
+        "cu": 230
+       }
+      },
+      "isc1s": {
+       "al": 9.12,
+       "cu": 13.8
+      }
+     },
+     {
+      "size": 150,
+      "rdc20": {
+       "al": 0.206,
+       "cu": 0.124
+      },
+      "rac": {
+       "al": 0.248,
+       "cu": 0.149
+      },
+      "amp": {
+       "ground": {
+        "al": 210,
+        "cu": 270
+       },
+       "duct": {
+        "al": 175,
+        "cu": 225
+       },
+       "air": {
+        "al": 205,
+        "cu": 265
+       }
+      },
+      "isc1s": {
+       "al": 11.4,
+       "cu": 17.3
+      }
+     },
+     {
+      "size": 185,
+      "rdc20": {
+       "al": 0.164,
+       "cu": 0.0991
+      },
+      "rac": {
+       "al": 0.198,
+       "cu": 0.12
+      },
+      "amp": {
+       "ground": {
+        "al": 235,
+        "cu": 300
+       },
+       "duct": {
+        "al": 200,
+        "cu": 255
+       },
+       "air": {
+        "al": 240,
+        "cu": 305
+       }
+      },
+      "isc1s": {
+       "al": 14.1,
+       "cu": 21.3
+      }
+     },
+     {
+      "size": 240,
+      "rdc20": {
+       "al": 0.125,
+       "cu": 0.0754
+      },
+      "rac": {
+       "al": 0.152,
+       "cu": 0.0912
+      },
+      "amp": {
+       "ground": {
+        "al": 275,
+        "cu": 345
+       },
+       "duct": {
+        "al": 235,
+        "cu": 295
+       },
+       "air": {
+        "al": 280,
+        "cu": 355
+       }
+      },
+      "isc1s": {
+       "al": 18.2,
+       "cu": 27.6
+      }
+     },
+     {
+      "size": 300,
+      "rdc20": {
+       "al": 0.1,
+       "cu": 0.0601
+      },
+      "rac": {
+       "al": 0.122,
+       "cu": 0.0739
+      },
+      "amp": {
+       "ground": {
+        "al": 305,
+        "cu": 385
+       },
+       "duct": {
+        "al": 260,
+        "cu": 335
+       },
+       "air": {
+        "al": 315,
+        "cu": 400
+       }
+      },
+      "isc1s": {
+       "al": 22.8,
+       "cu": 34.5
+      }
+     },
+     {
+      "size": 400,
+      "rdc20": {
+       "al": 0.0778,
+       "cu": 0.047
+      },
+      "rac": {
+       "al": 0.096,
+       "cu": 0.0592
+      },
+      "amp": {
+       "ground": {
+        "al": 335,
+        "cu": 425
+       },
+       "duct": {
+        "al": 290,
+        "cu": 360
+       },
+       "air": {
+        "al": 375,
+        "cu": 455
+       }
+      },
+      "isc1s": {
+       "al": 30.4,
+       "cu": 46
+      }
+     },
+     {
+      "size": 500,
+      "rdc20": {
+       "al": 0.0605,
+       "cu": 0.0366
+      },
+      "rac": {
+       "al": 0.076,
+       "cu": 0.0468
+      },
+      "amp": {
+       "ground": {
+        "al": 370,
+        "cu": 440
+       },
+       "duct": {
+        "al": 320,
+        "cu": 390
+       },
+       "air": {
+        "al": 405,
+        "cu": 500
+       }
+      },
+      "isc1s": {
+       "al": 37.9,
+       "cu": 57.5
+      }
+     }
+    ]
+   }
+  }
+ }
+}

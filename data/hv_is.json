@@ -1,0 +1,6153 @@
+{
+ "sources": [
+  {
+   "id": "polycab_ht_xlpe",
+   "title": "Polycab 'High Tension XLPE Cables, IS 7098 (Part II)' catalogue - Tables 1-6 (conductor R, 1 s short-circuit, capacitance, reactance), current-rating basis p.13, rating factors pp.14-15, Tables 7-31 dimensions & current ratings",
+   "url": "https://vijayshreegroup.com/img/POLYCAB_HT-XLPE.pdf",
+   "accessed": "2026-11-02",
+   "note": "Hosted by a Polycab dealer (Vijayshree Group), not polycab.com; ISO 9001:2008-era edition citing IS 7098-2/1985. Another copy: https://rajelectricals.co.in/wp-content/uploads/2026/07/Polycab-Catalogue.pdf (not cross-checked)."
+  },
+  {
+   "id": "kei_tech_handbook",
+   "title": "KEI Industries 'Technical Handbook' - p.97 (capacitance, multicore reactance), p.99-101 (rating basis, rating & group factors), p.102-115 (IS 7098-2 HT cable data), p.156 (conductor data)",
+   "url": "https://www.kei-ind.com/wp-content/uploads/2026/07/technical-handbook.pdf",
+   "accessed": "2026-11-02",
+   "note": "Scanned (image-only) PDF; values transcribed visually from page renders. Page numbers are the printed numbers."
+  },
+  {
+   "id": "polycab_au_ht",
+   "title": "Polycab 'High Tension Cable' catalogue (cms.polycab.com) - AS/NZS 1429.1 MV cables",
+   "url": "https://cms.polycab.com/media/nuvggigm/ht-cable-catalogue.pdf",
+   "accessed": "2026-11-02",
+   "note": "Checked but NOT used: Australian-standard cables and rating conditions, not IS 7098-2."
+  },
+  {
+   "id": "ier1956",
+   "title": "Indian Electricity Rules, 1956 - Rule 54 'Declared voltage of supply to consumer'",
+   "url": "https://www.goaelectricity.gov.in/Regulations/ier1956.pdf",
+   "accessed": "2026-11-02"
+  },
+  {
+   "id": "aiib_nepal_dist",
+   "title": "AIIB Project Document P000086 - Nepal Power Distribution System Upgrade and Expansion Project (implemented by NEA), 2019, technical design annex",
+   "url": "https://www.aiib.org/en/projects/approved/2018/_download/nepal/20191212-P000086-Nepal-Distribution-Project-published.pdf",
+   "accessed": "2026-11-02"
+  },
+  {
+   "id": "iec60364_4_43",
+   "title": "IEC 60364-4-43 Table 43A k values (Cu XLPE 143, Al XLPE 94; 90 -> 250 C) as reproduced in Bayka technical data",
+   "url": "https://www.bayka.de/?p=8164",
+   "accessed": "2026-11-02",
+   "note": "Secondary reproduction; IEC text is paywalled. One older-edition reproduction (koreascience.or.kr) shows Al 93."
+  }
+ ],
+ "notes": [
+  "PRIMARY SOURCE for complete R/X/C/SC + ampacity: Polycab HT XLPE catalogue (IS 7098-2 basis). SECOND SOURCE for ampacity/C/X cross-check: KEI Technical Handbook (adds trefoil vs flat single-core ratings).",
+  "Polycab Table 1 (R) and Table 2 (1 s SC) are per conductor size, shared by all voltage grades; they were copied into every Polycab row of that size. KEI rows have R and SC = null: KEI p.156 conductor data was not transcribed in full (spot-check at 95 mm2: Cu 0.193 DC / 0.247 AC90, Al 0.320 / 0.410 ohm/km - matches Polycab).",
+  "Polycab 1-core reactance: x_ohm_km = 'Arm' column, x_ohm_km_unarmoured = 'Un-Arm' column. KEI publishes reactance for multicore cables only, so KEI 1-core x_ohm_km = null. KEI 3.3 kV 3-core capacitance taken from the 3.3 kV 'ARMOURED' column of p.97 (an 'UNARMOURED' column also exists).",
+  "Polycab Table 3 (1-core capacitance) and Table 5 (1-core reactance) have an EMPTY 35 mm2 row and values start at 50 mm2; for 12.7/22 and 19/33 kV the reactance columns have values at 50 and 70 mm2 although those cables start at 95 mm2. A one-row shift in the published table is possible - transcribed exactly as published.",
+  "Polycab Table 5, 12.7/22 kV armoured, 500 mm2 is printed '8.099' (obvious typo, probably 0.099) - stored as null.",
+  "Polycab Table 5, 19/33 kV armoured, 400 mm2 = 0.119 > 300 mm2 = 0.112 (non-monotonic, probable typo). Stored as published.",
+  "Polycab Table 3, 6.6/6.6 & 6.35/11 kV 1-core capacitance: 500 mm2 = 0.50 < 400 mm2 = 0.53 (non-monotonic). Stored as published.",
+  "Polycab Table 20 (3.3 kV 3-core Cu) 300 mm2 in air = 510 A, while the otherwise identical 6.6 kV and 11 kV tables give 570 A; 510 also breaks the size trend. Probable typo, stored as published.",
+  "Polycab 1-core 12.7/22 kV Al 95 mm2 ground = 205 A vs 200 A at 19/33 kV; otherwise 22 kV and 33 kV ratings are identical. Polycab 11/11 kV (UE) ratings equal 6.35/11 kV (E) for overlapping sizes. Polycab 3-core 3.3 kV ratings equal the 11 kV ones (except the 300 mm2 Cu air value above).",
+  "Polycab 1-core tables do not state formation; KEI gives trefoil-touching and flat-touching separately. Polycab single-core values are slightly higher than KEI trefoil (e.g. 11 kV Al 240 mm2: Polycab 340/300/470 vs KEI trefoil 326/286/450 A ground/duct/air; 33 kV Cu 240: Polycab 430/370/600 vs KEI 404/350/575).",
+  "3-core Polycab and KEI agree closely (11 kV Al 240 mm2: Polycab 315/275/395, KEI 315/278/387; 33 kV Al 240: 310/275/400 vs 312/282/393). KEI air ratings and Cu ratings run a few % lower at large sizes.",
+  "Both catalogues: max conductor 90 C, ground 30 C, air 40 C, soil 1.5 K.m/W, depth 0.9 m (<=11 kV) / 1.05 m (22/33 kV), ducts at 30 C ground (KEI: single-way buried duct). Ratings are for ONE circuit; apply group factors.",
+  "Ampacity is manufacturer-published; IS 7098-2 itself (current edition 2011, 2nd revision) contains no ampacity tables. Both catalogues cite the 1985 edition for construction.",
+  "Not transcribed although available: KEI 1-core 1.9/3.3 & 3.3/3.3 kV (p.102), 3.8/6.6 kV, 11/11 kV UE (p.106), 12.7/22 kV (p.107) and KEI 3-core 12.7/22 kV (p.114); Polycab 3.8/6.6 kV and 33/33 kV (UE) tables. Not obtained: Universal Cables, Havells (2009 catalogue URL returned HTML, not PDF), RR Kabel, Finolex, Gloster MV tables.",
+  "Voltage drop: no official NEA Distribution Planning Criteria, Nepal Grid Code or distribution bylaw text with a numeric MV voltage-drop limit was found online. The 5% figure is from NEA/AIIB project design criteria. CEA (Measures relating to Safety and Electric Supply) Regulations 2023 text could not be downloaded to check for a successor clause; IE Rules 1956 Rule 54 (HV +6/-9%) is the long-standing statutory reference mirrored by state Supply Codes (e.g. TNERC uses 6%/10% for 11/22 kV). Nepal Electricity Regulation 2050 voltage tolerance not verified."
+ ],
+ "standard_conditions": {
+  "ground_temp_c": 30,
+  "air_temp_c": 40,
+  "soil_resistivity_kcmw": 150,
+  "depth_mm": "900 (<=11 kV) / 1050 (22-33 kV)",
+  "conductor_c": 90
+ },
+ "grades": {
+  "3.3": {
+   "label": "1.9/3.3 kV (E) / 3.3/3.3 kV (UE)",
+   "depthMm": 900,
+   "cores": {
+    "3": {
+     "polycab": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 115,
+         "duct": 97,
+         "air": 125
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 145,
+         "duct": 125,
+         "air": 165
+        },
+        "ampFlat": null
+       },
+       "x": 0.094,
+       "cap": 0.24
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 130,
+         "duct": 115,
+         "air": 150
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 170,
+         "duct": 150,
+         "air": 195
+        },
+        "ampFlat": null
+       },
+       "x": 0.087,
+       "cap": 0.27
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 160,
+         "duct": 140,
+         "air": 190
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 210,
+         "duct": 180,
+         "air": 240
+        },
+        "ampFlat": null
+       },
+       "x": 0.084,
+       "cap": 0.31
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 165,
+         "air": 230
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 250,
+         "duct": 215,
+         "air": 295
+        },
+        "ampFlat": null
+       },
+       "x": 0.081,
+       "cap": 0.35
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 220,
+         "duct": 190,
+         "air": 260
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 280,
+         "duct": 240,
+         "air": 335
+        },
+        "ampFlat": null
+       },
+       "x": 0.078,
+       "cap": 0.39
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 245,
+         "duct": 210,
+         "air": 295
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 310,
+         "duct": 270,
+         "air": 380
+        },
+        "ampFlat": null
+       },
+       "x": 0.076,
+       "cap": 0.42
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 275,
+         "duct": 240,
+         "air": 335
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 350,
+         "duct": 305,
+         "air": 430
+        },
+        "ampFlat": null
+       },
+       "x": 0.075,
+       "cap": 0.46
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 315,
+         "duct": 275,
+         "air": 395
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 400,
+         "duct": 350,
+         "air": 500
+        },
+        "ampFlat": null
+       },
+       "x": 0.073,
+       "cap": 0.51
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 355,
+         "duct": 310,
+         "air": 450
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 445,
+         "duct": 390,
+         "air": 510
+        },
+        "ampFlat": null
+       },
+       "x": 0.072,
+       "cap": 0.57
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 400,
+         "duct": 350,
+         "air": 520
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 500,
+         "duct": 440,
+         "air": 650
+        },
+        "ampFlat": null
+       },
+       "x": 0.071,
+       "cap": 0.63
+      }
+     ],
+     "kei": [
+      {
+       "size": 25,
+       "al": {
+        "rdc20": null,
+        "rac": null,
+        "isc1s": null,
+        "amp": {
+         "ground": 94,
+         "duct": 81,
+         "air": 102
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": null,
+        "rac": null,
+        "isc1s": null,
+        "amp": {
+         "ground": 121,
+         "duct": 104,
+         "air": 132
+        },
+        "ampFlat": null
+       },
+       "x": 0.0981,
+       "cap": 0.21
+      },
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 112,
+         "duct": 96,
+         "air": 123
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 144,
+         "duct": 124,
+         "air": 159
+        },
+        "ampFlat": null
+       },
+       "x": 0.094,
+       "cap": 0.24
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 131,
+         "duct": 113,
+         "air": 146
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 169,
+         "duct": 146,
+         "air": 188
+        },
+        "ampFlat": null
+       },
+       "x": 0.0878,
+       "cap": 0.27
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 160,
+         "duct": 138,
+         "air": 182
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 206,
+         "duct": 178,
+         "air": 234
+        },
+        "ampFlat": null
+       },
+       "x": 0.0842,
+       "cap": 0.31
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 191,
+         "duct": 165,
+         "air": 221
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 246,
+         "duct": 212,
+         "air": 284
+        },
+        "ampFlat": null
+       },
+       "x": 0.0813,
+       "cap": 0.35
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 216,
+         "duct": 187,
+         "air": 254
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 278,
+         "duct": 240,
+         "air": 326
+        },
+        "ampFlat": null
+       },
+       "x": 0.0785,
+       "cap": 0.39
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 241,
+         "duct": 208,
+         "air": 286
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 310,
+         "duct": 268,
+         "air": 368
+        },
+        "ampFlat": null
+       },
+       "x": 0.0769,
+       "cap": 0.42
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 273,
+         "duct": 236,
+         "air": 330
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 350,
+         "duct": 302,
+         "air": 422
+        },
+        "ampFlat": null
+       },
+       "x": 0.0755,
+       "cap": 0.46
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 315,
+         "duct": 277,
+         "air": 385
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 401,
+         "duct": 353,
+         "air": 492
+        },
+        "ampFlat": null
+       },
+       "x": 0.0737,
+       "cap": 0.51
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 354,
+         "duct": 312,
+         "air": 440
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 449,
+         "duct": 395,
+         "air": 559
+        },
+        "ampFlat": null
+       },
+       "x": 0.0725,
+       "cap": 0.57
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 403,
+         "duct": 355,
+         "air": 512
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 506,
+         "duct": 445,
+         "air": 642
+        },
+        "ampFlat": null
+       },
+       "x": 0.0712,
+       "cap": 0.63
+      }
+     ]
+    }
+   }
+  },
+  "6.6": {
+   "label": "6.6/6.6 kV (UE) - same construction as 6.35/11 kV (E)",
+   "depthMm": 900,
+   "cores": {
+    "3": {
+     "polycab": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 115,
+         "duct": 97,
+         "air": 125
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 145,
+         "duct": 125,
+         "air": 165
+        },
+        "ampFlat": null
+       },
+       "x": 0.111,
+       "cap": 0.21
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 130,
+         "duct": 115,
+         "air": 150
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 170,
+         "duct": 150,
+         "air": 195
+        },
+        "ampFlat": null
+       },
+       "x": 0.104,
+       "cap": 0.22
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 160,
+         "duct": 140,
+         "air": 190
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 210,
+         "duct": 180,
+         "air": 240
+        },
+        "ampFlat": null
+       },
+       "x": 0.1,
+       "cap": 0.25
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 165,
+         "air": 230
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 250,
+         "duct": 215,
+         "air": 295
+        },
+        "ampFlat": null
+       },
+       "x": 0.095,
+       "cap": 0.29
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 220,
+         "duct": 190,
+         "air": 260
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 280,
+         "duct": 240,
+         "air": 335
+        },
+        "ampFlat": null
+       },
+       "x": 0.092,
+       "cap": 0.31
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 245,
+         "duct": 210,
+         "air": 295
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 310,
+         "duct": 270,
+         "air": 380
+        },
+        "ampFlat": null
+       },
+       "x": 0.089,
+       "cap": 0.34
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 275,
+         "duct": 240,
+         "air": 335
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 350,
+         "duct": 305,
+         "air": 430
+        },
+        "ampFlat": null
+       },
+       "x": 0.087,
+       "cap": 0.36
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 315,
+         "duct": 275,
+         "air": 395
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 400,
+         "duct": 350,
+         "air": 500
+        },
+        "ampFlat": null
+       },
+       "x": 0.085,
+       "cap": 0.41
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 355,
+         "duct": 310,
+         "air": 450
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 445,
+         "duct": 390,
+         "air": 570
+        },
+        "ampFlat": null
+       },
+       "x": 0.082,
+       "cap": 0.46
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 400,
+         "duct": 350,
+         "air": 520
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 500,
+         "duct": 440,
+         "air": 650
+        },
+        "ampFlat": null
+       },
+       "x": 0.079,
+       "cap": 0.52
+      }
+     ],
+     "kei": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 112,
+         "duct": 97,
+         "air": 124
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 144,
+         "duct": 125,
+         "air": 160
+        },
+        "ampFlat": null
+       },
+       "x": 0.111,
+       "cap": 0.21
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 131,
+         "duct": 114,
+         "air": 148
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 169,
+         "duct": 146,
+         "air": 191
+        },
+        "ampFlat": null
+       },
+       "x": 0.105,
+       "cap": 0.22
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 161,
+         "duct": 139,
+         "air": 184
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 207,
+         "duct": 179,
+         "air": 237
+        },
+        "ampFlat": null
+       },
+       "x": 0.1,
+       "cap": 0.25
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 165,
+         "air": 222
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 245,
+         "duct": 213,
+         "air": 286
+        },
+        "ampFlat": null
+       },
+       "x": 0.0959,
+       "cap": 0.29
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 216,
+         "duct": 188,
+         "air": 256
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 278,
+         "duct": 241,
+         "air": 329
+        },
+        "ampFlat": null
+       },
+       "x": 0.0925,
+       "cap": 0.31
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 242,
+         "duct": 209,
+         "air": 288
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 311,
+         "duct": 269,
+         "air": 371
+        },
+        "ampFlat": null
+       },
+       "x": 0.0894,
+       "cap": 0.34
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 273,
+         "duct": 240,
+         "air": 330
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 349,
+         "duct": 308,
+         "air": 422
+        },
+        "ampFlat": null
+       },
+       "x": 0.0879,
+       "cap": 0.36
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 315,
+         "duct": 278,
+         "air": 387
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 401,
+         "duct": 354,
+         "air": 493
+        },
+        "ampFlat": null
+       },
+       "x": 0.085,
+       "cap": 0.41
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 354,
+         "duct": 312,
+         "air": 441
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 449,
+         "duct": 396,
+         "air": 560
+        },
+        "ampFlat": null
+       },
+       "x": 0.0823,
+       "cap": 0.46
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 404,
+         "duct": 356,
+         "air": 512
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 506,
+         "duct": 446,
+         "air": 643
+        },
+        "ampFlat": null
+       },
+       "x": 0.0799,
+       "cap": 0.52
+      }
+     ]
+    },
+    "1": {
+     "polycab": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 120,
+         "duct": 105,
+         "air": 145
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 155,
+         "duct": 140,
+         "air": 185
+        },
+        "ampFlat": null
+       },
+       "x": 0.094,
+       "cap": null
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 140,
+         "duct": 125,
+         "air": 170
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 185,
+         "duct": 160,
+         "air": 220
+        },
+        "ampFlat": null
+       },
+       "x": 0.133,
+       "cap": 0.23
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 175,
+         "duct": 155,
+         "air": 215
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 225,
+         "duct": 195,
+         "air": 275
+        },
+        "ampFlat": null
+       },
+       "x": 0.123,
+       "cap": 0.27
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 205,
+         "duct": 180,
+         "air": 260
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 265,
+         "duct": 235,
+         "air": 340
+        },
+        "ampFlat": null
+       },
+       "x": 0.116,
+       "cap": 0.31
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 235,
+         "duct": 205,
+         "air": 305
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 300,
+         "duct": 265,
+         "air": 390
+        },
+        "ampFlat": null
+       },
+       "x": 0.112,
+       "cap": 0.33
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 260,
+         "duct": 230,
+         "air": 345
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 335,
+         "duct": 295,
+         "air": 440
+        },
+        "ampFlat": null
+       },
+       "x": 0.109,
+       "cap": 0.36
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 295,
+         "duct": 260,
+         "air": 395
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 380,
+         "duct": 330,
+         "air": 510
+        },
+        "ampFlat": null
+       },
+       "x": 0.107,
+       "cap": 0.39
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 340,
+         "duct": 300,
+         "air": 470
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 435,
+         "duct": 380,
+         "air": 600
+        },
+        "ampFlat": null
+       },
+       "x": 0.104,
+       "cap": 0.43
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 385,
+         "duct": 335,
+         "air": 540
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 490,
+         "duct": 425,
+         "air": 680
+        },
+        "ampFlat": null
+       },
+       "x": 0.1,
+       "cap": 0.48
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 440,
+         "duct": 380,
+         "air": 630
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 550,
+         "duct": 480,
+         "air": 790
+        },
+        "ampFlat": null
+       },
+       "x": 0.096,
+       "cap": 0.53
+      },
+      {
+       "size": 500,
+       "al": {
+        "rdc20": 0.0605,
+        "rac": 0.0774,
+        "isc1s": 47.2,
+        "amp": {
+         "ground": 495,
+         "duct": 430,
+         "air": 730
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0366,
+        "rac": 0.0468,
+        "isc1s": 71.4,
+        "amp": {
+         "ground": 610,
+         "duct": 530,
+         "air": 910
+        },
+        "ampFlat": null
+       },
+       "x": 0.093,
+       "cap": 0.5
+      },
+      {
+       "size": 630,
+       "al": {
+        "rdc20": 0.0469,
+        "rac": 0.06,
+        "isc1s": 59.4,
+        "amp": {
+         "ground": 560,
+         "duct": 480,
+         "air": 840
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0283,
+        "rac": 0.0362,
+        "isc1s": 90.0,
+        "amp": {
+         "ground": 680,
+         "duct": 580,
+         "air": 1030
+        },
+        "ampFlat": null
+       },
+       "x": 0.092,
+       "cap": 0.69
+      },
+      {
+       "size": 800,
+       "al": {
+        "rdc20": 0.0367,
+        "rac": 0.047,
+        "isc1s": 75.5,
+        "amp": {
+         "ground": 620,
+         "duct": 530,
+         "air": 960
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0221,
+        "rac": 0.0283,
+        "isc1s": 114.3,
+        "amp": {
+         "ground": 740,
+         "duct": 630,
+         "air": 1140
+        },
+        "ampFlat": null
+       },
+       "x": 0.089,
+       "cap": 0.79
+      },
+      {
+       "size": 1000,
+       "al": {
+        "rdc20": 0.0291,
+        "rac": 0.0372,
+        "isc1s": 94.3,
+        "amp": {
+         "ground": 680,
+         "duct": 580,
+         "air": 1070
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0176,
+        "rac": 0.0225,
+        "isc1s": 142.9,
+        "amp": {
+         "ground": 790,
+         "duct": 670,
+         "air": 1250
+        },
+        "ampFlat": null
+       },
+       "x": 0.087,
+       "cap": 0.88
+      }
+     ],
+     "kei": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 118,
+         "duct": 104,
+         "air": 140
+        },
+        "ampFlat": {
+         "ground": 120,
+         "duct": 102,
+         "air": 143
+        }
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 151,
+         "duct": 134,
+         "air": 181
+        },
+        "ampFlat": {
+         "ground": 155,
+         "duct": 132,
+         "air": 185
+        }
+       },
+       "x": null,
+       "cap": 0.21
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 138,
+         "duct": 122,
+         "air": 167
+        },
+        "ampFlat": {
+         "ground": 141,
+         "duct": 120,
+         "air": 171
+        }
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 178,
+         "duct": 158,
+         "air": 216
+        },
+        "ampFlat": {
+         "ground": 181,
+         "duct": 154,
+         "air": 219
+        }
+       },
+       "x": 0.133,
+       "cap": 0.22
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 168,
+         "duct": 149,
+         "air": 209
+        },
+        "ampFlat": {
+         "ground": 172,
+         "duct": 146,
+         "air": 213
+        }
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 216,
+         "duct": 191,
+         "air": 269
+        },
+        "ampFlat": {
+         "ground": 220,
+         "duct": 186,
+         "air": 273
+        }
+       },
+       "x": 0.123,
+       "cap": 0.25
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 200,
+         "duct": 177,
+         "air": 254
+        },
+        "ampFlat": {
+         "ground": 204,
+         "duct": 172,
+         "air": 258
+        }
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 257,
+         "duct": 227,
+         "air": 326
+        },
+        "ampFlat": {
+         "ground": 259,
+         "duct": 219,
+         "air": 329
+        }
+       },
+       "x": 0.116,
+       "cap": 0.29
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 227,
+         "duct": 200,
+         "air": 294
+        },
+        "ampFlat": {
+         "ground": 230,
+         "duct": 194,
+         "air": 298
+        }
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 290,
+         "duct": 256,
+         "air": 376
+        },
+        "ampFlat": {
+         "ground": 292,
+         "duct": 246,
+         "air": 378
+        }
+       },
+       "x": 0.112,
+       "cap": 0.31
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 252,
+         "duct": 223,
+         "air": 331
+        },
+        "ampFlat": {
+         "ground": 255,
+         "duct": 215,
+         "air": 335
+        }
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 323,
+         "duct": 285,
+         "air": 424
+        },
+        "ampFlat": {
+         "ground": 323,
+         "duct": 272,
+         "air": 425
+        }
+       },
+       "x": 0.109,
+       "cap": 0.34
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 284,
+         "duct": 250,
+         "air": 383
+        },
+        "ampFlat": {
+         "ground": 284,
+         "duct": 238,
+         "air": 384
+        }
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 360,
+         "duct": 317,
+         "air": 487
+        },
+        "ampFlat": {
+         "ground": 354,
+         "duct": 297,
+         "air": 480
+        }
+       },
+       "x": 0.107,
+       "cap": 0.36
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 326,
+         "duct": 286,
+         "air": 450
+        },
+        "ampFlat": {
+         "ground": 323,
+         "duct": 270,
+         "air": 446
+        }
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 411,
+         "duct": 361,
+         "air": 568
+        },
+        "ampFlat": {
+         "ground": 398,
+         "duct": 332,
+         "air": 552
+        }
+       },
+       "x": 0.104,
+       "cap": 0.41
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 365,
+         "duct": 319,
+         "air": 512
+        },
+        "ampFlat": {
+         "ground": 357,
+         "duct": 297,
+         "air": 503
+        }
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 456,
+         "duct": 399,
+         "air": 643
+        },
+        "ampFlat": {
+         "ground": 435,
+         "duct": 362,
+         "air": 616
+        }
+       },
+       "x": 0.1,
+       "cap": 0.46
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 412,
+         "duct": 359,
+         "air": 594
+        },
+        "ampFlat": {
+         "ground": 397,
+         "duct": 329,
+         "air": 575
+        }
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 508,
+         "duct": 443,
+         "air": 735
+        },
+        "ampFlat": {
+         "ground": 474,
+         "duct": 392,
+         "air": 690
+        }
+       },
+       "x": 0.096,
+       "cap": 0.52
+      },
+      {
+       "size": 500,
+       "al": {
+        "rdc20": 0.0605,
+        "rac": 0.0774,
+        "isc1s": 47.2,
+        "amp": {
+         "ground": 461,
+         "duct": 401,
+         "air": 680
+        },
+        "ampFlat": {
+         "ground": 436,
+         "duct": 360,
+         "air": 647
+        }
+       },
+       "cu": {
+        "rdc20": 0.0366,
+        "rac": 0.0468,
+        "isc1s": 71.4,
+        "amp": {
+         "ground": 559,
+         "duct": 486,
+         "air": 828
+        },
+        "ampFlat": {
+         "ground": 510,
+         "duct": 420,
+         "air": 761
+        }
+       },
+       "x": 0.093,
+       "cap": 0.56
+      },
+      {
+       "size": 630,
+       "al": {
+        "rdc20": 0.0469,
+        "rac": 0.06,
+        "isc1s": 59.4,
+        "amp": {
+         "ground": 514,
+         "duct": 445,
+         "air": 778
+        },
+        "ampFlat": {
+         "ground": 476,
+         "duct": 390,
+         "air": 725
+        }
+       },
+       "cu": {
+        "rdc20": 0.0283,
+        "rac": 0.0362,
+        "isc1s": 90.0,
+        "amp": {
+         "ground": 611,
+         "duct": 529,
+         "air": 930
+        },
+        "ampFlat": {
+         "ground": 544,
+         "duct": 446,
+         "air": 835
+        }
+       },
+       "x": 0.092,
+       "cap": 0.63
+      },
+      {
+       "size": 800,
+       "al": {
+        "rdc20": 0.0367,
+        "rac": 0.047,
+        "isc1s": 75.5,
+        "amp": {
+         "ground": 553,
+         "duct": 476,
+         "air": 863
+        },
+        "ampFlat": {
+         "ground": 496,
+         "duct": 404,
+         "air": 781
+        }
+       },
+       "cu": {
+        "rdc20": 0.0221,
+        "rac": 0.0283,
+        "isc1s": 114.3,
+        "amp": {
+         "ground": 639,
+         "duct": 550,
+         "air": 1003
+        },
+        "ampFlat": {
+         "ground": 550,
+         "duct": 448,
+         "air": 873
+        }
+       },
+       "x": 0.089,
+       "cap": 0.71
+      },
+      {
+       "size": 1000,
+       "al": {
+        "rdc20": 0.0291,
+        "rac": 0.0372,
+        "isc1s": 94.3,
+        "amp": {
+         "ground": 595,
+         "duct": 509,
+         "air": 954
+        },
+        "ampFlat": {
+         "ground": 523,
+         "duct": 423,
+         "air": 846
+        }
+       },
+       "cu": {
+        "rdc20": 0.0176,
+        "rac": 0.0225,
+        "isc1s": 142.9,
+        "amp": {
+         "ground": 672,
+         "duct": 575,
+         "air": 1083
+        },
+        "ampFlat": {
+         "ground": 569,
+         "duct": 460,
+         "air": 927
+        }
+       },
+       "x": 0.087,
+       "cap": 0.78
+      }
+     ]
+    }
+   }
+  },
+  "11": {
+   "label": "6.35/11 kV (E)",
+   "depthMm": 900,
+   "cores": {
+    "3": {
+     "polycab": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 115,
+         "duct": 97,
+         "air": 125
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 145,
+         "duct": 125,
+         "air": 165
+        },
+        "ampFlat": null
+       },
+       "x": 0.111,
+       "cap": 0.21
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 130,
+         "duct": 115,
+         "air": 150
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 170,
+         "duct": 150,
+         "air": 195
+        },
+        "ampFlat": null
+       },
+       "x": 0.104,
+       "cap": 0.22
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 160,
+         "duct": 140,
+         "air": 190
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 210,
+         "duct": 180,
+         "air": 240
+        },
+        "ampFlat": null
+       },
+       "x": 0.1,
+       "cap": 0.25
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 165,
+         "air": 230
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 250,
+         "duct": 215,
+         "air": 295
+        },
+        "ampFlat": null
+       },
+       "x": 0.095,
+       "cap": 0.29
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 220,
+         "duct": 190,
+         "air": 260
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 280,
+         "duct": 240,
+         "air": 335
+        },
+        "ampFlat": null
+       },
+       "x": 0.092,
+       "cap": 0.31
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 245,
+         "duct": 210,
+         "air": 295
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 310,
+         "duct": 270,
+         "air": 380
+        },
+        "ampFlat": null
+       },
+       "x": 0.089,
+       "cap": 0.34
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 275,
+         "duct": 240,
+         "air": 335
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 350,
+         "duct": 305,
+         "air": 430
+        },
+        "ampFlat": null
+       },
+       "x": 0.087,
+       "cap": 0.36
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 315,
+         "duct": 275,
+         "air": 395
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 400,
+         "duct": 350,
+         "air": 500
+        },
+        "ampFlat": null
+       },
+       "x": 0.085,
+       "cap": 0.41
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 355,
+         "duct": 310,
+         "air": 450
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 445,
+         "duct": 390,
+         "air": 570
+        },
+        "ampFlat": null
+       },
+       "x": 0.082,
+       "cap": 0.46
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 400,
+         "duct": 350,
+         "air": 520
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 500,
+         "duct": 440,
+         "air": 650
+        },
+        "ampFlat": null
+       },
+       "x": 0.079,
+       "cap": 0.52
+      }
+     ],
+     "kei": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 112,
+         "duct": 97,
+         "air": 124
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 144,
+         "duct": 125,
+         "air": 160
+        },
+        "ampFlat": null
+       },
+       "x": 0.111,
+       "cap": 0.21
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 131,
+         "duct": 114,
+         "air": 148
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 169,
+         "duct": 146,
+         "air": 191
+        },
+        "ampFlat": null
+       },
+       "x": 0.105,
+       "cap": 0.22
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 161,
+         "duct": 139,
+         "air": 184
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 207,
+         "duct": 179,
+         "air": 237
+        },
+        "ampFlat": null
+       },
+       "x": 0.1,
+       "cap": 0.25
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 165,
+         "air": 222
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 245,
+         "duct": 213,
+         "air": 286
+        },
+        "ampFlat": null
+       },
+       "x": 0.0959,
+       "cap": 0.29
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 216,
+         "duct": 188,
+         "air": 256
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 278,
+         "duct": 241,
+         "air": 329
+        },
+        "ampFlat": null
+       },
+       "x": 0.0925,
+       "cap": 0.31
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 242,
+         "duct": 209,
+         "air": 288
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 311,
+         "duct": 269,
+         "air": 371
+        },
+        "ampFlat": null
+       },
+       "x": 0.0894,
+       "cap": 0.34
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 273,
+         "duct": 240,
+         "air": 330
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 349,
+         "duct": 308,
+         "air": 422
+        },
+        "ampFlat": null
+       },
+       "x": 0.0879,
+       "cap": 0.36
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 315,
+         "duct": 278,
+         "air": 387
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 401,
+         "duct": 354,
+         "air": 493
+        },
+        "ampFlat": null
+       },
+       "x": 0.085,
+       "cap": 0.41
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 354,
+         "duct": 312,
+         "air": 441
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 449,
+         "duct": 396,
+         "air": 560
+        },
+        "ampFlat": null
+       },
+       "x": 0.0823,
+       "cap": 0.46
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 404,
+         "duct": 356,
+         "air": 512
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 506,
+         "duct": 446,
+         "air": 643
+        },
+        "ampFlat": null
+       },
+       "x": 0.0799,
+       "cap": 0.52
+      }
+     ]
+    },
+    "1": {
+     "polycab": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 120,
+         "duct": 105,
+         "air": 145
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 155,
+         "duct": 140,
+         "air": 185
+        },
+        "ampFlat": null
+       },
+       "x": 0.094,
+       "cap": null
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 140,
+         "duct": 125,
+         "air": 170
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 185,
+         "duct": 160,
+         "air": 220
+        },
+        "ampFlat": null
+       },
+       "x": 0.133,
+       "cap": 0.23
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 175,
+         "duct": 155,
+         "air": 215
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 225,
+         "duct": 195,
+         "air": 275
+        },
+        "ampFlat": null
+       },
+       "x": 0.123,
+       "cap": 0.27
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 205,
+         "duct": 180,
+         "air": 260
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 265,
+         "duct": 235,
+         "air": 340
+        },
+        "ampFlat": null
+       },
+       "x": 0.116,
+       "cap": 0.31
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 235,
+         "duct": 205,
+         "air": 305
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 300,
+         "duct": 265,
+         "air": 390
+        },
+        "ampFlat": null
+       },
+       "x": 0.112,
+       "cap": 0.33
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 260,
+         "duct": 230,
+         "air": 345
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 335,
+         "duct": 295,
+         "air": 440
+        },
+        "ampFlat": null
+       },
+       "x": 0.109,
+       "cap": 0.36
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 295,
+         "duct": 260,
+         "air": 395
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 380,
+         "duct": 330,
+         "air": 510
+        },
+        "ampFlat": null
+       },
+       "x": 0.107,
+       "cap": 0.39
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 340,
+         "duct": 300,
+         "air": 470
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 435,
+         "duct": 380,
+         "air": 600
+        },
+        "ampFlat": null
+       },
+       "x": 0.104,
+       "cap": 0.43
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 385,
+         "duct": 335,
+         "air": 540
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 490,
+         "duct": 425,
+         "air": 680
+        },
+        "ampFlat": null
+       },
+       "x": 0.1,
+       "cap": 0.48
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 440,
+         "duct": 380,
+         "air": 630
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 550,
+         "duct": 480,
+         "air": 790
+        },
+        "ampFlat": null
+       },
+       "x": 0.096,
+       "cap": 0.53
+      },
+      {
+       "size": 500,
+       "al": {
+        "rdc20": 0.0605,
+        "rac": 0.0774,
+        "isc1s": 47.2,
+        "amp": {
+         "ground": 495,
+         "duct": 430,
+         "air": 730
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0366,
+        "rac": 0.0468,
+        "isc1s": 71.4,
+        "amp": {
+         "ground": 610,
+         "duct": 530,
+         "air": 910
+        },
+        "ampFlat": null
+       },
+       "x": 0.093,
+       "cap": 0.5
+      },
+      {
+       "size": 630,
+       "al": {
+        "rdc20": 0.0469,
+        "rac": 0.06,
+        "isc1s": 59.4,
+        "amp": {
+         "ground": 560,
+         "duct": 480,
+         "air": 840
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0283,
+        "rac": 0.0362,
+        "isc1s": 90.0,
+        "amp": {
+         "ground": 680,
+         "duct": 580,
+         "air": 1030
+        },
+        "ampFlat": null
+       },
+       "x": 0.092,
+       "cap": 0.69
+      },
+      {
+       "size": 800,
+       "al": {
+        "rdc20": 0.0367,
+        "rac": 0.047,
+        "isc1s": 75.5,
+        "amp": {
+         "ground": 620,
+         "duct": 530,
+         "air": 960
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0221,
+        "rac": 0.0283,
+        "isc1s": 114.3,
+        "amp": {
+         "ground": 740,
+         "duct": 630,
+         "air": 1140
+        },
+        "ampFlat": null
+       },
+       "x": 0.089,
+       "cap": 0.79
+      },
+      {
+       "size": 1000,
+       "al": {
+        "rdc20": 0.0291,
+        "rac": 0.0372,
+        "isc1s": 94.3,
+        "amp": {
+         "ground": 680,
+         "duct": 580,
+         "air": 1070
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0176,
+        "rac": 0.0225,
+        "isc1s": 142.9,
+        "amp": {
+         "ground": 790,
+         "duct": 670,
+         "air": 1250
+        },
+        "ampFlat": null
+       },
+       "x": 0.087,
+       "cap": 0.88
+      }
+     ],
+     "kei": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 118,
+         "duct": 104,
+         "air": 140
+        },
+        "ampFlat": {
+         "ground": 120,
+         "duct": 102,
+         "air": 143
+        }
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 151,
+         "duct": 134,
+         "air": 181
+        },
+        "ampFlat": {
+         "ground": 155,
+         "duct": 132,
+         "air": 185
+        }
+       },
+       "x": null,
+       "cap": 0.21
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 138,
+         "duct": 122,
+         "air": 167
+        },
+        "ampFlat": {
+         "ground": 141,
+         "duct": 120,
+         "air": 171
+        }
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 178,
+         "duct": 158,
+         "air": 216
+        },
+        "ampFlat": {
+         "ground": 181,
+         "duct": 154,
+         "air": 219
+        }
+       },
+       "x": 0.133,
+       "cap": 0.22
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 168,
+         "duct": 149,
+         "air": 209
+        },
+        "ampFlat": {
+         "ground": 172,
+         "duct": 146,
+         "air": 213
+        }
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 216,
+         "duct": 191,
+         "air": 269
+        },
+        "ampFlat": {
+         "ground": 220,
+         "duct": 186,
+         "air": 273
+        }
+       },
+       "x": 0.123,
+       "cap": 0.25
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 200,
+         "duct": 177,
+         "air": 254
+        },
+        "ampFlat": {
+         "ground": 204,
+         "duct": 172,
+         "air": 258
+        }
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 257,
+         "duct": 227,
+         "air": 326
+        },
+        "ampFlat": {
+         "ground": 259,
+         "duct": 219,
+         "air": 329
+        }
+       },
+       "x": 0.116,
+       "cap": 0.29
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 227,
+         "duct": 200,
+         "air": 294
+        },
+        "ampFlat": {
+         "ground": 230,
+         "duct": 194,
+         "air": 298
+        }
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 290,
+         "duct": 256,
+         "air": 376
+        },
+        "ampFlat": {
+         "ground": 292,
+         "duct": 246,
+         "air": 378
+        }
+       },
+       "x": 0.112,
+       "cap": 0.31
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 252,
+         "duct": 223,
+         "air": 331
+        },
+        "ampFlat": {
+         "ground": 255,
+         "duct": 215,
+         "air": 335
+        }
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 323,
+         "duct": 285,
+         "air": 424
+        },
+        "ampFlat": {
+         "ground": 323,
+         "duct": 272,
+         "air": 425
+        }
+       },
+       "x": 0.109,
+       "cap": 0.34
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 284,
+         "duct": 250,
+         "air": 383
+        },
+        "ampFlat": {
+         "ground": 284,
+         "duct": 238,
+         "air": 384
+        }
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 360,
+         "duct": 317,
+         "air": 487
+        },
+        "ampFlat": {
+         "ground": 354,
+         "duct": 297,
+         "air": 480
+        }
+       },
+       "x": 0.107,
+       "cap": 0.36
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 326,
+         "duct": 286,
+         "air": 450
+        },
+        "ampFlat": {
+         "ground": 323,
+         "duct": 270,
+         "air": 446
+        }
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 411,
+         "duct": 361,
+         "air": 568
+        },
+        "ampFlat": {
+         "ground": 398,
+         "duct": 332,
+         "air": 552
+        }
+       },
+       "x": 0.104,
+       "cap": 0.41
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 365,
+         "duct": 319,
+         "air": 512
+        },
+        "ampFlat": {
+         "ground": 357,
+         "duct": 297,
+         "air": 503
+        }
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 456,
+         "duct": 399,
+         "air": 643
+        },
+        "ampFlat": {
+         "ground": 435,
+         "duct": 362,
+         "air": 616
+        }
+       },
+       "x": 0.1,
+       "cap": 0.46
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 412,
+         "duct": 359,
+         "air": 594
+        },
+        "ampFlat": {
+         "ground": 397,
+         "duct": 329,
+         "air": 575
+        }
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 508,
+         "duct": 443,
+         "air": 735
+        },
+        "ampFlat": {
+         "ground": 474,
+         "duct": 392,
+         "air": 690
+        }
+       },
+       "x": 0.096,
+       "cap": 0.52
+      },
+      {
+       "size": 500,
+       "al": {
+        "rdc20": 0.0605,
+        "rac": 0.0774,
+        "isc1s": 47.2,
+        "amp": {
+         "ground": 461,
+         "duct": 401,
+         "air": 680
+        },
+        "ampFlat": {
+         "ground": 436,
+         "duct": 360,
+         "air": 647
+        }
+       },
+       "cu": {
+        "rdc20": 0.0366,
+        "rac": 0.0468,
+        "isc1s": 71.4,
+        "amp": {
+         "ground": 559,
+         "duct": 486,
+         "air": 828
+        },
+        "ampFlat": {
+         "ground": 510,
+         "duct": 420,
+         "air": 761
+        }
+       },
+       "x": 0.093,
+       "cap": 0.56
+      },
+      {
+       "size": 630,
+       "al": {
+        "rdc20": 0.0469,
+        "rac": 0.06,
+        "isc1s": 59.4,
+        "amp": {
+         "ground": 514,
+         "duct": 445,
+         "air": 778
+        },
+        "ampFlat": {
+         "ground": 476,
+         "duct": 390,
+         "air": 725
+        }
+       },
+       "cu": {
+        "rdc20": 0.0283,
+        "rac": 0.0362,
+        "isc1s": 90.0,
+        "amp": {
+         "ground": 611,
+         "duct": 529,
+         "air": 930
+        },
+        "ampFlat": {
+         "ground": 544,
+         "duct": 446,
+         "air": 835
+        }
+       },
+       "x": 0.092,
+       "cap": 0.63
+      },
+      {
+       "size": 800,
+       "al": {
+        "rdc20": 0.0367,
+        "rac": 0.047,
+        "isc1s": 75.5,
+        "amp": {
+         "ground": 553,
+         "duct": 476,
+         "air": 863
+        },
+        "ampFlat": {
+         "ground": 496,
+         "duct": 404,
+         "air": 781
+        }
+       },
+       "cu": {
+        "rdc20": 0.0221,
+        "rac": 0.0283,
+        "isc1s": 114.3,
+        "amp": {
+         "ground": 639,
+         "duct": 550,
+         "air": 1003
+        },
+        "ampFlat": {
+         "ground": 550,
+         "duct": 448,
+         "air": 873
+        }
+       },
+       "x": 0.089,
+       "cap": 0.71
+      },
+      {
+       "size": 1000,
+       "al": {
+        "rdc20": 0.0291,
+        "rac": 0.0372,
+        "isc1s": 94.3,
+        "amp": {
+         "ground": 595,
+         "duct": 509,
+         "air": 954
+        },
+        "ampFlat": {
+         "ground": 523,
+         "duct": 423,
+         "air": 846
+        }
+       },
+       "cu": {
+        "rdc20": 0.0176,
+        "rac": 0.0225,
+        "isc1s": 142.9,
+        "amp": {
+         "ground": 672,
+         "duct": 575,
+         "air": 1083
+        },
+        "ampFlat": {
+         "ground": 569,
+         "duct": 460,
+         "air": 927
+        }
+       },
+       "x": 0.087,
+       "cap": 0.78
+      }
+     ]
+    }
+   }
+  },
+  "11UE": {
+   "label": "11/11 kV (UE)",
+   "depthMm": 900,
+   "cores": {
+    "3": {
+     "polycab": [
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 160,
+         "duct": 140,
+         "air": 190
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 210,
+         "duct": 180,
+         "air": 240
+        },
+        "ampFlat": null
+       },
+       "x": 0.129,
+       "cap": 0.19
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 165,
+         "air": 230
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 250,
+         "duct": 215,
+         "air": 295
+        },
+        "ampFlat": null
+       },
+       "x": 0.123,
+       "cap": 0.21
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 220,
+         "duct": 190,
+         "air": 260
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 280,
+         "duct": 240,
+         "air": 335
+        },
+        "ampFlat": null
+       },
+       "x": 0.117,
+       "cap": 0.23
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 245,
+         "duct": 210,
+         "air": 295
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 310,
+         "duct": 270,
+         "air": 380
+        },
+        "ampFlat": null
+       },
+       "x": 0.114,
+       "cap": 0.25
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 275,
+         "duct": 240,
+         "air": 335
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 350,
+         "duct": 305,
+         "air": 430
+        },
+        "ampFlat": null
+       },
+       "x": 0.11,
+       "cap": 0.27
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 315,
+         "duct": 275,
+         "air": 395
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 400,
+         "duct": 350,
+         "air": 500
+        },
+        "ampFlat": null
+       },
+       "x": 0.106,
+       "cap": 0.3
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 355,
+         "duct": 310,
+         "air": 450
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 445,
+         "duct": 390,
+         "air": 570
+        },
+        "ampFlat": null
+       },
+       "x": 0.103,
+       "cap": 0.33
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 400,
+         "duct": 350,
+         "air": 520
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 500,
+         "duct": 440,
+         "air": 650
+        },
+        "ampFlat": null
+       },
+       "x": 0.099,
+       "cap": 0.37
+      }
+     ],
+     "kei": [
+      {
+       "size": 35,
+       "al": {
+        "rdc20": 0.868,
+        "rac": 1.11,
+        "isc1s": 3.3,
+        "amp": {
+         "ground": 112,
+         "duct": 97,
+         "air": 124
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.524,
+        "rac": 0.671,
+        "isc1s": 5.0,
+        "amp": {
+         "ground": 144,
+         "duct": 125,
+         "air": 160
+        },
+        "ampFlat": null
+       },
+       "x": 0.124,
+       "cap": 0.15
+      },
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 131,
+         "duct": 114,
+         "air": 148
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 169,
+         "duct": 146,
+         "air": 191
+        },
+        "ampFlat": null
+       },
+       "x": 0.117,
+       "cap": 0.16
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 161,
+         "duct": 139,
+         "air": 184
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 207,
+         "duct": 179,
+         "air": 237
+        },
+        "ampFlat": null
+       },
+       "x": 0.111,
+       "cap": 0.19
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 165,
+         "air": 222
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 245,
+         "duct": 213,
+         "air": 286
+        },
+        "ampFlat": null
+       },
+       "x": 0.107,
+       "cap": 0.21
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 216,
+         "duct": 188,
+         "air": 256
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 278,
+         "duct": 241,
+         "air": 329
+        },
+        "ampFlat": null
+       },
+       "x": 0.103,
+       "cap": 0.22
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 242,
+         "duct": 209,
+         "air": 288
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 311,
+         "duct": 269,
+         "air": 371
+        },
+        "ampFlat": null
+       },
+       "x": 0.0987,
+       "cap": 0.24
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 273,
+         "duct": 240,
+         "air": 330
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 349,
+         "duct": 308,
+         "air": 422
+        },
+        "ampFlat": null
+       },
+       "x": 0.0968,
+       "cap": 0.26
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 315,
+         "duct": 278,
+         "air": 387
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 401,
+         "duct": 354,
+         "air": 493
+        },
+        "ampFlat": null
+       },
+       "x": 0.0932,
+       "cap": 0.29
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 354,
+         "duct": 312,
+         "air": 441
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 449,
+         "duct": 396,
+         "air": 560
+        },
+        "ampFlat": null
+       },
+       "x": 0.0897,
+       "cap": 0.32
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 404,
+         "duct": 356,
+         "air": 512
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 506,
+         "duct": 446,
+         "air": 643
+        },
+        "ampFlat": null
+       },
+       "x": 0.0866,
+       "cap": 0.36
+      }
+     ]
+    },
+    "1": {
+     "polycab": [
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 175,
+         "duct": 155,
+         "air": 215
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 225,
+         "duct": 195,
+         "air": 275
+        },
+        "ampFlat": null
+       },
+       "x": 0.126,
+       "cap": 0.18
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 205,
+         "duct": 180,
+         "air": 260
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 265,
+         "duct": 235,
+         "air": 340
+        },
+        "ampFlat": null
+       },
+       "x": 0.12,
+       "cap": 0.2
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 235,
+         "duct": 205,
+         "air": 305
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 300,
+         "duct": 265,
+         "air": 390
+        },
+        "ampFlat": null
+       },
+       "x": 0.117,
+       "cap": 0.22
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 260,
+         "duct": 230,
+         "air": 345
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 335,
+         "duct": 295,
+         "air": 440
+        },
+        "ampFlat": null
+       },
+       "x": 0.112,
+       "cap": 0.24
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 295,
+         "duct": 260,
+         "air": 395
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 380,
+         "duct": 330,
+         "air": 510
+        },
+        "ampFlat": null
+       },
+       "x": 0.11,
+       "cap": 0.25
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 340,
+         "duct": 300,
+         "air": 470
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 435,
+         "duct": 380,
+         "air": 600
+        },
+        "ampFlat": null
+       },
+       "x": 0.106,
+       "cap": 0.28
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 385,
+         "duct": 335,
+         "air": 540
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 490,
+         "duct": 425,
+         "air": 680
+        },
+        "ampFlat": null
+       },
+       "x": 0.102,
+       "cap": 0.32
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 440,
+         "duct": 380,
+         "air": 630
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 550,
+         "duct": 480,
+         "air": 790
+        },
+        "ampFlat": null
+       },
+       "x": 0.098,
+       "cap": 0.36
+      },
+      {
+       "size": 500,
+       "al": {
+        "rdc20": 0.0605,
+        "rac": 0.0774,
+        "isc1s": 47.2,
+        "amp": {
+         "ground": 495,
+         "duct": 430,
+         "air": 730
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0366,
+        "rac": 0.0468,
+        "isc1s": 71.4,
+        "amp": {
+         "ground": 610,
+         "duct": 530,
+         "air": 910
+        },
+        "ampFlat": null
+       },
+       "x": 0.095,
+       "cap": 0.39
+      },
+      {
+       "size": 630,
+       "al": {
+        "rdc20": 0.0469,
+        "rac": 0.06,
+        "isc1s": 59.4,
+        "amp": {
+         "ground": 560,
+         "duct": 480,
+         "air": 840
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0283,
+        "rac": 0.0362,
+        "isc1s": 90.0,
+        "amp": {
+         "ground": 680,
+         "duct": 580,
+         "air": 1030
+        },
+        "ampFlat": null
+       },
+       "x": 0.094,
+       "cap": 0.43
+      },
+      {
+       "size": 800,
+       "al": {
+        "rdc20": 0.0367,
+        "rac": 0.047,
+        "isc1s": 75.5,
+        "amp": {
+         "ground": 620,
+         "duct": 530,
+         "air": 960
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0221,
+        "rac": 0.0283,
+        "isc1s": 114.3,
+        "amp": {
+         "ground": 740,
+         "duct": 630,
+         "air": 1140
+        },
+        "ampFlat": null
+       },
+       "x": 0.091,
+       "cap": 0.49
+      },
+      {
+       "size": 1000,
+       "al": {
+        "rdc20": 0.0291,
+        "rac": 0.0372,
+        "isc1s": 94.3,
+        "amp": {
+         "ground": 680,
+         "duct": 580,
+         "air": 1070
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0176,
+        "rac": 0.0225,
+        "isc1s": 142.9,
+        "amp": {
+         "ground": 790,
+         "duct": 670,
+         "air": 1250
+        },
+        "ampFlat": null
+       },
+       "x": 0.088,
+       "cap": 0.53
+      }
+     ],
+     "kei": null
+    }
+   }
+  },
+  "22": {
+   "label": "12.7/22 kV (E)",
+   "depthMm": 1050,
+   "cores": {
+    "3": {
+     "polycab": [
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 170,
+         "air": 230
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 245,
+         "duct": 215,
+         "air": 300
+        },
+        "ampFlat": null
+       },
+       "x": 0.125,
+       "cap": 0.2
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 215,
+         "duct": 190,
+         "air": 265
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 275,
+         "duct": 245,
+         "air": 340
+        },
+        "ampFlat": null
+       },
+       "x": 0.12,
+       "cap": 0.22
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 240,
+         "duct": 215,
+         "air": 300
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 305,
+         "duct": 275,
+         "air": 385
+        },
+        "ampFlat": null
+       },
+       "x": 0.116,
+       "cap": 0.23
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 270,
+         "duct": 240,
+         "air": 340
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 345,
+         "duct": 305,
+         "air": 435
+        },
+        "ampFlat": null
+       },
+       "x": 0.113,
+       "cap": 0.25
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 310,
+         "duct": 275,
+         "air": 400
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 395,
+         "duct": 350,
+         "air": 510
+        },
+        "ampFlat": null
+       },
+       "x": 0.108,
+       "cap": 0.28
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 350,
+         "duct": 310,
+         "air": 455
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 440,
+         "duct": 390,
+         "air": 580
+        },
+        "ampFlat": null
+       },
+       "x": 0.105,
+       "cap": 0.31
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 395,
+         "duct": 355,
+         "air": 530
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 495,
+         "duct": 440,
+         "air": 660
+        },
+        "ampFlat": null
+       },
+       "x": 0.101,
+       "cap": 0.34
+      }
+     ],
+     "kei": null
+    },
+    "1": {
+     "polycab": [
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 205,
+         "duct": 180,
+         "air": 270
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 265,
+         "duct": 230,
+         "air": 345
+        },
+        "ampFlat": null
+       },
+       "x": 0.124,
+       "cap": 0.19
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 230,
+         "duct": 200,
+         "air": 310
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 300,
+         "duct": 260,
+         "air": 400
+        },
+        "ampFlat": null
+       },
+       "x": 0.119,
+       "cap": 0.2
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 260,
+         "duct": 225,
+         "air": 350
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 330,
+         "duct": 290,
+         "air": 450
+        },
+        "ampFlat": null
+       },
+       "x": 0.115,
+       "cap": 0.22
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 290,
+         "duct": 255,
+         "air": 400
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 375,
+         "duct": 325,
+         "air": 510
+        },
+        "ampFlat": null
+       },
+       "x": 0.114,
+       "cap": 0.24
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 335,
+         "duct": 290,
+         "air": 470
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 430,
+         "duct": 370,
+         "air": 600
+        },
+        "ampFlat": null
+       },
+       "x": 0.11,
+       "cap": 0.26
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 380,
+         "duct": 325,
+         "air": 540
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 480,
+         "duct": 415,
+         "air": 690
+        },
+        "ampFlat": null
+       },
+       "x": 0.105,
+       "cap": 0.3
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 430,
+         "duct": 370,
+         "air": 630
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 540,
+         "duct": 465,
+         "air": 790
+        },
+        "ampFlat": null
+       },
+       "x": 0.101,
+       "cap": 0.33
+      },
+      {
+       "size": 500,
+       "al": {
+        "rdc20": 0.0605,
+        "rac": 0.0774,
+        "isc1s": 47.2,
+        "amp": {
+         "ground": 485,
+         "duct": 420,
+         "air": 730
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0366,
+        "rac": 0.0468,
+        "isc1s": 71.4,
+        "amp": {
+         "ground": 600,
+         "duct": 520,
+         "air": 910
+        },
+        "ampFlat": null
+       },
+       "x": 0.093,
+       "cap": 0.36
+      },
+      {
+       "size": 630,
+       "al": {
+        "rdc20": 0.0469,
+        "rac": 0.06,
+        "isc1s": 59.4,
+        "amp": {
+         "ground": 550,
+         "duct": 470,
+         "air": 840
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0283,
+        "rac": 0.0362,
+        "isc1s": 90.0,
+        "amp": {
+         "ground": 660,
+         "duct": 570,
+         "air": 1020
+        },
+        "ampFlat": null
+       },
+       "x": 0.095,
+       "cap": 0.4
+      },
+      {
+       "size": 800,
+       "al": {
+        "rdc20": 0.0367,
+        "rac": 0.047,
+        "isc1s": 75.5,
+        "amp": {
+         "ground": 610,
+         "duct": 520,
+         "air": 950
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0221,
+        "rac": 0.0283,
+        "isc1s": 114.3,
+        "amp": {
+         "ground": 720,
+         "duct": 620,
+         "air": 1140
+        },
+        "ampFlat": null
+       },
+       "x": 0.092,
+       "cap": 0.45
+      },
+      {
+       "size": 1000,
+       "al": {
+        "rdc20": 0.0291,
+        "rac": 0.0372,
+        "isc1s": 94.3,
+        "amp": {
+         "ground": 660,
+         "duct": 560,
+         "air": 1060
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0176,
+        "rac": 0.0225,
+        "isc1s": 142.9,
+        "amp": {
+         "ground": 760,
+         "duct": 660,
+         "air": 1240
+        },
+        "ampFlat": null
+       },
+       "x": 0.09,
+       "cap": 0.49
+      }
+     ],
+     "kei": null
+    }
+   }
+  },
+  "33": {
+   "label": "19/33 kV (E)",
+   "depthMm": 1050,
+   "cores": {
+    "3": {
+     "polycab": [
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 190,
+         "duct": 170,
+         "air": 230
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 245,
+         "duct": 215,
+         "air": 300
+        },
+        "ampFlat": null
+       },
+       "x": 0.121,
+       "cap": 0.15
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 215,
+         "duct": 190,
+         "air": 265
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 275,
+         "duct": 245,
+         "air": 340
+        },
+        "ampFlat": null
+       },
+       "x": 0.116,
+       "cap": 0.16
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 240,
+         "duct": 215,
+         "air": 300
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 305,
+         "duct": 275,
+         "air": 385
+        },
+        "ampFlat": null
+       },
+       "x": 0.112,
+       "cap": 0.18
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 270,
+         "duct": 240,
+         "air": 340
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 345,
+         "duct": 305,
+         "air": 435
+        },
+        "ampFlat": null
+       },
+       "x": 0.11,
+       "cap": 0.18
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 310,
+         "duct": 275,
+         "air": 400
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 395,
+         "duct": 350,
+         "air": 510
+        },
+        "ampFlat": null
+       },
+       "x": 0.105,
+       "cap": 0.2
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 350,
+         "duct": 310,
+         "air": 455
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 440,
+         "duct": 390,
+         "air": 580
+        },
+        "ampFlat": null
+       },
+       "x": 0.1,
+       "cap": 0.23
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 395,
+         "duct": 355,
+         "air": 530
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 495,
+         "duct": 440,
+         "air": 660
+        },
+        "ampFlat": null
+       },
+       "x": 0.097,
+       "cap": 0.25
+      }
+     ],
+     "kei": [
+      {
+       "size": 50,
+       "al": {
+        "rdc20": 0.641,
+        "rac": 0.82,
+        "isc1s": 4.7,
+        "amp": {
+         "ground": 130,
+         "duct": 116,
+         "air": 152
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.387,
+        "rac": 0.495,
+        "isc1s": 7.1,
+        "amp": {
+         "ground": 167,
+         "duct": 150,
+         "air": 196
+        },
+        "ampFlat": null
+       },
+       "x": 0.134,
+       "cap": 0.12
+      },
+      {
+       "size": 70,
+       "al": {
+        "rdc20": 0.443,
+        "rac": 0.567,
+        "isc1s": 6.6,
+        "amp": {
+         "ground": 159,
+         "duct": 142,
+         "air": 189
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.268,
+        "rac": 0.343,
+        "isc1s": 10.0,
+        "amp": {
+         "ground": 204,
+         "duct": 183,
+         "air": 243
+        },
+        "ampFlat": null
+       },
+       "x": 0.126,
+       "cap": 0.14
+      },
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 189,
+         "duct": 169,
+         "air": 227
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 243,
+         "duct": 217,
+         "air": 293
+        },
+        "ampFlat": null
+       },
+       "x": 0.121,
+       "cap": 0.15
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 215,
+         "duct": 192,
+         "air": 262
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 276,
+         "duct": 246,
+         "air": 336
+        },
+        "ampFlat": null
+       },
+       "x": 0.117,
+       "cap": 0.16
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 239,
+         "duct": 214,
+         "air": 294
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 307,
+         "duct": 275,
+         "air": 378
+        },
+        "ampFlat": null
+       },
+       "x": 0.112,
+       "cap": 0.18
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 270,
+         "duct": 245,
+         "air": 336
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 346,
+         "duct": 313,
+         "air": 431
+        },
+        "ampFlat": null
+       },
+       "x": 0.11,
+       "cap": 0.18
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 312,
+         "duct": 282,
+         "air": 393
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 398,
+         "duct": 360,
+         "air": 503
+        },
+        "ampFlat": null
+       },
+       "x": 0.106,
+       "cap": 0.2
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 351,
+         "duct": 317,
+         "air": 448
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 446,
+         "duct": 403,
+         "air": 571
+        },
+        "ampFlat": null
+       },
+       "x": 0.1,
+       "cap": 0.23
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 400,
+         "duct": 361,
+         "air": 519
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 503,
+         "duct": 453,
+         "air": 655
+        },
+        "ampFlat": null
+       },
+       "x": 0.0971,
+       "cap": 0.25
+      }
+     ]
+    },
+    "1": {
+     "polycab": [
+      {
+       "size": 95,
+       "al": {
+        "rdc20": 0.32,
+        "rac": 0.41,
+        "isc1s": 9.0,
+        "amp": {
+         "ground": 200,
+         "duct": 180,
+         "air": 270
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.193,
+        "rac": 0.247,
+        "isc1s": 13.6,
+        "amp": {
+         "ground": 265,
+         "duct": 230,
+         "air": 345
+        },
+        "ampFlat": null
+       },
+       "x": 0.135,
+       "cap": 0.15
+      },
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 230,
+         "duct": 200,
+         "air": 310
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 300,
+         "duct": 260,
+         "air": 400
+        },
+        "ampFlat": null
+       },
+       "x": 0.13,
+       "cap": 0.16
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 260,
+         "duct": 225,
+         "air": 350
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 330,
+         "duct": 290,
+         "air": 450
+        },
+        "ampFlat": null
+       },
+       "x": 0.126,
+       "cap": 0.17
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 290,
+         "duct": 255,
+         "air": 400
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 375,
+         "duct": 325,
+         "air": 510
+        },
+        "ampFlat": null
+       },
+       "x": 0.124,
+       "cap": 0.18
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 335,
+         "duct": 290,
+         "air": 470
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 430,
+         "duct": 370,
+         "air": 600
+        },
+        "ampFlat": null
+       },
+       "x": 0.118,
+       "cap": 0.2
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 380,
+         "duct": 325,
+         "air": 540
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 480,
+         "duct": 415,
+         "air": 690
+        },
+        "ampFlat": null
+       },
+       "x": 0.112,
+       "cap": 0.23
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 430,
+         "duct": 370,
+         "air": 630
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 540,
+         "duct": 465,
+         "air": 790
+        },
+        "ampFlat": null
+       },
+       "x": 0.119,
+       "cap": 0.25
+      },
+      {
+       "size": 500,
+       "al": {
+        "rdc20": 0.0605,
+        "rac": 0.0774,
+        "isc1s": 47.2,
+        "amp": {
+         "ground": 485,
+         "duct": 420,
+         "air": 730
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0366,
+        "rac": 0.0468,
+        "isc1s": 71.4,
+        "amp": {
+         "ground": 600,
+         "duct": 520,
+         "air": 910
+        },
+        "ampFlat": null
+       },
+       "x": 0.105,
+       "cap": 0.27
+      },
+      {
+       "size": 630,
+       "al": {
+        "rdc20": 0.0469,
+        "rac": 0.06,
+        "isc1s": 59.4,
+        "amp": {
+         "ground": 550,
+         "duct": 470,
+         "air": 840
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0283,
+        "rac": 0.0362,
+        "isc1s": 90.0,
+        "amp": {
+         "ground": 660,
+         "duct": 570,
+         "air": 1020
+        },
+        "ampFlat": null
+       },
+       "x": 0.101,
+       "cap": 0.29
+      },
+      {
+       "size": 800,
+       "al": {
+        "rdc20": 0.0367,
+        "rac": 0.047,
+        "isc1s": 75.5,
+        "amp": {
+         "ground": 610,
+         "duct": 520,
+         "air": 950
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0221,
+        "rac": 0.0283,
+        "isc1s": 114.3,
+        "amp": {
+         "ground": 720,
+         "duct": 620,
+         "air": 1140
+        },
+        "ampFlat": null
+       },
+       "x": 0.097,
+       "cap": 0.33
+      },
+      {
+       "size": 1000,
+       "al": {
+        "rdc20": 0.0291,
+        "rac": 0.0372,
+        "isc1s": 94.3,
+        "amp": {
+         "ground": 660,
+         "duct": 560,
+         "air": 1060
+        },
+        "ampFlat": null
+       },
+       "cu": {
+        "rdc20": 0.0176,
+        "rac": 0.0225,
+        "isc1s": 142.9,
+        "amp": {
+         "ground": 760,
+         "duct": 660,
+         "air": 1240
+        },
+        "ampFlat": null
+       },
+       "x": 0.096,
+       "cap": 0.35
+      }
+     ],
+     "kei": [
+      {
+       "size": 120,
+       "al": {
+        "rdc20": 0.253,
+        "rac": 0.324,
+        "isc1s": 11.3,
+        "amp": {
+         "ground": 224,
+         "duct": 195,
+         "air": 302
+        },
+        "ampFlat": {
+         "ground": 225,
+         "duct": 188,
+         "air": 303
+        }
+       },
+       "cu": {
+        "rdc20": 0.153,
+        "rac": 0.196,
+        "isc1s": 17.1,
+        "amp": {
+         "ground": 285,
+         "duct": 249,
+         "air": 386
+        },
+        "ampFlat": {
+         "ground": 284,
+         "duct": 236,
+         "air": 384
+        }
+       },
+       "x": 0.13,
+       "cap": 0.16
+      },
+      {
+       "size": 150,
+       "al": {
+        "rdc20": 0.206,
+        "rac": 0.264,
+        "isc1s": 14.2,
+        "amp": {
+         "ground": 249,
+         "duct": 217,
+         "air": 339
+        },
+        "ampFlat": {
+         "ground": 249,
+         "duct": 207,
+         "air": 340
+        }
+       },
+       "cu": {
+        "rdc20": 0.124,
+        "rac": 0.159,
+        "isc1s": 21.4,
+        "amp": {
+         "ground": 317,
+         "duct": 276,
+         "air": 434
+        },
+        "ampFlat": {
+         "ground": 313,
+         "duct": 260,
+         "air": 429
+        }
+       },
+       "x": 0.126,
+       "cap": 0.18
+      },
+      {
+       "size": 185,
+       "al": {
+        "rdc20": 0.164,
+        "rac": 0.21,
+        "isc1s": 17.5,
+        "amp": {
+         "ground": 280,
+         "duct": 243,
+         "air": 389
+        },
+        "ampFlat": {
+         "ground": 279,
+         "duct": 231,
+         "air": 387
+        }
+       },
+       "cu": {
+        "rdc20": 0.0991,
+        "rac": 0.127,
+        "isc1s": 26.4,
+        "amp": {
+         "ground": 355,
+         "duct": 308,
+         "air": 494
+        },
+        "ampFlat": {
+         "ground": 346,
+         "duct": 286,
+         "air": 485
+        }
+       },
+       "x": 0.124,
+       "cap": 0.18
+      },
+      {
+       "size": 240,
+       "al": {
+        "rdc20": 0.125,
+        "rac": 0.16,
+        "isc1s": 22.6,
+        "amp": {
+         "ground": 321,
+         "duct": 278,
+         "air": 455
+        },
+        "ampFlat": {
+         "ground": 316,
+         "duct": 261,
+         "air": 449
+        }
+       },
+       "cu": {
+        "rdc20": 0.0754,
+        "rac": 0.0965,
+        "isc1s": 34.3,
+        "amp": {
+         "ground": 404,
+         "duct": 350,
+         "air": 575
+        },
+        "ampFlat": {
+         "ground": 387,
+         "duct": 320,
+         "air": 556
+        }
+       },
+       "x": 0.118,
+       "cap": 0.2
+      },
+      {
+       "size": 300,
+       "al": {
+        "rdc20": 0.1,
+        "rac": 0.13,
+        "isc1s": 28.3,
+        "amp": {
+         "ground": 355,
+         "duct": 307,
+         "air": 515
+        },
+        "ampFlat": {
+         "ground": 343,
+         "duct": 282,
+         "air": 501
+        }
+       },
+       "cu": {
+        "rdc20": 0.0601,
+        "rac": 0.0769,
+        "isc1s": 42.9,
+        "amp": {
+         "ground": 442,
+         "duct": 382,
+         "air": 644
+        },
+        "ampFlat": {
+         "ground": 413,
+         "duct": 339,
+         "air": 611
+        }
+       },
+       "x": 0.112,
+       "cap": 0.23
+      },
+      {
+       "size": 400,
+       "al": {
+        "rdc20": 0.0778,
+        "rac": 0.1,
+        "isc1s": 37.7,
+        "amp": {
+         "ground": 400,
+         "duct": 345,
+         "air": 594
+        },
+        "ampFlat": {
+         "ground": 380,
+         "duct": 312,
+         "air": 571
+        }
+       },
+       "cu": {
+        "rdc20": 0.047,
+        "rac": 0.0602,
+        "isc1s": 57.1,
+        "amp": {
+         "ground": 490,
+         "duct": 422,
+         "air": 734
+        },
+        "ampFlat": {
+         "ground": 449,
+         "duct": 367,
+         "air": 683
+        }
+       },
+       "x": 0.119,
+       "cap": 0.25
+      },
+      {
+       "size": 500,
+       "al": {
+        "rdc20": 0.0605,
+        "rac": 0.0774,
+        "isc1s": 47.2,
+        "amp": {
+         "ground": 447,
+         "duct": 384,
+         "air": 678
+        },
+        "ampFlat": {
+         "ground": 417,
+         "duct": 340,
+         "air": 641
+        }
+       },
+       "cu": {
+        "rdc20": 0.0366,
+        "rac": 0.0468,
+        "isc1s": 71.4,
+        "amp": {
+         "ground": 538,
+         "duct": 462,
+         "air": 825
+        },
+        "ampFlat": {
+         "ground": 482,
+         "duct": 393,
+         "air": 753
+        }
+       },
+       "x": 0.105,
+       "cap": 0.27
+      },
+      {
+       "size": 630,
+       "al": {
+        "rdc20": 0.0469,
+        "rac": 0.06,
+        "isc1s": 59.4,
+        "amp": {
+         "ground": 496,
+         "duct": 424,
+         "air": 770
+        },
+        "ampFlat": {
+         "ground": 453,
+         "duct": 367,
+         "air": 715
+        }
+       },
+       "cu": {
+        "rdc20": 0.0283,
+        "rac": 0.0362,
+        "isc1s": 90.0,
+        "amp": {
+         "ground": 586,
+         "duct": 501,
+         "air": 920
+        },
+        "ampFlat": {
+         "ground": 513,
+         "duct": 416,
+         "air": 823
+        }
+       },
+       "x": 0.101,
+       "cap": 0.29
+      },
+      {
+       "size": 800,
+       "al": {
+        "rdc20": 0.0367,
+        "rac": 0.047,
+        "isc1s": 75.5,
+        "amp": {
+         "ground": 543,
+         "duct": 475,
+         "air": 866
+        },
+        "ampFlat": {
+         "ground": 486,
+         "duct": 402,
+         "air": 789
+        }
+       },
+       "cu": {
+        "rdc20": 0.0221,
+        "rac": 0.0283,
+        "isc1s": 114.3,
+        "amp": {
+         "ground": 629,
+         "duct": 550,
+         "air": 1014
+        },
+        "ampFlat": {
+         "ground": 540,
+         "duct": 447,
+         "air": 890
+        }
+       },
+       "x": 0.097,
+       "cap": 0.33
+      },
+      {
+       "size": 1000,
+       "al": {
+        "rdc20": 0.0291,
+        "rac": 0.0372,
+        "isc1s": 94.3,
+        "amp": {
+         "ground": 572,
+         "duct": 498,
+         "air": 944
+        },
+        "ampFlat": {
+         "ground": 508,
+         "duct": 417,
+         "air": 851
+        }
+       },
+       "cu": {
+        "rdc20": 0.0176,
+        "rac": 0.0225,
+        "isc1s": 142.9,
+        "amp": {
+         "ground": 643,
+         "duct": 560,
+         "air": 1074
+        },
+        "ampFlat": {
+         "ground": 552,
+         "duct": 453,
+         "air": 938
+        }
+       },
+       "x": 0.096,
+       "cap": 0.36
+      }
+     ]
+    }
+   }
+  }
+ },
+ "derating": {
+  "air_temp": {
+   "25": 1.14,
+   "30": 1.1,
+   "35": 1.04,
+   "40": 1.0,
+   "45": 0.95,
+   "50": 0.9
+  },
+  "ground_temp": {
+   "15": 1.12,
+   "20": 1.08,
+   "25": 1.03,
+   "30": 1.0,
+   "35": 0.96,
+   "40": 0.91,
+   "45": 0.87
+  },
+  "soil": {
+   "100": 1.2,
+   "120": 1.11,
+   "150": 1.0,
+   "200": 0.89,
+   "250": 0.8,
+   "300": 0.73
+  },
+  "depth": {
+   "le11": {
+    "900": 1,
+    "1050": 0.99,
+    "1200": 0.98,
+    "1500": 0.96,
+    "1800": 0.95
+   },
+   "ge22": {
+    "1050": 1,
+    "1200": 0.99,
+    "1500": 0.97,
+    "1800": 0.96
+   }
+  },
+  "group_3c_ground": {
+   "2": {
+    "touching": 0.79,
+    "150": 0.82,
+    "300": 0.87,
+    "450": 0.9
+   },
+   "3": {
+    "touching": 0.69,
+    "150": 0.75,
+    "300": 0.79,
+    "450": 0.83
+   },
+   "4": {
+    "touching": 0.62,
+    "150": 0.69,
+    "300": 0.74,
+    "450": 0.79
+   },
+   "5": {
+    "touching": 0.58,
+    "150": 0.65,
+    "300": 0.72,
+    "450": 0.76
+   },
+   "6": {
+    "touching": 0.54,
+    "150": 0.61,
+    "300": 0.69,
+    "450": 0.75
+   }
+  },
+  "group_1c_ground_le22": {
+   "2": {
+    "touching": 0.78,
+    "150": 0.81,
+    "300": 0.85,
+    "450": 0.88
+   },
+   "3": {
+    "touching": 0.68,
+    "150": 0.71,
+    "300": 0.77,
+    "450": 0.81
+   },
+   "4": {
+    "touching": 0.61,
+    "150": 0.65,
+    "300": 0.72,
+    "450": 0.76
+   },
+   "5": {
+    "touching": 0.56,
+    "150": 0.61,
+    "300": 0.68,
+    "450": 0.73
+   }
+  },
+  "group_1c_ground_33": {
+   "2": {
+    "touching": 0.8,
+    "150": 0.82,
+    "300": 0.85,
+    "450": 0.88
+   },
+   "3": {
+    "touching": 0.68,
+    "150": 0.71,
+    "300": 0.76,
+    "450": 0.79
+   },
+   "4": {
+    "touching": 0.62,
+    "150": 0.65,
+    "300": 0.71,
+    "450": 0.75
+   },
+   "5": {
+    "touching": 0.57,
+    "150": 0.6,
+    "300": 0.67,
+    "450": 0.72
+   }
+  },
+  "group_3c_air_touching": {
+   "1": {
+    "1": 1,
+    "2": 0.84,
+    "3": 0.8,
+    "6": 0.75,
+    "9": 0.73
+   },
+   "2": {
+    "1": 1,
+    "2": 0.8,
+    "3": 0.76,
+    "6": 0.71,
+    "9": 0.69
+   },
+   "3": {
+    "1": 1,
+    "2": 0.78,
+    "3": 0.74,
+    "6": 0.7,
+    "9": 0.68
+   },
+   "6": {
+    "1": 1,
+    "2": 0.76,
+    "3": 0.72,
+    "6": 0.68,
+    "9": 0.66
+   }
+  },
+  "group_1c_air": {
+   "1": {
+    "1": 1,
+    "2": 0.98,
+    "3": 0.96
+   },
+   "2": {
+    "1": 1,
+    "2": 0.95,
+    "3": 0.93
+   },
+   "3": {
+    "1": 1,
+    "2": 0.94,
+    "3": 0.92
+   },
+   "6": {
+    "1": 1,
+    "2": 0.93,
+    "3": 0.9
+   }
+  }
+ },
+ "k_values": {
+  "xlpe_90_to_250C": {
+   "cu": 143,
+   "al": 94,
+   "source": "iec60364_4_43",
+   "confirmation": "Polycab Table 2 (1 s short-circuit, XLPE, 90 C operating / 250 C final) reproduces k x S: Cu 1000 mm2 -> 142.9 kA (k = 142.9), 95 mm2 -> 13.6 kA (143 x 95 = 13.585 kA); Al 1000 mm2 -> 94.3 kA (k = 94.3), 120 mm2 -> 11.3 kA (94 x 120 = 11.28 kA).",
+   "formula": "I_sc(t) [A] = k x S [mm2] / sqrt(t [s]); Polycab: It = Ish / sqrt(t)",
+   "caveat": "One older-edition IEC reproduction lists Al = 93; the Polycab table implies 94.3, current IEC reproductions give 94."
+  },
+  "screen_and_armour": null,
+  "screen_and_armour_note": "Neither Polycab nor KEI publishes copper-screen or armour short-circuit capability. Would need IS 7098-2 screen-area requirements + IEC 60949 calculation - not sourced here."
+ },
+ "voltage_drop_limits": [
+  {
+   "jurisdiction": "Nepal (NEA distribution planning, AIIB-financed Power Distribution System Upgrade & Expansion Project)",
+   "level": "33 kV sub-transmission lines and 11 kV MV feeders",
+   "limit_percent": 5,
+   "basis": "Voltage drop at target-year loading computed from the source grid substation (tap-off drops added); conductor size or double circuit chosen to keep drop < 5%. Standard 11 kV conductors 100 mm2 Dog, 50 mm2 Rabbit, 30 mm2 Weasel ACSR.",
+   "source": "aiib_nepal_dist",
+   "quote": "the voltage drop at target loading year will be computed, and then conductor size will be selected to maintain a voltage drop less than 5%"
+  },
+  {
+   "jurisdiction": "India - Indian Electricity Rules 1956, Rule 54 (statutory supply tolerance; carried into state Supply Codes)",
+   "level": "High voltage (>650 V up to 33 kV), at consumer point of supply",
+   "limit_percent": {
+    "over": 6,
+    "under": 9
+   },
+   "basis": "Permitted deviation of supply voltage from declared voltage. This is an end-of-line supply tolerance, not a per-feeder design drop budget.",
+   "source": "ier1956"
+  },
+  {
+   "jurisdiction": "India - Indian Electricity Rules 1956, Rule 54",
+   "level": "Low or medium voltage",
+   "limit_percent": 6,
+   "source": "ier1956"
+  },
+  {
+   "jurisdiction": "India - Indian Electricity Rules 1956, Rule 54",
+   "level": "Extra-high voltage",
+   "limit_percent": {
+    "over": 10,
+    "under": 12.5
+   },
+   "source": "ier1956"
+  }
+ ],
+ "self_checks": []
+}

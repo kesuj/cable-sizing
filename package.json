@@ -1,0 +1,11 @@
+{
+  "name": "cable-sizing",
+  "version": "1.0.0",
+  "description": "LV and HV conductor sizing - Nepal/IS and IEC 60364 - with the working shown",
+  "type": "module",
+  "private": true,
+  "scripts": {
+    "build": "python scripts/build.py",
+    "test": "node --test tests/*.test.js"
+  }
+}

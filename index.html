@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Conductor sizing</title>
+<meta name="description" content="Size LV and HV cables the way it is done in Nepal (IS) or internationally (IEC): current, derating, voltage drop, short circuit, breaker and earth conductor, with the working shown.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>Conductor sizing</h1>
+    <p>Which cable to buy and which breaker to fit, with every step of the working shown.</p>
+  </div>
+  <nav class="switches" aria-label="Calculator setup">
+    <div class="seg" role="radiogroup" aria-label="Voltage level">
+      <button type="button" role="radio" data-set="level" data-val="LV">Low voltage <small>up to 1.1 kV</small></button>
+      <button type="button" role="radio" data-set="level" data-val="HV">High voltage <small>3.3 to 33 kV</small></button>
+    </div>
+    <div class="seg" role="radiogroup" aria-label="Standard">
+      <button type="button" role="radio" data-set="std" data-val="IS">Nepal / India <small>IS tables</small></button>
+      <button type="button" role="radio" data-set="std" data-val="IEC">International <small>IEC 60364</small></button>
+    </div>
+    <div class="seg" role="radiogroup" aria-label="Detail">
+      <button type="button" role="radio" data-set="mode" data-val="simple">Simple</button>
+      <button type="button" role="radio" data-set="mode" data-val="engineer">Engineer</button>
+    </div>
+    <a class="guide-link" href="guide.html">How it works</a>
+  </nav>
+</header>
+
+<main class="bench">
+  <form id="f" class="form" autocomplete="off" novalidate>
+    <section class="step" aria-labelledby="s1">
+      <h2 id="s1"><span class="n">1</span> What the cable will power</h2>
+      <div id="load-fields"></div>
+    </section>
+    <section class="step" aria-labelledby="s2">
+      <h2 id="s2"><span class="n">2</span> Where the cable runs</h2>
+      <div id="route-fields"></div>
+    </section>
+    <section class="step" aria-labelledby="s3">
+      <h2 id="s3"><span class="n">3</span> The cable</h2>
+      <div id="cable-fields"></div>
+    </section>
+    <section class="step" aria-labelledby="s4">
+      <h2 id="s4"><span class="n">4</span> Checks</h2>
+      <div id="check-fields"></div>
+    </section>
+  </form>
+
+  <aside class="result" aria-live="polite" aria-labelledby="r-h">
+    <h2 id="r-h" class="sr-only">Result</h2>
+    <figure class="xsec">
+      <svg id="xsec" viewBox="0 0 240 240" role="img" aria-labelledby="xsec-t"><title id="xsec-t">Cable cross-section</title></svg>
+      <figcaption id="xsec-cap"></figcaption>
+    </figure>
+    <div id="answer"></div>
+    <div class="actions">
+      <button type="button" id="copy" class="btn">Copy result</button>
+      <button type="button" id="print" class="btn ghost">Print or save PDF</button>
+    </div>
+  </aside>
+
+  <section class="working" aria-labelledby="w-h">
+    <h2 id="w-h">The working</h2>
+    <div id="working"></div>
+  </section>
+</main>
+
+<div class="sticky" id="sticky" aria-hidden="true"></div>
+
+<footer class="foot">
+  <p>Results are for design and checking. Use the actual manufacturer datasheet before buying, and have the installation done or inspected by a licensed electrician. In Nepal, any connection to the NEA network needs NEA approval.</p>
+</footer>
+<script src="dist/app.bundle.js"></script>
+</body>
+</html>

@@ -1,0 +1,2184 @@
+{
+ "meta": {
+  "title": "LV (<=1.1 kV) conductor sizing reference data - verified transcription",
+  "compiled": "2026-11-02",
+  "rules": "Values are transcribed from the cited source. null = not found in any accessible source (reason given). verification flags: primary = standard/law text; manufacturer_catalogue; secondary = guide/forum/search extract; not_verified = value known from the standard but no accessible text found - re-check before release.",
+  "units": {
+   "reactance": "ohm/km at 50 Hz",
+   "temperature": "degC",
+   "soil_resistivity": "K.m/W (1.5 K.m/W = 150 degC.cm/W)"
+  }
+ },
+ "sources": [
+  {
+   "id": "S1",
+   "title": "Polycab - XLPE Insulated Heavy Duty Cables 650/1100V (LT catalogue, ORD 17720 v2, 2025), IS 7098-1",
+   "url": "https://cms.polycab.com/media/kb1l12kq/lt-catalogue-ord_17720_v2.pdf",
+   "accessed": "2026-11-02",
+   "notes": "p.8 basic assumptions; p.9 short-circuit table; p.10 reactance/capacitance; p.87 de-rating factor table"
+  },
+  {
+   "id": "S2",
+   "title": "Gemscab (Gems Cables) - LT PVC Cables catalogue, IS 1554 (Part 1) PVC and HR-PVC 1.1 kV",
+   "url": "https://gemscab.com/wp-content/uploads/2025/10/LT-PVC-Cables.pdf",
+   "accessed": "2026-11-02",
+   "notes": "pp.6-9 normal conditions and rating factor Tables 1-11; p.23 reactance. Smaller Indian manufacturer; Polycab/KEI/Havells/Finolex PVC tables were not retrievable"
+  },
+  {
+   "id": "S3",
+   "title": "IS 3961 (Part 2):1967 Recommended current ratings for cables - PVC insulated and PVC sheathed heavy duty cables (incl. Amendments 1 and 2), OCR text",
+   "url": "https://archive.org/download/gov.in.is.3961.2.1967/is.3961.2.1967.txt",
+   "accessed": "2026-11-02",
+   "notes": "Superseded by IS 3961 (Part 2):2017, which was NOT accessible. OCR quality poor in places"
+  },
+  {
+   "id": "S4",
+   "title": "Torrent Cables - LV cables technical specification / rating factor sheet (IS 1554-1)",
+   "url": "https://torrentelectricals.com/products/lv-cables/technical-specification/rating-factor-1_merged.pdf",
+   "accessed": "2026-11-02"
+  },
+  {
+   "id": "S5",
+   "title": "Finolex Cables - Power Cables Catalogue (Finvul-X 1100 V XLPE and Finopower HT)",
+   "url": "https://www.finolex.com//UploadedDocs/Power%20Cables%20Catalogue.pdf",
+   "accessed": "2026-11-02",
+   "notes": "Section 4 rating factors Tables 4.1-4.19; its reactance Table 2.4 is HT only"
+  },
+  {
+   "id": "S6",
+   "title": "SP 30:2011 National Electrical Code of India 2011 (BIS), OCR text",
+   "url": "https://archive.org/download/gov.in.is.sp.30.2011/is.sp.30.2011.txt",
+   "accessed": "2026-11-02",
+   "notes": "Superseded by SP 30:2023 (not freely accessible without BIS login)"
+  },
+  {
+   "id": "S7",
+   "title": "IS 3043:1987 Code of practice for earthing (reaffirmed 2006, incl. Amd 1 and 2), OCR text",
+   "url": "https://archive.org/download/gov.in.is.3043.1987/is.3043.1987.txt",
+   "accessed": "2026-11-02",
+   "notes": "Superseded by IS 3043:2018 (not accessed)"
+  },
+  {
+   "id": "S8",
+   "title": "Nepal - Electricity Rules, 2050 (1993), Nepal Law Commission English translation",
+   "url": "https://giwmscdnone.gov.np/media/pdf_upload/electricity-rules-2050-1993_omynmfd.pdf",
+   "accessed": "2026-11-02",
+   "notes": "Chapter 4, Rules 40-44"
+  },
+  {
+   "id": "S9",
+   "title": "ABB Technical note - IEC 60034-30-1 efficiency classes (9AKK107319 EN 05-2018), Table 1",
+   "url": "https://library.e.abb.com/public/db64d153e3c346938e18916e66fb1d0d/9AKK107319%20EN%2005-2018_20848_ABB_Technical_note_IEC_60034_30_1.pdf",
+   "accessed": "2026-11-02",
+   "notes": "Values of IEC 60034-30-1:2014; the 2025 second edition was not accessed"
+  },
+  {
+   "id": "S10",
+   "title": "NIST Guide to the SI (SP 811) Appendix B.8",
+   "url": "https://www.nist.gov/pml/special-publication-811/nist-guide-si-appendix-b-conversion-factors/nist-guide-si-appendix-b8",
+   "accessed": "2026-11-02"
+  },
+  {
+   "id": "S11",
+   "title": "Schneider Electric FAQ FA369327 - IEC 60898-1 vs IEC 60947-2 conventional tripping currents",
+   "url": "https://www.se.com/de/de/faqs/FA369327/",
+   "accessed": "2026-11-02"
+  },
+  {
+   "id": "S12",
+   "title": "Prysmian ASEAN - Electrical Information for Low Voltage Cables (2024-12-18), section 5 Voltage drop",
+   "url": "https://asean.prysmian.com/sites/asean.prysmian.com/files/media/documents/241218%20-%20Prysmian%20Electrical%20Information%20for%20Low%20Voltage%20Cables.pdf",
+   "accessed": "2026-11-02"
+  },
+  {
+   "id": "S13",
+   "title": "Schneider Electric Electrical Installation Guide - Maximum voltage drop limit (reproduces IEC 60364-5-52 Table G.52.1)",
+   "url": "https://www.electrical-installation.org/enwiki/Maximum_voltage_drop_limit",
+   "accessed": "2026-11-02",
+   "notes": "Direct fetch returned HTTP 403; values taken from search-engine extracts of this page. Re-verify in a browser"
+  },
+  {
+   "id": "S14",
+   "title": "IEC 60364-4-41, 4-43, 5-52, 5-54 free previews (VDE Verlag) - contents pages only",
+   "url": "https://assets.vde-verlag.de/iec-normen/preview-pdf/info_iec60364-4-43%7Bed4.0%7Db.pdf",
+   "accessed": "2026-11-02",
+   "notes": "Confirms table names (Table 41.1 Maximum disconnection times; Table 54.2 Minimum CSA of protective conductors; Table G.52.1 Voltage drop; 4-43:2023 Table 2 Values of k) but NOT the values"
+  },
+  {
+   "id": "S15",
+   "title": "IET EngX forum - Disconnection times changes (411.3.2.2: 63 A sockets / 32 A fixed)",
+   "url": "https://engx.theiet.org/f/wiring-and-regulations/31164/disconnection-times---changes",
+   "accessed": "2026-11-02",
+   "notes": "Secondary (forum) source"
+  },
+  {
+   "id": "S16",
+   "title": "KEI Industries Product Catalogue (2020) - LT cable ratings section",
+   "url": "https://www.kei-ind.com/wp-content/uploads/2020/01/KEI_Product_Catalogue.pdf",
+   "accessed": "2026-11-02",
+   "notes": "Its rating tables use UK/BS conditions, not the IS 3961 base"
+  },
+  {
+   "id": "S17",
+   "title": "BIS blog - National Electrical Code of India 2023 (SP 30:2023)",
+   "url": "https://www.services.bis.gov.in/php/BIS_2.0/BISBlog/national-electrical-code-of-india-2023/",
+   "accessed": "2026-11-02"
+  },
+  {
+   "id": "S18",
+   "title": "Bahra Cables - Low Voltage Power Cables technical information (cable parameter calculation guide)",
+   "url": "https://www.bahra-electric.com/Downloads/Low_Voltage.pdf",
+   "accessed": "2026-11-02",
+   "notes": "Formula only (inductance, reactance); its tables are 60 Hz so not used"
+  },
+  {
+   "id": "S19",
+   "title": "IS 732:1989 Code of practice for electrical wiring installations, OCR text",
+   "url": "https://archive.org/download/gov.in.is.732.1989/is.732.1989.txt",
+   "accessed": "2026-11-02",
+   "notes": "Superseded by IS 732:2019 (not accessible)"
+  }
+ ],
+ "reactance": {
+  "xlpe_1100V_IS7098_1": {
+   "source": "S1",
+   "table": "Approximate Reactance At 50 Hz (Ohm/km) 1.1 kV XLPE Cables (p.10)",
+   "verification": "manufacturer_catalogue",
+   "single_core_unarmoured": [
+    {
+     "size_mm2": 1.5,
+     "x_ohm_per_km": 0.154
+    },
+    {
+     "size_mm2": 2.5,
+     "x_ohm_per_km": 0.143
+    },
+    {
+     "size_mm2": 4,
+     "x_ohm_per_km": 0.134
+    },
+    {
+     "size_mm2": 6,
+     "x_ohm_per_km": 0.125
+    },
+    {
+     "size_mm2": 10,
+     "x_ohm_per_km": 0.116
+    },
+    {
+     "size_mm2": 16,
+     "x_ohm_per_km": 0.11
+    },
+    {
+     "size_mm2": 25,
+     "x_ohm_per_km": 0.105
+    },
+    {
+     "size_mm2": 35,
+     "x_ohm_per_km": 0.101
+    },
+    {
+     "size_mm2": 50,
+     "x_ohm_per_km": 0.0937
+    },
+    {
+     "size_mm2": 70,
+     "x_ohm_per_km": 0.091
+    },
+    {
+     "size_mm2": 95,
+     "x_ohm_per_km": 0.0879
+    },
+    {
+     "size_mm2": 120,
+     "x_ohm_per_km": 0.085
+    },
+    {
+     "size_mm2": 150,
+     "x_ohm_per_km": 0.0855
+    },
+    {
+     "size_mm2": 185,
+     "x_ohm_per_km": 0.0839
+    },
+    {
+     "size_mm2": 240,
+     "x_ohm_per_km": 0.082
+    },
+    {
+     "size_mm2": 300,
+     "x_ohm_per_km": 0.0801
+    },
+    {
+     "size_mm2": 400,
+     "x_ohm_per_km": 0.0792
+    },
+    {
+     "size_mm2": 500,
+     "x_ohm_per_km": 0.078
+    },
+    {
+     "size_mm2": 630,
+     "x_ohm_per_km": 0.0767
+    }
+   ],
+   "single_core_armoured": [
+    {
+     "size_mm2": 1.5,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 2.5,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 4,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 6,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 10,
+     "x_ohm_per_km": 0.131
+    },
+    {
+     "size_mm2": 16,
+     "x_ohm_per_km": 0.124
+    },
+    {
+     "size_mm2": 25,
+     "x_ohm_per_km": 0.117
+    },
+    {
+     "size_mm2": 35,
+     "x_ohm_per_km": 0.112
+    },
+    {
+     "size_mm2": 50,
+     "x_ohm_per_km": 0.108
+    },
+    {
+     "size_mm2": 70,
+     "x_ohm_per_km": 0.1
+    },
+    {
+     "size_mm2": 95,
+     "x_ohm_per_km": 0.099
+    },
+    {
+     "size_mm2": 120,
+     "x_ohm_per_km": 0.0951
+    },
+    {
+     "size_mm2": 150,
+     "x_ohm_per_km": 0.0936
+    },
+    {
+     "size_mm2": 185,
+     "x_ohm_per_km": 0.0913
+    },
+    {
+     "size_mm2": 240,
+     "x_ohm_per_km": 0.0887
+    },
+    {
+     "size_mm2": 300,
+     "x_ohm_per_km": 0.0868
+    },
+    {
+     "size_mm2": 400,
+     "x_ohm_per_km": 0.0861
+    },
+    {
+     "size_mm2": 500,
+     "x_ohm_per_km": 0.0843
+    },
+    {
+     "size_mm2": 630,
+     "x_ohm_per_km": 0.0829
+    }
+   ],
+   "multicore": [
+    {
+     "size_mm2": 1.5,
+     "x_ohm_per_km": 0.105
+    },
+    {
+     "size_mm2": 2.5,
+     "x_ohm_per_km": 0.099
+    },
+    {
+     "size_mm2": 4,
+     "x_ohm_per_km": 0.0933
+    },
+    {
+     "size_mm2": 6,
+     "x_ohm_per_km": 0.0888
+    },
+    {
+     "size_mm2": 10,
+     "x_ohm_per_km": 0.0842
+    },
+    {
+     "size_mm2": 16,
+     "x_ohm_per_km": 0.0802
+    },
+    {
+     "size_mm2": 25,
+     "x_ohm_per_km": 0.0808
+    },
+    {
+     "size_mm2": 35,
+     "x_ohm_per_km": 0.0787
+    },
+    {
+     "size_mm2": 50,
+     "x_ohm_per_km": 0.078
+    },
+    {
+     "size_mm2": 70,
+     "x_ohm_per_km": 0.0742
+    },
+    {
+     "size_mm2": 95,
+     "x_ohm_per_km": 0.0725
+    },
+    {
+     "size_mm2": 120,
+     "x_ohm_per_km": 0.0713
+    },
+    {
+     "size_mm2": 150,
+     "x_ohm_per_km": 0.0718
+    },
+    {
+     "size_mm2": 185,
+     "x_ohm_per_km": 0.072
+    },
+    {
+     "size_mm2": 240,
+     "x_ohm_per_km": 0.0713
+    },
+    {
+     "size_mm2": 300,
+     "x_ohm_per_km": 0.0703
+    },
+    {
+     "size_mm2": 400,
+     "x_ohm_per_km": 0.0702
+    },
+    {
+     "size_mm2": 500,
+     "x_ohm_per_km": 0.07
+    },
+    {
+     "size_mm2": 630,
+     "x_ohm_per_km": 0.0697
+    }
+   ],
+   "notes": [
+    "Single-core formation is NOT stated in the catalogue; tabulated single-core values are conventionally for trefoil touching. Treat as trefoil.",
+    "Armoured single core shown as '-' (not made) for 1.5-6 mm2, stored as null.",
+    "Values are geometry-based and apply to Cu and Al alike (catalogue gives one table).",
+    "Catalogue also lists 800 mm2 (SC UA 0.0762, SC AR 0.0819, MC '-') and 1000 mm2 (SC UA 0.0757, SC AR 0.0820)."
+   ]
+  },
+  "pvc_hrpvc_1100V_IS1554_1": {
+   "source": "S2",
+   "table": "Approximate Reactance at 50 Hz (Ohms/Km) 1.1 KV PVC and HR PVC Cables (p.23)",
+   "verification": "manufacturer_catalogue",
+   "single_core_unarmoured": [
+    {
+     "size_mm2": 1.5,
+     "x_ohm_per_km": 0.157
+    },
+    {
+     "size_mm2": 2.5,
+     "x_ohm_per_km": 0.145
+    },
+    {
+     "size_mm2": 4,
+     "x_ohm_per_km": 0.136
+    },
+    {
+     "size_mm2": 6,
+     "x_ohm_per_km": 0.128
+    },
+    {
+     "size_mm2": 10,
+     "x_ohm_per_km": 0.118
+    },
+    {
+     "size_mm2": 16,
+     "x_ohm_per_km": 0.11
+    },
+    {
+     "size_mm2": 25,
+     "x_ohm_per_km": 0.107
+    },
+    {
+     "size_mm2": 35,
+     "x_ohm_per_km": 0.102
+    },
+    {
+     "size_mm2": 50,
+     "x_ohm_per_km": 0.1
+    },
+    {
+     "size_mm2": 70,
+     "x_ohm_per_km": 0.091
+    },
+    {
+     "size_mm2": 95,
+     "x_ohm_per_km": 0.087
+    },
+    {
+     "size_mm2": 120,
+     "x_ohm_per_km": 0.085
+    },
+    {
+     "size_mm2": 150,
+     "x_ohm_per_km": 0.085
+    },
+    {
+     "size_mm2": 185,
+     "x_ohm_per_km": 0.082
+    },
+    {
+     "size_mm2": 240,
+     "x_ohm_per_km": 0.08
+    },
+    {
+     "size_mm2": 300,
+     "x_ohm_per_km": 0.078
+    },
+    {
+     "size_mm2": 400,
+     "x_ohm_per_km": 0.078
+    },
+    {
+     "size_mm2": 500,
+     "x_ohm_per_km": 0.078
+    },
+    {
+     "size_mm2": 630,
+     "x_ohm_per_km": 0.077
+    }
+   ],
+   "single_core_armoured_wire": [
+    {
+     "size_mm2": 1.5,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 2.5,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 4,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 6,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 10,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 16,
+     "x_ohm_per_km": null
+    },
+    {
+     "size_mm2": 25,
+     "x_ohm_per_km": 0.12
+    },
+    {
+     "size_mm2": 35,
+     "x_ohm_per_km": 0.115
+    },
+    {
+     "size_mm2": 50,
+     "x_ohm_per_km": 0.11
+    },
+    {
+     "size_mm2": 70,
+     "x_ohm_per_km": 0.103
+    },
+    {
+     "size_mm2": 95,
+     "x_ohm_per_km": 0.101
+    },
+    {
+     "size_mm2": 120,
+     "x_ohm_per_km": 0.095
+    },
+    {
+     "size_mm2": 150,
+     "x_ohm_per_km": 0.093
+    },
+    {
+     "size_mm2": 185,
+     "x_ohm_per_km": 0.092
+    },
+    {
+     "size_mm2": 240,
+     "x_ohm_per_km": 0.089
+    },
+    {
+     "size_mm2": 300,
+     "x_ohm_per_km": 0.087
+    },
+    {
+     "size_mm2": 400,
+     "x_ohm_per_km": 0.087
+    },
+    {
+     "size_mm2": 500,
+     "x_ohm_per_km": 0.087
+    },
+    {
+     "size_mm2": 630,
+     "x_ohm_per_km": 0.085
+    }
+   ],
+   "multicore": [
+    {
+     "size_mm2": 1.5,
+     "x_ohm_per_km": 0.11
+    },
+    {
+     "size_mm2": 2.5,
+     "x_ohm_per_km": 0.106
+    },
+    {
+     "size_mm2": 4,
+     "x_ohm_per_km": 0.102
+    },
+    {
+     "size_mm2": 6,
+     "x_ohm_per_km": 0.0962
+    },
+    {
+     "size_mm2": 10,
+     "x_ohm_per_km": 0.0908
+    },
+    {
+     "size_mm2": 16,
+     "x_ohm_per_km": 0.084
+    },
+    {
+     "size_mm2": 25,
+     "x_ohm_per_km": 0.084
+    },
+    {
+     "size_mm2": 35,
+     "x_ohm_per_km": 0.081
+    },
+    {
+     "size_mm2": 50,
+     "x_ohm_per_km": 0.079
+    },
+    {
+     "size_mm2": 70,
+     "x_ohm_per_km": 0.076
+    },
+    {
+     "size_mm2": 95,
+     "x_ohm_per_km": 0.075
+    },
+    {
+     "size_mm2": 120,
+     "x_ohm_per_km": 0.074
+    },
+    {
+     "size_mm2": 150,
+     "x_ohm_per_km": 0.074
+    },
+    {
+     "size_mm2": 185,
+     "x_ohm_per_km": 0.073
+    },
+    {
+     "size_mm2": 240,
+     "x_ohm_per_km": 0.072
+    },
+    {
+     "size_mm2": 300,
+     "x_ohm_per_km": 0.072
+    },
+    {
+     "size_mm2": 400,
+     "x_ohm_per_km": 0.071
+    },
+    {
+     "size_mm2": 500,
+     "x_ohm_per_km": 0.071
+    },
+    {
+     "size_mm2": 630,
+     "x_ohm_per_km": 0.071
+    }
+   ],
+   "notes": [
+    "Formation for single core not stated (assume trefoil).",
+    "Armoured single-core column is '*Wire armoured'; '-' for 1.5-16 mm2 stored as null.",
+    "Also 800 mm2: 0.076 / 0.084 / -, 1000 mm2: 0.073 / 0.082 / -.",
+    "Polycab/KEI/Havells/Finolex PVC (IS 1554) reactance tables could not be retrieved; Gemscab is the only PVC LV source found."
+   ]
+  },
+  "single_core_flat_formation": {
+   "value": null,
+   "reason": "No Indian LV catalogue found that tabulates flat-formation reactance at 1.1 kV.",
+   "method": {
+    "source": "S18",
+    "formula": "X = 2*pi*f*L*1e-3 ohm/km; L = K + 0.2*ln(2S/d) mH/km; trefoil: S = axial spacing; flat: S = 1.26 x axial spacing; K = constant depending on number of wires in the conductor (not tabulated in S18)",
+    "derived_note": "Flat vs trefoil at the same axial spacing: delta X = 2*pi*50*0.2*ln(1.26)*1e-3 = 0.0145 ohm/km (derived from the formula, not a catalogue value)."
+   }
+  },
+  "default_when_unknown": {
+   "source": "S12",
+   "value_mohm_per_m": 0.08,
+   "text": "reactance per unit length of conductors, which is taken to be 0.08 m(ohm)/m in the absence of details",
+   "verification": "manufacturer_catalogue (reproduces IEC 60364-5-52 Annex G formula)"
+  }
+ },
+ "rating_basis_india": {
+  "IS_3961_2_PVC": {
+   "source": "S3",
+   "clause": "2.1",
+   "verification": "primary (1967 edition)",
+   "max_conductor_temp_C": 70,
+   "soil_thermal_resistivity_degC_cm_per_W": 150,
+   "PVC_thermal_resistivity_degC_cm_per_W": 650,
+   "ground_temp_C": 30,
+   "ambient_air_temp_C": 40,
+   "depth_of_laying_cm": 75,
+   "depth_definition": "to the highest point of cable laid direct in the ground or to top surface of ducts",
+   "installation": "Single core: three in close trefoil or two touching horizontal (ground); trefoil / two horizontal (ducts); in air two single-core on a vertical wall 25 mm from wall at 2xD centres (<=185 mm2) or 90 mm (>=240 mm2), three in trefoil touching. Twin/multicore: installed singly.",
+   "note": "Clause 0.4: 150 degC.cm/W 'as agreed to by IEC for tropical climates'."
+  },
+  "gemscab_PVC_HRPVC": {
+   "source": "S2",
+   "max_conductor_temp_C": {
+    "PVC": 70,
+    "HR_PVC": 85
+   },
+   "ambient_air_temp_C": 40,
+   "ground_temp_C": 30,
+   "depth_of_laying_cm": {
+    "1.1kV": 75,
+    "3.3kV": 90
+   },
+   "soil_thermal_resistivity_degC_cm_per_W": 150,
+   "PVC_thermal_resistivity_degC_cm_per_W": 650
+  },
+  "polycab_XLPE_IS7098": {
+   "source": "S1",
+   "max_conductor_temp_C": 90,
+   "soil_thermal_resistivity_K_m_per_W": 1.5,
+   "ground_temp_C": 30,
+   "ambient_air_temp_C": 40,
+   "depth_of_laying_mm": 750,
+   "note": "Polycab p.13: ratings 'in accordance with IS 3961 (part 6):2016'."
+  },
+  "warning_non_IS_catalogues": {
+   "source": "S16",
+   "text": "KEI 2020 catalogue LT tables are on UK conditions: ambient air 30 C, ground 15 C, depth 0.5 m, soil 1.2 C.m/W. Do not mix its factors with IS-based ratings."
+  }
+ },
+ "ambient_air_factors": {
+  "PVC_70C": {
+   "IS_3961_2_1967_Table17": {
+    "source": "S3",
+    "verification": "primary (OCR)",
+    "values": {
+     "25": 1.25,
+     "30": 1.16,
+     "35": 1.09,
+     "40": 1.0,
+     "45": 0.9
+    },
+    "note": "No 20 or 50 C column in the 1967 Table 17."
+   },
+   "gemscab_Table4": {
+    "source": "S2",
+    "values": {
+     "20": 1.32,
+     "25": 1.25,
+     "30": 1.16,
+     "35": 1.09,
+     "40": 1.0,
+     "45": 0.9,
+     "50": 0.81
+    }
+   },
+   "torrent": {
+    "source": "S4",
+    "values": {
+     "20": 1.32,
+     "25": 1.25,
+     "30": 1.16,
+     "35": 1.09,
+     "40": 1.0,
+     "45": 0.91,
+     "50": 0.81
+    },
+    "note": "45 C = 0.91 differs from IS 3961 and Gemscab (0.90)."
+   },
+   "55C": null,
+   "55C_reason": "No source tabulates PVC 70 C at 55 C."
+  },
+  "HR_PVC_85C": {
+   "gemscab_Table4": {
+    "source": "S2",
+    "values": {
+     "20": 1.22,
+     "25": 1.15,
+     "30": 1.1,
+     "35": 1.05,
+     "40": 1.0,
+     "45": 0.94,
+     "50": 0.88
+    }
+   },
+   "55C": null,
+   "55C_reason": "Not tabulated in any accessible source. sqrt((85-55)/(85-40)) = 0.816 by the standard thermal formula (derived, not transcribed)."
+  },
+  "XLPE_90C": {
+   "polycab_p87": {
+    "source": "S1",
+    "values": {
+     "25": 1.14,
+     "30": 1.1,
+     "35": 1.05,
+     "40": 1.0,
+     "45": 0.95,
+     "50": 0.89,
+     "55": 0.84,
+     "60": 0.77
+    }
+   },
+   "finolex_Table4_1": {
+    "source": "S5",
+    "values": {
+     "25": 1.14,
+     "30": 1.1,
+     "35": 1.05,
+     "40": 1.0,
+     "45": 0.95,
+     "50": 0.89,
+     "55": 0.84,
+     "60": 0.77
+    }
+   },
+   "20C": null,
+   "20C_reason": "Polycab and Finolex tables start at 25 C."
+  }
+ },
+ "ground_temperature_factors": {
+  "PVC_70C": {
+   "IS_3961_2_1967_Table7_direct": {
+    "source": "S3",
+    "verification": "primary (OCR)",
+    "values": {
+     "15": 1.17,
+     "20": 1.12,
+     "25": null,
+     "30": 1.0,
+     "35": 0.94,
+     "40": 0.87,
+     "45": 0.79
+    },
+    "note": "25 C value illegible in the OCR; 1967 table ends at 45 C."
+   },
+   "gemscab_Table2_direct_and_duct": {
+    "source": "S2",
+    "values": {
+     "15": 1.17,
+     "20": 1.12,
+     "25": 1.06,
+     "30": 1.0,
+     "35": 0.94,
+     "40": 0.87,
+     "45": 0.79,
+     "50": 0.71
+    }
+   },
+   "torrent_duct": {
+    "source": "S4",
+    "values": {
+     "15": 1.17,
+     "20": 1.12,
+     "25": 1.06,
+     "30": 1.0,
+     "35": 0.94,
+     "40": 0.87,
+     "45": 0.79,
+     "50": 0.71
+    }
+   }
+  },
+  "HR_PVC_85C": {
+   "gemscab_Table2": {
+    "source": "S2",
+    "values": {
+     "15": 1.12,
+     "20": 1.08,
+     "25": 1.04,
+     "30": 1.0,
+     "35": 0.95,
+     "40": 0.9,
+     "45": 0.84,
+     "50": 0.77
+    }
+   }
+  },
+  "XLPE_90C": {
+   "polycab_p87_direct_and_duct": {
+    "source": "S1",
+    "values": {
+     "15": 1.12,
+     "20": 1.08,
+     "25": 1.04,
+     "30": 1.0,
+     "35": 0.96,
+     "40": 0.91,
+     "45": 0.87,
+     "50": 0.82
+    }
+   },
+   "finolex_Table4_2": {
+    "source": "S5",
+    "values": {
+     "15": 1.12,
+     "20": 1.08,
+     "25": 1.04,
+     "30": 1.0,
+     "35": 0.96,
+     "40": 0.91,
+     "45": 0.87,
+     "50": 0.82
+    }
+   }
+  }
+ },
+ "soil_and_depth_factors_PVC": {
+  "depth_direct_ground": {
+   "source": "S2",
+   "table": "Table 5",
+   "depth_mm": [
+    750,
+    900,
+    1050,
+    1200,
+    1500,
+    1800
+   ],
+   "upto_25mm2": [
+    1.0,
+    0.99,
+    0.98,
+    0.97,
+    0.96,
+    0.95
+   ],
+   "25_to_300mm2": [
+    1.0,
+    0.98,
+    0.97,
+    0.96,
+    0.94,
+    0.93
+   ],
+   "above_300mm2": [
+    1.0,
+    0.97,
+    0.96,
+    0.95,
+    0.92,
+    0.91
+   ]
+  },
+  "depth_single_way_ducts_multicore": {
+   "source": "S2",
+   "table": "Table 7",
+   "depth_mm": [
+    750,
+    900,
+    1050,
+    1200,
+    1500,
+    1800,
+    2700,
+    3600,
+    4500,
+    5400
+   ],
+   "factor": [
+    1.0,
+    0.99,
+    0.98,
+    0.97,
+    0.96,
+    0.95,
+    0.92,
+    0.91,
+    0.9,
+    0.89
+   ]
+  },
+  "soil_resistivity_multicore_direct": {
+   "source": "S2",
+   "table": "Table 8 (direct in ground columns)",
+   "resistivity_degC_cm_per_W": [
+    100,
+    120,
+    150,
+    200
+   ],
+   "rows": {
+    "1.5": [
+     1.1,
+     1.05,
+     1.0,
+     0.92
+    ],
+    "2.5": [
+     1.1,
+     1.05,
+     1.0,
+     0.92
+    ],
+    "4": [
+     1.1,
+     1.05,
+     1.0,
+     0.92
+    ],
+    "6": [
+     1.1,
+     1.05,
+     1.0,
+     0.92
+    ],
+    "10": [
+     1.1,
+     1.06,
+     1.0,
+     0.92
+    ],
+    "16": [
+     1.12,
+     1.06,
+     1.0,
+     0.91
+    ],
+    "25": [
+     1.14,
+     1.08,
+     1.0,
+     0.91
+    ],
+    "35": [
+     1.15,
+     1.08,
+     1.0,
+     0.91
+    ],
+    "50": [
+     1.15,
+     1.08,
+     1.0,
+     0.91
+    ],
+    "70": [
+     1.15,
+     1.08,
+     1.0,
+     0.9
+    ],
+    "95": [
+     1.15,
+     1.08,
+     1.0,
+     0.9
+    ],
+    "120": [
+     1.17,
+     1.09,
+     1.0,
+     0.9
+    ],
+    "150": [
+     1.17,
+     1.09,
+     1.0,
+     0.9
+    ],
+    "185": [
+     1.18,
+     1.09,
+     1.0,
+     0.89
+    ],
+    "240": [
+     1.18,
+     1.09,
+     1.0,
+     0.89
+    ],
+    "300": [
+     1.18,
+     1.09,
+     1.0,
+     0.89
+    ],
+    "400": [
+     1.19,
+     1.1,
+     1.0,
+     0.89
+    ]
+   }
+  },
+  "soil_resistivity_3x1c_trefoil_direct": {
+   "source": "S2",
+   "table": "Table 10 (direct in ground columns)",
+   "resistivity_degC_cm_per_W": [
+    100,
+    120,
+    150,
+    200
+   ],
+   "rows": {
+    "1.5": [
+     1.18,
+     1.09,
+     1.0,
+     0.9
+    ],
+    "2.5": [
+     1.18,
+     1.09,
+     1.0,
+     0.9
+    ],
+    "4": [
+     1.18,
+     1.09,
+     1.0,
+     0.9
+    ],
+    "6": [
+     1.18,
+     1.09,
+     1.0,
+     0.9
+    ],
+    "10": [
+     1.18,
+     1.09,
+     1.0,
+     0.89
+    ],
+    "16": [
+     1.19,
+     1.09,
+     1.0,
+     0.89
+    ],
+    "25": [
+     1.19,
+     1.09,
+     1.0,
+     0.88
+    ],
+    "35": [
+     1.2,
+     1.09,
+     1.0,
+     0.88
+    ],
+    "50": [
+     1.2,
+     1.09,
+     1.0,
+     0.88
+    ],
+    "70": [
+     1.21,
+     1.1,
+     1.0,
+     0.88
+    ],
+    "95": [
+     1.22,
+     1.1,
+     1.0,
+     0.88
+    ],
+    "120": [
+     1.22,
+     1.1,
+     1.0,
+     0.88
+    ],
+    "150": [
+     1.22,
+     1.1,
+     1.0,
+     0.88
+    ],
+    "185": [
+     1.22,
+     1.1,
+     1.0,
+     0.88
+    ],
+    "240": [
+     1.22,
+     1.1,
+     1.0,
+     0.88
+    ],
+    "300": [
+     1.22,
+     1.1,
+     1.0,
+     0.88
+    ],
+    "400": [
+     1.24,
+     1.11,
+     1.0,
+     0.88
+    ],
+    "500": [
+     1.24,
+     1.11,
+     1.0,
+     0.88
+    ],
+    "630": [
+     1.24,
+     1.11,
+     1.0,
+     0.88
+    ]
+   }
+  },
+  "XLPE_1100V": {
+   "source": "S5",
+   "value": null,
+   "reason": "Finolex Tables 4.3 (depth), 4.13 and 4.14 (soil resistivity, 1100 V, base 1.5 K.m/W) exist but the PDF text layout of Table 4.3 is scrambled; not transcribed to avoid misalignment."
+  }
+ },
+ "grouping_factors": {
+  "air_rule_IS3961_2_cl6_1": {
+   "source": "S3",
+   "verification": "primary",
+   "text": "For cables of sizes up to 70 mm2, no reduction in rating need be applied provided that the circuits are run with a clearance of at least 75 mm and provided that if the number of circuits exceeds three, they are installed in a horizontal plane. For cables of sizes above 70 mm2, no reduction in rating need be applied provided that the circuits are run with a clearance of at least 150 mm, and provided that if the number of circuits exceeds four, they are installed in a horizontal plane."
+  },
+  "PVC_multicore_on_racks_in_air_touching": {
+   "source": [
+    "S3",
+    "S2"
+   ],
+   "tables": "IS 3961-2 Amd 1 Table 20; Gemscab Table 3",
+   "verification": "primary and catalogue agree",
+   "cables_per_rack": [
+    1,
+    2,
+    3,
+    6,
+    9
+   ],
+   "racks": {
+    "1": [
+     1.0,
+     0.84,
+     0.8,
+     0.75,
+     0.73
+    ],
+    "2": [
+     1.0,
+     0.8,
+     0.76,
+     0.71,
+     0.69
+    ],
+    "3": [
+     1.0,
+     0.78,
+     0.74,
+     0.7,
+     0.68
+    ],
+    "6": [
+     1.0,
+     0.76,
+     0.72,
+     0.68,
+     0.66
+    ]
+   },
+   "note": "Racks of open type (Amd 2 note)."
+  },
+  "PVC_multicore_on_racks_in_air_spaced_1D": {
+   "source": [
+    "S3",
+    "S2"
+   ],
+   "tables": "IS 3961-2 Amd 1 Table 19; Gemscab Table 11",
+   "cables_per_rack": [
+    1,
+    2,
+    3,
+    6,
+    9
+   ],
+   "racks": {
+    "1": [
+     1.0,
+     0.98,
+     0.96,
+     0.93,
+     0.92
+    ],
+    "2": [
+     1.0,
+     0.95,
+     0.93,
+     0.9,
+     0.89
+    ],
+    "3": [
+     1.0,
+     0.94,
+     0.92,
+     0.89,
+     0.88
+    ],
+    "6": [
+     1.0,
+     0.93,
+     0.9,
+     0.87,
+     0.86
+    ]
+   }
+  },
+  "XLPE_1100V_multicore_perforated_trays": {
+   "source": "S5",
+   "table": "Table 4.17",
+   "cables": [
+    1,
+    2,
+    3,
+    4,
+    6,
+    9
+   ],
+   "touching": {
+    "1": [
+     1.0,
+     0.88,
+     0.82,
+     0.79,
+     0.76,
+     0.73
+    ],
+    "2": [
+     1.0,
+     0.87,
+     0.8,
+     0.77,
+     0.73,
+     0.68
+    ],
+    "3": [
+     1.0,
+     0.86,
+     0.79,
+     0.76,
+     0.71,
+     0.66
+    ]
+   },
+   "spaced": {
+    "1": [
+     1.0,
+     1.0,
+     0.98,
+     0.95,
+     0.91,
+     null
+    ],
+    "2": [
+     1.0,
+     0.99,
+     0.96,
+     0.92,
+     0.87,
+     null
+    ],
+    "3": [
+     1.0,
+     0.98,
+     0.95,
+     0.91,
+     0.85,
+     null
+    ]
+   },
+   "note": "Arrangement labels are drawings in the PDF; the touching/spaced assignment is inferred from block order and the IEC 60364-5-52 Table B.52.20 pattern. Trays 300 mm apart vertically, >=20 mm from wall. Finolex Table 4.19 (ladder, LV section) repeats these perforated-tray values, which looks like a catalogue error (HT Table 4.11 ladder: 1.00, 0.87, 0.82, 0.80, 0.79, 0.78 for 1 ladder touching)."
+  },
+  "PVC_multicore_direct_ground_horizontal": {
+   "source": "S2",
+   "table": "Table 6",
+   "spacing": [
+    "touching",
+    "15cm",
+    "30cm",
+    "45cm",
+    "60cm"
+   ],
+   "cables": {
+    "2": [
+     0.79,
+     0.82,
+     0.87,
+     0.9,
+     0.91
+    ],
+    "3": [
+     0.69,
+     0.75,
+     0.79,
+     0.83,
+     0.86
+    ],
+    "4": [
+     0.62,
+     0.69,
+     0.75,
+     0.79,
+     0.82
+    ],
+    "5": [
+     0.58,
+     0.65,
+     0.72,
+     0.76,
+     0.8
+    ],
+    "6": [
+     0.54,
+     0.61,
+     0.69,
+     0.75,
+     0.78
+    ],
+    "7": [
+     0.52,
+     0.59,
+     0.68,
+     0.73,
+     0.77
+    ],
+    "8": [
+     0.5,
+     0.57,
+     0.66,
+     0.72,
+     0.75
+    ],
+    "9": [
+     0.47,
+     0.55,
+     0.64,
+     0.71,
+     0.74
+    ],
+    "10": [
+     0.46,
+     0.54,
+     0.63,
+     0.7,
+     0.74
+    ],
+    "11": [
+     0.45,
+     0.53,
+     0.63,
+     0.69,
+     0.73
+    ],
+    "12": [
+     0.44,
+     0.52,
+     0.62,
+     0.68,
+     0.73
+    ]
+   },
+   "note": "Tier-formation columns are misaligned in the PDF text and are omitted."
+  },
+  "PVC_3x1c_trefoil_direct_ground_horizontal": {
+   "source": "S2",
+   "table": "Table 1",
+   "spacing": [
+    "touching",
+    "15cm",
+    "30cm",
+    "45cm",
+    "60cm"
+   ],
+   "circuits": {
+    "2": [
+     0.76,
+     0.81,
+     0.86,
+     0.88,
+     0.89
+    ],
+    "3": [
+     0.66,
+     0.71,
+     0.77,
+     0.81,
+     0.83
+    ],
+    "4": [
+     0.61,
+     0.64,
+     0.72,
+     0.77,
+     0.8
+    ],
+    "5": [
+     0.56,
+     0.6,
+     0.68,
+     0.73,
+     0.76
+    ],
+    "6": [
+     0.53,
+     0.56,
+     0.66,
+     0.72,
+     0.76
+    ],
+    "7": [
+     0.51,
+     0.55,
+     0.64,
+     0.69,
+     0.74
+    ],
+    "8": [
+     0.48,
+     0.53,
+     0.63,
+     0.68,
+     0.74
+    ],
+    "9": [
+     0.46,
+     0.52,
+     0.62,
+     0.67,
+     0.73
+    ],
+    "10": [
+     0.45,
+     0.51,
+     0.6,
+     0.66,
+     0.73
+    ],
+    "11": [
+     0.44,
+     0.5,
+     0.59,
+     0.66,
+     0.72
+    ],
+    "12": [
+     0.43,
+     0.49,
+     0.59,
+     0.65,
+     0.72
+    ]
+   }
+  }
+ },
+ "voltage_drop": {
+  "india_SP30_2011": [
+   {
+    "source": "S6",
+    "clause": "Part 1/Sec 9 area, 4.8 Voltage Drop in Consumer's Installations",
+    "verification": "primary (2011 ed.)",
+    "limit_percent": 4,
+    "from": "origin of installation (usually the supply terminal) to fixed current-using equipment",
+    "text": "should not exceed 4 percent of the normal voltage of the supply. A greater voltage drop maybe accepted for a motor during starting periods ..."
+   },
+   {
+    "source": "S6",
+    "clause": "4.2.10.1 Acceptable values of voltage drop",
+    "verification": "primary (2011 ed.)",
+    "limit_percent": 5,
+    "from": "origin of installation to fixed current-using equipment",
+    "text": "The requirements are deemed to be satisfied for a supply given if the voltage drop ... does not exceed 5 percent of the normal voltage of the supply."
+   },
+   {
+    "source": "S6",
+    "clause": "5.3 Approximate estimates of allowable voltage drop in a large building",
+    "verification": "primary (2011 ed.)",
+    "lighting_circuit_percent": 3,
+    "breakdown_V": {
+     "main_fuse_to_MDB": 1.0,
+     "MDB_to_each_SDB": 4.5,
+     "each_final_subcircuit": 1.5
+    },
+    "pump_motor_house_percent_max": 7.5,
+    "text": "in a lighting circuit containing lights and fans, the total voltage drop is kept within 3 percent of the declared voltage ... pump motor in a house may go up to 7.5 percent ... recommended to keep this drop within 3 percent, if possible."
+   },
+   {
+    "source": "S6",
+    "clause": "6.0.2 Size of Wires",
+    "verification": "primary (2011 ed.)",
+    "lighting_percent": 3,
+    "from": "main distribution board to farthest point of the lighting circuit",
+    "text": "in a 230 V circuit this drop is 3/100 x 230 = 6.9 ~ 7.0 V"
+   }
+  ],
+  "india_note": "SP 30:2011 gives 4 % in one clause and 5 % 'deemed to satisfy' in another.",
+  "IS_732_1989_8_2_2": {
+   "source": "S19",
+   "limit_percent": null,
+   "text": "the voltage drop within the installation does not exceed a value appropriate to the safe functioning of the associated equipment in normal service"
+  },
+  "IS_732_2019": {
+   "value": null,
+   "reason": "Standard text not freely accessible; secondary web summaries conflict (5 %, 2.5/3 %, 3/5 %), so none is used."
+  },
+  "NEC_India_2023_SP30_2023": {
+   "value": null,
+   "source": "S17",
+   "reason": "Exists (second revision, Jan 2023) but the text needs a BIS portal login; not verified."
+  },
+  "IEC_60364_5_52_AnnexG_TableG52_1": {
+   "source": "S13",
+   "verification": "secondary (search extract; page returned 403)",
+   "public_LV_supply": {
+    "lighting_percent": 3,
+    "other_uses_percent": 5
+   },
+   "private_LV_supply": {
+    "lighting_percent": 6,
+    "other_uses_percent": 8
+   },
+   "extension": "may be increased by 0.005 % per metre of wiring system beyond 100 m, increase not greater than 0.5 %",
+   "motor_starting": "Limits refer to steady state and do not apply at motor starting. The guide notes 8 % at full load can mean 40 % or more at start-up, and that a motor needs +/-5 % of rated voltage in steady state.",
+   "formula": {
+    "source": "S12",
+    "text": "u = b*(rho1*L/S*cos(phi) + lambda*L*sin(phi))*IB; b = 1 three-phase, 2 single-phase; rho1 = 0.0225 ohm.mm2/m Cu, 0.036 Al (1.25 x rho at 20 C); lambda = 0.08 mohm/m; cos(phi) = 0.8 if unknown; du % = 100*u/U0"
+   }
+  },
+  "motor_starting_dip_numeric": {
+   "value": null,
+   "reason": "No accessible IS/IEC clause gives a numeric starting-dip limit. SP 30 and IEC defer to the equipment standard or manufacturer. IEC TS 61200-201 (2026) covers motor starting but was not accessible."
+  },
+  "nepal": {
+   "source": "S8",
+   "verification": "primary (law)",
+   "rule_40": {
+    "nominal_single_phase_V": 230,
+    "nominal_three_phase_V": 400,
+    "four_wire": "230/400 V AC three phase",
+    "max_fluctuation_percent": 5,
+    "text": "(2) The fluctuation shall not be allowed for more than five percent in standard volt as mentioned in Clauses (a) and (b) of sub-rule (1)."
+   },
+   "rule_41_HV_distribution": {
+    "voltages_V": [
+     3300,
+     6600,
+     11000,
+     22000,
+     33000
+    ],
+    "max_fluctuation_percent": 5
+   },
+   "rule_42_transmission": {
+    "voltages_V": [
+     33000,
+     66000,
+     132000,
+     220000,
+     400000
+    ],
+    "max_fluctuation_percent": 10
+   },
+   "rule_43_frequency": {
+    "Hz": 50,
+    "max_fluctuation_percent": 2.5
+   },
+   "rule_44_power_factor": "not less than 0.8 lagging and not more than unity leading",
+   "derived_supply_range_V": {
+    "230V": [
+     218.5,
+     241.5
+    ],
+    "400V": [
+     380,
+     420
+    ],
+    "note": "computed from +/-5 %"
+   },
+   "NEA_distribution_bylaws": null,
+   "NEA_bylaws_reason": "Not found online in accessible form.",
+   "Nepal_electrical_code": null,
+   "Nepal_code_reason": "No Nepal national wiring code found; Indian SP 30/IS 732 and IEC 60364 are used in practice."
+  }
+ },
+ "protection_coordination": {
+  "IEC_60364_4_43_433_1": {
+   "verification": "not_verified (standard text not accessible; S14 confirms structure only)",
+   "conditions": [
+    "IB <= In <= Iz",
+    "I2 <= 1.45 * Iz"
+   ]
+  },
+  "SP30_2011_4_2_8": {
+   "source": "S6",
+   "verification": "primary (2011 ed.)",
+   "text": "the operating current of the protective device must not exceed 1.45Iz. Where the protective device is a fuse as per IS 13703 (Part 2/Section 1) and IS 13703 (Part 2/Section 2) or IS 2086 or a miniature circuit breaker as per IS/IEC 60898, this requirement is satisfied by selecting a value of Iz not less than In.",
+   "rewirable_fuse_IS9926": "correction factor 1.45/2 = 0.725 applied to the fuse rating as a divisor"
+  },
+  "IS_3961_2_1967_cl7": {
+   "source": "S3",
+   "verification": "primary (1967)",
+   "text": "protection is considered adequate if the minimum current at which the protective device is designed to operate does not exceed 1.5 times the tabulated ratings for cables laid in air or in ducts, and not more than 1.3 times the tabulated values for cables laid direct in the ground",
+   "rating_multiplier_if_not_met": {
+    "air_or_duct": 0.67,
+    "direct_ground": 0.77
+   },
+   "note": "Older Indian rule; differs from the IEC 1.45 Iz rule."
+  },
+  "conventional_currents": {
+   "source": "S11",
+   "IEC_60898_1_MCB": {
+    "non_tripping": "1.13 In",
+    "tripping": "1.45 In",
+    "time": "1 h",
+    "ref_temp_C": 30
+   },
+   "IEC_60947_2_CB": {
+    "non_tripping": "1.05 In",
+    "tripping": "1.3 In",
+    "time": "1 h",
+    "ref_temp": "manufacturer defined"
+   }
+  },
+  "MCB_rating_series_A": {
+   "value": [
+    6,
+    8,
+    10,
+    13,
+    16,
+    20,
+    25,
+    32,
+    40,
+    50,
+    63,
+    80,
+    100,
+    125
+   ],
+   "verification": "not_verified",
+   "note": "IEC 60898-1 preferred values as recalled, not read from the standard. Indian market MCBs are commonly 6, 10, 16, 20, 25, 32, 40, 50, 63 (+80, 100, 125). Confirm against IS/IEC 60898-1 clause 5.3."
+  },
+  "MCCB_rating_series_A": {
+   "value": null,
+   "reason": "IEC 60947-2 defines no preferred series; ratings are manufacturer-specific."
+  },
+  "fuse_gG_rating_series_A": {
+   "value": [
+    2,
+    4,
+    6,
+    8,
+    10,
+    12,
+    16,
+    20,
+    25,
+    32,
+    40,
+    50,
+    63,
+    80,
+    100,
+    125,
+    160,
+    200,
+    250,
+    315,
+    400,
+    500,
+    630,
+    800,
+    1000,
+    1250
+   ],
+   "verification": "not_verified",
+   "note": "IEC 60269-1 rated currents as recalled, not read from the standard; gG conventional fusing current about 1.6 In (secondary vendor source). Confirm before release."
+  }
+ },
+ "short_circuit_k": {
+  "formula": "S = sqrt(I^2 * t) / k ; Isc_kA = k * S / sqrt(t) / 1000",
+  "live_conductors": [
+   {
+    "insulation": "PVC 70 C",
+    "initial_C": 70,
+    "final_C": 160,
+    "k_Cu": 115,
+    "k_Al": 76,
+    "source": [
+     "S1",
+     "S4",
+     "S7"
+    ],
+    "verification": "three Indian sources agree (Polycab kA table, Torrent K, IS 3043 Table 6C)"
+   },
+   {
+    "insulation": "HR-PVC 85 C",
+    "initial_C": 85,
+    "final_C": 160,
+    "k_Cu": 104,
+    "k_Al": 69,
+    "source": "S4",
+    "verification": "manufacturer_catalogue"
+   },
+   {
+    "insulation": "XLPE 90 C",
+    "initial_C": 90,
+    "final_C": 250,
+    "k_Cu": 143,
+    "k_Al": 94,
+    "source": [
+     "S1",
+     "S7"
+    ],
+    "verification": "Polycab kA table and IS 3043 Table 6C agree"
+   },
+   {
+    "insulation": "PVC 70 C, conductor > 300 mm2",
+    "initial_C": 70,
+    "final_C": 140,
+    "k_Cu": 103,
+    "k_Al": 68,
+    "verification": "not_verified",
+    "note": "IEC 60364-4-43 value as recalled; Polycab and Torrent use 115/76 for all sizes."
+   }
+  ],
+  "polycab_1s_ratings_kA": {
+   "source": "S1",
+   "sizes_mm2": [
+    1.5,
+    2.5,
+    4,
+    6,
+    10,
+    16,
+    25,
+    35,
+    50,
+    70,
+    95,
+    120,
+    150,
+    185,
+    240,
+    300,
+    400,
+    500,
+    630
+   ],
+   "PVC_Cu": [
+    0.173,
+    0.29,
+    0.46,
+    0.69,
+    1.15,
+    1.84,
+    2.88,
+    4.03,
+    5.75,
+    8.05,
+    10.93,
+    13.8,
+    17.25,
+    21.27,
+    27.6,
+    34.5,
+    46,
+    57.5,
+    72.45
+   ],
+   "PVC_Al": [
+    null,
+    null,
+    0.3,
+    0.46,
+    0.76,
+    1.22,
+    1.9,
+    2.66,
+    3.8,
+    5.32,
+    7.22,
+    9.12,
+    11.4,
+    14.06,
+    18.24,
+    22.8,
+    30.4,
+    38,
+    47.88
+   ],
+   "XLPE_Cu": [
+    0.21,
+    0.36,
+    0.57,
+    0.86,
+    1.43,
+    2.29,
+    3.58,
+    5.01,
+    7.16,
+    10.02,
+    13.59,
+    17.17,
+    21.47,
+    26.47,
+    34.34,
+    42.93,
+    57.24,
+    71.55,
+    90.15
+   ],
+   "XLPE_Al": [
+    null,
+    null,
+    0.38,
+    0.57,
+    0.95,
+    1.51,
+    2.36,
+    3.31,
+    4.73,
+    6.62,
+    8.98,
+    11.34,
+    14.18,
+    17.48,
+    22.68,
+    28.35,
+    37.8,
+    47.25,
+    59.54
+   ]
+  },
+  "protective_conductors_IS3043_Table6": {
+   "source": "S7",
+   "verification": "primary (1987)",
+   "6A_bare_no_fire_risk_initial_40C": {
+    "k1": {
+     "Cu": 205,
+     "Al": 126,
+     "steel": 80
+    },
+    "final_C": {
+     "Cu": 395,
+     "Al": 325,
+     "steel": 500
+    }
+   },
+   "6B_separate_insulated_PE_initial_40C": {
+    "PVC_160C": {
+     "Cu": 136,
+     "Al": 90,
+     "steel": 49
+    },
+    "butyl_220C": {
+     "Cu": 160,
+     "Al": 106,
+     "steel": 58
+    },
+    "XLPE_EPR_250C": {
+     "Cu": 170,
+     "Al": 112,
+     "steel": 62
+    }
+   },
+   "6C_core_in_multicore": {
+    "PVC_70_160": {
+     "Cu": 115,
+     "Al": 76
+    },
+    "butyl_85_220": {
+     "Cu": 134,
+     "Al": 89
+    },
+    "XLPE_EPR_90_250": {
+     "Cu": 143,
+     "Al": 94
+    }
+   },
+   "note": "IS 3043:1987 uses initial 40 C for separate PE; IEC 60364-5-54 Table A.54.2 uses 30 C (giving higher k, e.g. Cu/PVC 143) - IEC values not verified here."
+  }
+ },
+ "protective_earth_sizing": {
+  "IS3043_1987_12_2_2_2_Table7": {
+   "source": "S7",
+   "verification": "primary (OCR partly illegible)",
+   "rows": [
+    {
+     "phase_S_mm2": "S <= 16",
+     "Sp": "S"
+    },
+    {
+     "phase_S_mm2": "16 < S <= 35",
+     "Sp": 16
+    },
+    {
+     "phase_S_mm2": "S > 35",
+     "Sp": null,
+     "Sp_reason": "OCR shows 'See 12.2.2.1' in this cell; IEC 60364-5-54 Table 54.2 gives S/2 (not verified from accessible text)"
+    }
+   ],
+   "minimum_separate_PE": {
+    "clause": "12.2.2.3",
+    "mechanically_protected_mm2": 2.5,
+    "not_protected_mm2": 4
+   },
+   "adiabatic": {
+    "clause": "12.2.2.1",
+    "formula": "S = sqrt(I^2 t)/k, applicable only for disconnection times not exceeding 5 s"
+   }
+  },
+  "IEC_60364_5_54_Table54_2": {
+   "verification": "not_verified",
+   "rows": [
+    [
+     "S <= 16",
+     "S"
+    ],
+    [
+     "16 < S <= 35",
+     "16"
+    ],
+    [
+     "S > 35",
+     "S/2"
+    ]
+   ],
+   "note": "Same-material PE; for a different material scale by k1/k2."
+  },
+  "SP30_2011_main_bonding": {
+   "source": "S6",
+   "text": "not less than half the cross-sectional area of the largest protective conductor of the installation, subject to a minimum of 6 mm2. The cross-sectional area need not, however, exceed 25 mm2, if the bonding conductor is of copper"
+  }
+ },
+ "earth_fault_loop": {
+  "TN_condition": "Zs * Ia <= U0 (Ia = current causing automatic operation of the device within the Table 41.1 time)",
+  "Zs_max_formula": "Zs_max = U0 / Ia ; for MCBs use the upper instantaneous limit: type B 5 In, type C 10 In, type D 20 In",
+  "TT_condition": "RA * Ia <= 50 V (for an RCD, Ia = rated residual operating current)",
+  "IEC_60364_4_41_Table41_1": {
+   "verification": "not_verified (table name confirmed by S14; 0.4 s at 230 V and the 63 A / 32 A scope confirmed only by secondary S15)",
+   "applies_to": "final circuits <= 63 A with socket-outlets and <= 32 A supplying only fixed equipment (current wording); older 2005 text: final circuits <= 32 A",
+   "TN_s": {
+    "50<U0<=120": 0.8,
+    "120<U0<=230": 0.4,
+    "230<U0<=400": 0.2,
+    "U0>400": 0.1
+   },
+   "TT_s": {
+    "50<U0<=120": 0.3,
+    "120<U0<=230": 0.2,
+    "230<U0<=400": 0.07,
+    "U0>400": 0.04
+   },
+   "distribution_and_other_circuits_s": {
+    "TN": 5,
+    "TT": 1
+   }
+  },
+  "india_note": "IS 3043:1987 and SP 30:2011 discuss 'safe disconnecting time' and PE thermal protection via adiabatic curves; an explicit 0.4 s / 5 s table was not located in the OCR text."
+ },
+ "motors": {
+  "hp_to_kW": {
+   "source": "S10",
+   "mechanical_hp_W": 745.6999,
+   "electric_hp_W": 746,
+   "metric_hp_W": 735.4988,
+   "recommended_factor_kW_per_hp": 0.746
+  },
+  "efficiency_IEC60034_30_1_2014_4pole_50Hz_percent": {
+   "source": "S9",
+   "kW": [
+    0.75,
+    1.1,
+    1.5,
+    2.2,
+    3,
+    4,
+    5.5,
+    7.5,
+    11,
+    15,
+    18.5,
+    22,
+    30,
+    37,
+    45,
+    55,
+    75,
+    90,
+    110
+   ],
+   "IE2": [
+    79.6,
+    81.4,
+    82.8,
+    84.3,
+    85.5,
+    86.6,
+    87.7,
+    88.7,
+    89.8,
+    90.6,
+    91.2,
+    91.6,
+    92.3,
+    92.7,
+    93.1,
+    93.5,
+    94.0,
+    94.2,
+    94.5
+   ],
+   "IE3": [
+    82.5,
+    84.1,
+    85.3,
+    86.7,
+    87.7,
+    88.6,
+    89.6,
+    90.4,
+    91.4,
+    92.1,
+    92.6,
+    93.0,
+    93.6,
+    93.9,
+    94.2,
+    94.6,
+    95.0,
+    95.2,
+    95.4
+   ],
+   "note": "Read from PDF word coordinates (plain text extraction is shifted by one row). These are minimum values. Indian 3.7 kW and 9.3 kW ratings are not listed."
+  },
+  "power_factor_default": {
+   "value_generic": 0.8,
+   "source": "S12",
+   "text": "in the absence of precise details, the power factor is taken as equal to 0.8 (sin = 0.6)",
+   "per_rating_table": null,
+   "reason": "No standard defines motor PF by rating; use nameplate or manufacturer data."
+  }
+ },
+ "user_quoted_values_check": {
+  "PVC_air": {
+   "user": {
+    "20": 1.32,
+    "25": 1.25,
+    "30": 1.16,
+    "35": 1.09,
+    "40": 1.0,
+    "45": 0.9,
+    "50": 0.81
+   },
+   "verdict": "agrees with IS 3961-2 Table 17 (25-45 C) and Gemscab (20-50 C). Torrent alone shows 0.91 at 45 C.",
+   "sources": [
+    "S2",
+    "S3",
+    "S4"
+   ]
+  },
+  "XLPE_air": {
+   "user": {
+    "40": 1.0,
+    "45": 0.95,
+    "50": 0.9,
+    "55": 0.84
+   },
+   "verdict": "50 C differs: Polycab and Finolex both give 0.89. 45 and 55 C agree.",
+   "sources": [
+    "S1",
+    "S5"
+   ]
+  },
+  "HR_PVC_air": {
+   "user": {
+    "45": 0.94,
+    "50": 0.87,
+    "55": 0.82
+   },
+   "verdict": "45 C agrees; 50 C differs (Gemscab 0.88); 55 C not found in any source.",
+   "sources": [
+    "S2"
+   ]
+  },
+  "ground_temp": {
+   "user": {
+    "15": 1.17,
+    "30": 1.0,
+    "35": 0.94,
+    "40": 0.87,
+    "45": 0.79,
+    "50": 0.71
+   },
+   "verdict": "Confirmed as PVC 70 C factors (IS 3961-2 Table 7, Gemscab, Torrent). XLPE 90 C ground factors are 1.12/1.08/1.04/1.00/0.96/0.91/0.87/0.82 for 15-50 C.",
+   "sources": [
+    "S1",
+    "S2",
+    "S3",
+    "S5"
+   ]
+  },
+  "base_conditions": {
+   "user": "ground 30 C, air 40 C, soil 150 C.cm/W, depth 750 mm",
+   "verdict": "Confirmed for IS 3961-2 (PVC) and Polycab (XLPE, IS 3961-6:2016).",
+   "sources": [
+    "S1",
+    "S3"
+   ]
+  },
+  "table_numbers": {
+   "verdict": "Your 'Table 9' (air) and 'Table 20' (HR-PVC/XLPE) numbering could not be matched: the 1967 edition uses Table 17 (air) and Table 7 (ground); the 2017 revision was not accessible."
+  }
+ }
+}

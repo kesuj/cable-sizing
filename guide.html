@@ -1,0 +1,208 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Cable sizing guide</title>
+<meta name="description" content="How cables are sized in Nepal and around the world, explained for homeowners and engineers.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+  .doc { max-width: 1100px; margin: 0 auto; padding: var(--s6); display: grid; grid-template-columns: 220px minmax(0, 1fr); gap: var(--s7); }
+  .toc { position: sticky; top: var(--s4); align-self: start; font-size: 14px; }
+  .toc ol { padding-left: 1.2em; display: grid; gap: var(--s2); margin: var(--s3) 0 0; }
+  .toc a { text-decoration: none; } .toc a:hover { text-decoration: underline; }
+  .doc article { min-width: 0; }
+  .doc section { padding-bottom: var(--s6); border-bottom: 1px solid var(--rule); margin-bottom: var(--s6); }
+  .doc h2 { font-size: 31px; margin-bottom: var(--s4); }
+  .doc h3 { margin: var(--s5) 0 var(--s2); }
+  .doc p, .doc li { max-width: 62ch; }
+  .doc .lead { font-size: 20px; line-height: 1.45; max-width: 60ch; }
+  .four { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--s4); margin: var(--s4) 0; }
+  .four > div { background: var(--sheet); border: 1px solid var(--rule); padding: var(--s4); }
+  .four b { display: block; font-size: 18px; font-variation-settings: "wdth" 80; margin-bottom: var(--s1); }
+  details { background: var(--sheet); border: 1px solid var(--rule); padding: var(--s3) var(--s4); margin: var(--s3) 0; }
+  summary { cursor: pointer; font-weight: 600; min-height: 32px; }
+  td, th { white-space: normal; text-align: left; vertical-align: top; }
+  .tag { font-size: 12px; color: var(--graphite); }
+  .unv { background: var(--warn-bg); padding: 0 4px; font-size: 13px; }
+  @media (max-width: 860px) { .doc { grid-template-columns: minmax(0, 1fr); padding: var(--s4); gap: var(--s4); } .toc { position: static; } .four { grid-template-columns: minmax(0, 1fr); } }
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">
+    <h1>How cable sizing works</h1>
+    <p>Why one cable is right and another is dangerous, how it is done in Nepal, and how the rest of the world does it.</p>
+  </div>
+  <nav class="switches" aria-label="Pages"><a class="btn" href="index.html">Open the calculator</a></nav>
+</header>
+
+<div class="doc">
+  <nav class="toc" aria-label="Contents">
+    <b>On this page</b>
+    <ol>
+      <li><a href="#idea">The idea in two minutes</a></li>
+      <li><a href="#process">The complete process</a></li>
+      <li><a href="#route">Where the cable runs</a></li>
+      <li><a href="#nepal">How it is done in Nepal</a></li>
+      <li><a href="#world">How the world does it</a></li>
+      <li><a href="#hv">High voltage (3.3–33 kV)</a></li>
+      <li><a href="#buy">Buying and installing</a></li>
+      <li><a href="#limits">Limits and sources</a></li>
+    </ol>
+  </nav>
+  <article>
+
+  <section id="idea">
+    <h2>The idea in two minutes</h2>
+    <p class="lead">A cable is a pipe for current. Too thin and it gets hot, wastes power and, in a fault, melts before the breaker trips. Too thick and you pay for copper you never use. Sizing finds the thinnest cable that passes four tests.</p>
+    <div class="four">
+      <div><b>It must not overheat</b>Every cable has a current it can carry all day without its insulation cooking. Heat around it — summer sun, soil, other cables — lowers that number.</div>
+      <div><b>The voltage must arrive</b>Long thin cables lose voltage on the way. Lights dim, motors run hot and fail to start. Nepal's law allows the supply only ±5 %.</div>
+      <div><b>It must survive a short circuit</b>For the split second before the breaker trips, thousands of amps flow. The cable must be thick enough not to be damaged.</div>
+      <div><b>The breaker must protect it</b>The breaker trips before the cable overheats: load current ≤ breaker rating ≤ what the cable can carry.</div>
+    </div>
+    <p>The calculator runs all four tests on every standard size, picks the smallest that passes, and tells you which test decided it. Often it is not the one you expect: on long runs it is voltage drop, near big transformers it is the short-circuit test.</p>
+  </section>
+
+  <section id="process">
+    <h2>The complete process</h2>
+    <p>These ten steps are the same in every country; only the tables and limits change. Formulas, clauses and worked examples are in <code>docs/METHOD.md</code> and <code>docs/WORKED_EXAMPLES.md</code>.</p>
+    <ol class="trail">
+      <li><b>Load current.</b> 3-phase: I = P ÷ (√3 × 400 V × pf × η). Single phase: I = P ÷ (230 V × pf × η). 1 HP = 0.746 kW of shaft power.</li>
+      <li><b>Design current Ib.</b> Add spare for growth (25 % for a building supply) and 25 % for a motor branch.</li>
+      <li><b>Breaker or fuse.</b> The next standard rating at or above Ib: 6, 10, 16, 20, 25, 32, 40, 63, 80, 100, 125 A …</li>
+      <li><b>Rating factors.</b> Multiply the factors for air or ground temperature, soil, depth and neighbouring cables.</li>
+      <li><b>Thermal size.</b> The table rating must be at least breaker rating ÷ total factor.</li>
+      <li><b>Voltage drop.</b> ΔU = √3 × I × L × (R cos φ + X sin φ). Keep it within 3–5 %.</li>
+      <li><b>Motor starting.</b> A direct-on-line motor draws 6–7 times its current while starting; the dip must not stall it.</li>
+      <li><b>Short circuit.</b> Cross-section ≥ I × √t ÷ k (k = 143 copper XLPE, 94 aluminium XLPE, 115/76 for PVC).</li>
+      <li><b>Parallel cables.</b> If no single cable is enough, use two or more identical cables side by side (they heat each other, so each is derated).</li>
+      <li><b>Earth conductor.</b> Same size up to 16 mm², 16 mm² up to 35 mm², half the phase size above that.</li>
+    </ol>
+    <details><summary>The two rules that catch most mistakes</summary>
+      <p><b>Size the cable for the breaker, not for the load.</b> If a 20 A load is on a 32 A breaker, the cable must carry 32 A after derating, or it can overheat for hours without the breaker ever tripping.</p>
+      <p><b>Never mix tables.</b> Indian (IS) ratings assume 40 °C air and 30 °C ground; IEC ratings assume 30 °C air and 20 °C ground. Using IEC factors on IS ratings (or the reverse) gives wrong answers of 10–20 %.</p>
+    </details>
+  </section>
+
+  <section id="route">
+    <h2>Where the cable runs changes everything</h2>
+    <p>The same 16 mm² copper cable can safely carry anywhere from about 60 A to 100 A depending on how it is installed, because what limits it is how fast heat escapes.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Installation</th><th>IS (Nepal/India) name</th><th>IEC method</th><th>What to watch</th></tr></thead>
+      <tbody>
+        <tr><td>Wires in PVC pipe on a wall (house wiring)</td><td>—</td><td>B1</td><td>Many circuits in one pipe heat each other: 3 circuits → 70 %.</td></tr>
+        <tr><td>Pipe inside an insulated wall</td><td>—</td><td>A1</td><td>Lowest rating of all; avoid for heavy loads.</td></tr>
+        <tr><td>Cable clipped to a wall</td><td>In air</td><td>C</td><td>Keep out of direct sun or use a sun factor.</td></tr>
+        <tr><td>On a perforated tray or ladder</td><td>In air (racks)</td><td>E / F</td><td>Cables touching on a tray lose 20–30 %.</td></tr>
+        <tr><td>Buried directly</td><td>In ground</td><td>D2</td><td>Dry sandy soil is a poor conductor of heat; wet clay is good.</td></tr>
+        <tr><td>In a pipe underground</td><td>In duct</td><td>D1</td><td>The air in the pipe insulates: about 10 % less than direct burial.</td></tr>
+      </tbody></table></div>
+  </section>
+
+  <section id="nepal">
+    <h2>How it is done in Nepal</h2>
+    <p>There is no separate Nepal wiring code. The rules come from the Electricity Regulation 2050 and the National Building Code NBC 207, and NBC 207 points to Indian Standards for the actual numbers. In practice, <b>IS tables from Indian and Nepali manufacturers are the national default</b>. Projects funded by ADB, AIIB or JICA usually follow IEC, so the calculator offers both.</p>
+    <h3>The rules that apply</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Document</th><th>What it requires</th></tr></thead>
+      <tbody>
+        <tr><td>Electricity Regulation 2050 (1993), Rules 40–44</td><td>LV supply 230/400 V ±5 %. Distribution 3.3, 6.6, 11, 22, 33 kV ±5 %. Transmission 33–400 kV ±10 %. 50 Hz ±2.5 %. Customer power factor not below 0.8.</td></tr>
+        <tr><td>Rules 58–61</td><td>Earth all HV supports. Cut-out or breaker and an isolating switch at the meter. Earth heaters, ACs and three-pin sockets.</td></tr>
+        <tr><td>NBC 207:2003 Electrical design for public buildings</td><td>Wiring to IS 732; ratings from IS 3961 and IS 1554; earthing to IS 3043 with an electrode at every premises. <b>Minimum copper: 2.5 mm² for lighting, 4 mm² for power circuits.</b></td></tr>
+        <tr><td>Nepal Electricity Grid Code 2080 (2023)</td><td>Grid connection and operation. <span class="unv">Voltage and fault clauses not verified.</span></td></tr>
+      </tbody></table></div>
+    <h3>What NEA networks look like</h3>
+    <ul>
+      <li>LV 230/400 V from 50, 100 and 200 kVA distribution transformers; aerial bundled cable 25–150 mm² from Nepali makers (IS 14255).</li>
+      <li>11 kV overhead: ACSR Dog (100 mm²), Rabbit (50 mm²), Weasel (30 mm²). 33 kV rural lines also use Dog.</li>
+      <li>11 kV underground: 3-core 300 mm² aluminium XLPE armoured has appeared in NEA tenders (rated 28.2 kA for 1 s).</li>
+      <li>132 kV: ACSR Bear; 220 and 400 kV: ACSR Moose; some 132 kV lines re-conductored with high-temperature ACCC.</li>
+      <li>NEA's design criteria for distribution projects keep feeder voltage drop under 5 % at the target-year load.</li>
+    </ul>
+    <h3>What you must find out yourself</h3>
+    <p>These are not published; ask NEA's distribution centre or your consultant: the <b>fault level at your point of supply</b> (11 kV switchgear in Kathmandu is rated 25 kA), the <b>protection clearing time</b>, and whether the LV network at your site is treated as <b>TT or TN-C-S</b>. With TT (local earth electrode only), an RCD is what disconnects an earth fault fast — fit 30 mA on socket circuits.</p>
+    <h3>Climate across Nepal</h3>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Region</th><th>Design air</th><th>Design ground</th><th>Effect on XLPE in air (IS)</th></tr></thead>
+      <tbody>
+        <tr><td>Terai / Madhesh — Dhangadhi holds the national record, 46.4 °C</td><td>45 °C</td><td>35 °C</td><td>× 0.95 (PVC × 0.90)</td></tr>
+        <tr><td>Hills and valleys — Kathmandu record 35.2 °C</td><td>35 °C</td><td>25 °C</td><td>× 1.05</td></tr>
+        <tr><td>High hills and mountains</td><td>25 °C</td><td>20 °C</td><td>× 1.14</td></tr>
+      </tbody></table></div>
+    <p><b>Altitude:</b> no cable standard applies an altitude factor; the cooler air at height already raises the rating. Altitude derating above ~1000 m is for <i>equipment</i> — breakers, drives, inverters. <b>Strong sun</b> at altitude is the real risk: cables in direct sun are not covered by any table, so shade them or use a conduit.</p>
+  </section>
+
+  <section id="world">
+    <h2>How the rest of the world does it</h2>
+    <p>Every code follows the same logic. They differ in the reference temperature, the voltage-drop limit, and how they treat continuous loads.</p>
+    <div class="tablewrap"><table>
+      <thead><tr><th></th><th>Tables</th><th>Reference ambient</th><th>Voltage drop</th><th>Notable rule</th></tr></thead>
+      <tbody>
+        <tr><td><b>India</b> IS 732, IS 3961, NEC 2023 (SP 30)</td><td>Manufacturer catalogues to IS 1554 / IS 7098</td><td>Air 40 °C, ground 30 °C, soil 1.5 K·m/W, 0.75 m</td><td>4 % from origin (5 % deemed to satisfy); 3 % lighting</td><td>Same as Nepal; rewirable fuses need a 0.725 factor</td></tr>
+        <tr><td><b>IEC 60364-5-52</b> Europe, most of Asia, Africa, Middle East</td><td>Annex B, by reference method A1–G</td><td>Air 30 °C, ground 20 °C, soil 2.5 K·m/W, 0.7 m</td><td>3 % lighting / 5 % other (public supply); 6 % / 8 % (own transformer)</td><td>Ib ≤ In ≤ Iz and I2 ≤ 1.45 Iz</td></tr>
+        <tr><td><b>UK</b> BS 7671 + IET</td><td>Appendix 4</td><td>Air 30 °C</td><td>3 % / 5 % (public), 6 % / 8 % (private)</td><td>Factors Ca, Cg, Ci; earth-fault loop tables</td></tr>
+        <tr><td><b>USA</b> NEC (NFPA 70)</td><td>Table 310.16 in AWG/kcmil, 60/75/90 °C columns</td><td>30 °C</td><td>3 % branch, 5 % total — advisory only</td><td><b>125 % of continuous loads</b> (3 h or more); 4–6 conductors in a raceway → 80 %</td></tr>
+        <tr><td><b>Australia/NZ</b> AS/NZS 3008.1.1, AS/NZS 3000</td><td>By installation method</td><td>Air 40 °C, soil 25 °C (NZ: 30 / 15 °C)</td><td><b>5 % mandatory</b>, supply to point of use</td><td>Ratings lower than IEC for the same cable because of the hotter base</td></tr>
+      </tbody></table></div>
+    <p class="tag">Sources for these rows are mostly secondary (standard summaries, manufacturer guides); check the current edition for a formal design.</p>
+  </section>
+
+  <section id="hv">
+    <h2>High voltage: 3.3 to 33 kV</h2>
+    <p>The steps are the same, with three differences.</p>
+    <ul>
+      <li><b>There is no breaker rating to size for.</b> The cable is sized on the load current, and the protection relay is then set at or below the cable's derated rating.</li>
+      <li><b>The short-circuit test usually decides.</b> 13.1 kA for 1 second needs 139 mm² of aluminium whatever the load is. Ask NEA for the fault level and the clearing time.</li>
+      <li><b>The reference depth is deeper</b> (0.9 m up to 11 kV, 1.05 m for 22–33 kV), and soil and temperature factors differ from LV. The calculator uses the MV tables from the Polycab HT catalogue, with KEI as a cross-check.</li>
+    </ul>
+    <p>Earthed (E) grades suit systems where an earth fault is cleared in about a minute; unearthed (UE) grades are for systems that may run with an earth fault for longer. Single-core cables must have aluminium (non-magnetic) armour. The copper screen must carry the earth-fault current; check it in the datasheet.</p>
+    <details><summary>Rating methods engineers use beyond catalogue tables</summary>
+      <ul>
+        <li><b>IEC 60287</b>: the analytical method behind every table. Use it for unusual installations: deep burial, crossings, sun.</li>
+        <li><b>IEC 60949</b>: short-circuit rating including heat lost to the insulation. Gives higher allowable currents for screens and small conductors than the simple adiabatic formula.</li>
+        <li><b>IEC 60502-2</b>: tabulated MV ratings. <b>Neher–McGrath / IEEE 835 / NEC 311</b>: the US equivalents.</li>
+        <li>In Nepal, utility studies use ETAP for load flow and short circuit (IOE Pulchowk theses, OCEM journal).</li>
+      </ul>
+    </details>
+  </section>
+
+  <section id="buy">
+    <h2>Buying and installing</h2>
+    <h3>At the shop</h3>
+    <ul>
+      <li>The printing on the sheath must show the maker, the standard (IS 694, IS 1554, IS 7098), the size in mm², the number of cores and the voltage grade (1.1 kV, or 450/750 V for house wire).</li>
+      <li>Look for the ISI/NS mark. Avoid unmarked cable and "copper-clad aluminium" sold as copper — scrape a strand: it must be copper all the way through.</li>
+      <li>Count strands and check the weight on the label against the catalogue; undersized "2.5 mm²" wire is common.</li>
+      <li>Buy about 10 % more than the measured route length.</li>
+    </ul>
+    <h3>Laying it</h3>
+    <ul>
+      <li>Underground LV: at least 0.75 m deep (0.9 m for 11 kV, 1.05 m for 33 kV), on 75–100 mm of sand, covered with sand, then bricks or a cover slab, then warning tape 300 mm above.</li>
+      <li>Use pipe under roads, driveways and walls. Seal the pipe ends.</li>
+      <li>Do not bend tighter than 12 × the cable diameter (multicore) or 15–20 × for HV.</li>
+      <li>Terminate with glands and crimped lugs of the right size and material; use bimetallic lugs between aluminium cable and copper terminals.</li>
+    </ul>
+    <h3>Before switching on</h3>
+    <ul>
+      <li>Insulation test with a 500 V (LV) or 1000 V tester: phase-to-phase and phase-to-earth, at least 1 MΩ; new cable is normally hundreds of MΩ.</li>
+      <li>Check continuity of the earth conductor and the polarity at the far end.</li>
+      <li>Test the RCD with its button and, if possible, a tester. Measure the voltage at the far end under load and compare with the calculator.</li>
+    </ul>
+  </section>
+
+  <section id="limits">
+    <h2>Limits and sources</h2>
+    <p>The calculator covers continuous ratings, voltage drop, motor starting, short circuit, parallel runs and earth conductor size. It flags but does not calculate: earth-fault loop impedance and disconnection time, harmonic (third-harmonic) neutral loading, cables in direct sun, and HV screen earth-fault capacity.</p>
+    <p>Data: your original workbook (IS 1554-1 / IS 7098-1 / IS 3961, with 12 transcription errors corrected), Polycab and KEI HT XLPE catalogues (IS 7098-2), Polycab and Gemscab 1.1 kV reactances, IEC 60364-5-52:2009 Annex B (via the identical GOST R 50571.5.52-2011), Electricity Regulation 2050, NBC 207:2003. Full source lists with links: <code>research/world_practice.md</code>, <code>research/lv_reference.json</code>, <code>research/hv_xlpe_raw.json</code>.</p>
+    <p>Items marked <span class="unv">not verified</span> could not be confirmed from a primary source and are left as user inputs in the calculator.</p>
+  </section>
+  </article>
+</div>
+<footer class="foot"><p>For design and checking. Use the actual manufacturer datasheet and have the work done or inspected by a licensed electrician; connection to the NEA network needs NEA approval.</p></footer>
+</body>
+</html>
