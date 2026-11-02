@@ -249,3 +249,14 @@ svg .brick { fill: #B5533C; opacity: .85; }
 svg .sheath { fill: #2A2F33; stroke: none; }
 fieldset.field > details.why > summary { top: -36px; }
 .routes + details.why > summary { top: -38px; }
+
+/* illustrations */
+svg .fa { fill: color-mix(in srgb, var(--accent) 38%, transparent); }
+svg .fw { fill: #1F5FAF; stroke: none; opacity: .75; }
+.jobart { flex: none; }
+.jobcard { min-height: 72px; }
+.top { position: relative; overflow: hidden; }
+.hero-art { position: absolute; right: var(--s6); top: 18px; width: 260px; height: 110px; color: var(--ink); opacity: .9; }
+.hero-art .acc { stroke: var(--accent); }
+@media (min-width: 1200px) { .top { padding-right: 320px; } }
+@media (max-width: 1199px) { .hero-art { display: none; } }

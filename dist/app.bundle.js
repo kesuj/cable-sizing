@@ -1665,15 +1665,15 @@ function setStepTitles(t) {
 }
 
 const ICONS = {
-  house: '<path d="M4 14 L16 4 L28 14 V28 H4 Z"/><path d="M13 28 V20 H19 V28"/>',
-  heater: '<rect x="8" y="4" width="16" height="24" rx="4"/><path d="M12 22 q2 -3 0 -6 q-2 -3 0 -6 M20 22 q2 -3 0 -6 q-2 -3 0 -6"/>',
-  ac: '<rect x="3" y="8" width="26" height="10" rx="2"/><path d="M8 22 v4 M16 22 v6 M24 22 v4"/>',
-  pump: '<circle cx="12" cy="18" r="8"/><path d="M20 18 H29 M12 10 V4 H20"/><path d="M9 18 h6 M12 15 v6"/>',
-  ev: '<path d="M5 20 L8 12 H22 L26 20 V25 H5 Z"/><circle cx="10" cy="25" r="2.5"/><circle cx="21" cy="25" r="2.5"/><path d="M16 4 l-3 5 h4 l-3 5"/>',
-  shop: '<path d="M4 12 H28 L26 6 H6 Z"/><path d="M6 12 V28 H26 V12"/><path d="M13 28 V20 H19 V28"/>',
-  hv: '<path d="M16 3 L10 29 M16 3 L22 29 M11 22 H21 M13 14 H19"/><path d="M6 8 H26"/>',
+  house: '<path d="M6 22 L24 8 L42 22" class="fa" stroke-linejoin="round"/><path d="M10 20 V40 H38 V20"/><rect x="20" y="28" width="8" height="12" class="fa"/><rect x="13" y="25" width="5" height="5"/><path d="M2 14 H8 M5 11 V40" stroke-width="1.5"/><path d="M8 14 C 14 16, 18 20, 20 22" stroke-dasharray="2 2" stroke-width="1.5"/>',
+  heater: '<rect x="14" y="6" width="20" height="34" rx="6" class="fa"/><path d="M20 30 q2 -4 0 -8 q-2 -4 0 -8 M28 30 q2 -4 0 -8 q-2 -4 0 -8"/><circle cx="24" cy="35" r="1.8" fill="currentColor"/>',
+  ac: '<rect x="5" y="10" width="38" height="14" rx="3" class="fa"/><path d="M9 19 H39"/><path d="M14 29 q-2 4 0 8 M24 29 q-2 4 0 8 M34 29 q-2 4 0 8"/>',
+  pump: '<circle cx="18" cy="26" r="11" class="fa"/><circle cx="18" cy="26" r="4"/><path d="M29 26 H44 M18 15 V6 H30"/><path d="M36 30 q3 4 0 7 q-3 -3 0 -7" class="fw"/>',
+  ev: '<path d="M6 30 L10 19 H32 L37 30 V36 H6 Z" class="fa"/><circle cx="13" cy="36" r="3.5" fill="var(--sheet)"/><circle cx="30" cy="36" r="3.5" fill="var(--sheet)"/><path d="M40 8 V20 M40 20 q0 6 -5 6" /><rect x="37" y="4" width="6" height="6" rx="1"/>',
+  shop: '<path d="M6 16 H42 L39 7 H9 Z" class="fa"/><path d="M8 16 V40 H40 V16"/><rect x="20" y="27" width="8" height="13"/><path d="M12 22 H17 V28 H12 Z M31 22 H36 V28 H31 Z"/>',
+  hv: '<path d="M24 4 L15 44 M24 4 L33 44 M16 36 H32 M19 24 H29"/><path d="M8 11 H40" stroke-width="2.4"/><circle cx="10" cy="15" r="1.6" class="fa"/><circle cx="24" cy="15" r="1.6" class="fa"/><circle cx="38" cy="15" r="1.6" class="fa"/>',
 };
-const icon = (k) => `<svg viewBox="0 0 32 32" width="28" height="28" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ""}</svg>`;
+const icon = (k) => `<svg class="jobart" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ""}</svg>`;
 const ROUTE_HL = { house: "main", heater: "heater", ac: "heater", pump: "pump", ev: "ev", shop: "main", hvfeed: "service" };
 
 function renderSimple() {
