@@ -645,7 +645,7 @@ function sizeConductor(adapter, input) {
     // Criteria that first pass at exactly the chosen size decided it; if the chosen size is the
     // smallest in the table, every criterion passes there and the table minimum decided it.
     decidedBy = view.cands.indexOf(ch) === 0
-      ? ["smallest size in the table"]
+      ? [rows.length < allRows.length ? `the minimum size rule (${spec.minSizeRule || "your setting"})` : "smallest size in the table"]
       : Object.entries(governing).filter(([, s]) => s === ch.size).map(([k]) => labels[k]);
   }
   if (ch) {
