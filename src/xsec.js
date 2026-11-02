@@ -70,3 +70,38 @@ export function drawCable(svg, c) {
   t.textContent = `${bar} mm · overall ≈ ${Math.round(R * 2)} mm`;
   svg.appendChild(t);
 }
+
+/** Stranded overhead conductor (ACSR / AAAC) drawn layer by layer. */
+function layersFor(c) {
+  const al = c.al_strands, st = c.st_strands;
+  if (st == null) { // homogeneous AAAC: 1, 6, 12, 18, 24 …
+    const L = [1]; let n = 1; while (n < al) { const k = 6 * L.length; L.push(k); n += k; } return L.map((k) => ({ n: k, steel: false }));
+  }
+  const steel = st === 1 ? [1] : st === 7 ? [1, 6] : [1, 6, 12];
+  const alLayers = al === 6 ? [6] : al === 26 ? [10, 16] : al === 30 ? [12, 18] : al === 54 ? [12, 18, 24] : al === 45 ? [9, 15, 21] : [al];
+  return [...steel.map((n) => ({ n, steel: true })), ...alLayers.map((n) => ({ n, steel: false }))];
+}
+export function drawStrands(svg, c) {
+  while (svg.lastChild && svg.lastChild.nodeName !== "title") svg.removeChild(svg.lastChild);
+  if (!c) return;
+  const L = layersFor(c);
+  const scale = 100 / (c.dia_mm / 2);
+  const dSteel = c.st_dia_mm || c.al_dia_mm || c.dia_mm / (2 * L.length - 1);
+  const dAl = c.al_dia_mm || dSteel;
+  const g = el("g", { transform: "translate(120 112)" });
+  let r = 0;
+  L.forEach((layer, i) => {
+    const d = layer.steel ? dSteel : dAl;
+    const rr = i === 0 ? 0 : r + d / 2;
+    for (let k = 0; k < layer.n; k++) {
+      const a = (k / layer.n) * 2 * Math.PI + (i % 2) * 0.2;
+      g.appendChild(el("circle", { cx: rr * Math.cos(a) * scale, cy: rr * Math.sin(a) * scale, r: (d / 2) * scale * 0.97,
+        fill: layer.steel ? "#6E777D" : "#C9CFD3", stroke: "#4B5359", "stroke-width": 0.6 }));
+    }
+    r = i === 0 ? d / 2 : rr + d / 2;
+  });
+  svg.appendChild(g);
+  const t = el("text", { x: 120, y: 234, "text-anchor": "middle", "font-size": 12, fill: "currentColor" });
+  t.textContent = `Ø ${c.dia_mm} mm · ${c.al_strands} Al${c.st_strands ? ` + ${c.st_strands} steel` : ""} strands`;
+  svg.appendChild(t);
+}

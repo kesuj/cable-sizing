@@ -2,7 +2,7 @@
 import json, pathlib
 root = pathlib.Path(__file__).resolve().parent.parent
 names = {"lv_is.json": "lvIs", "derating_is.json": "deratingIs", "lv_reactance.json": "lvReactance",
-         "hv_is.json": "hvIs", "iec_60364_5_52.json": "iec"}
+         "hv_is.json": "hvIs", "overhead.json": "overhead", "iec_60364_5_52.json": "iec"}
 out = {}
 for f, key in names.items():
     p = root / "data" / f

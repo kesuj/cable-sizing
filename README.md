@@ -22,7 +22,13 @@ Live: **https://kesuj.github.io/cable-sizing/**
   pictures, where in Nepal, and the length. You get the cable to ask for, the breaker (rating, trip
   curve, poles), the RCD, the earth wire, **the voltage your appliance actually gets** (at 230 V and
   at NEA's −5 % limit), why one size smaller would fail, every assumption, and a shop checklist.
-  Every term has a "What is this?" note with a figure.
+  Every term has a "?" note with a figure.
+* **Overhead / transmission lines** (11, 33, 66, 132 kV, ACSR or AAAC): thermal rating at your site by the
+  IEEE 738-2012 heat balance (validated against 156 CEA 2023 / manufacturer ratings within 0.6 %), including
+  Nepal's altitude, reactance from phase spacing, voltage drop, losses, and the corona minimum conductor.
+* **What to buy**: a bill of materials with ratings — breaker, RCD, isolator, SPD, starter, overload,
+  back-up fuse, capacitor, lugs, glands, conduit/pipe, earthing; for HV the RMU/VCB, HV fuses, arresters,
+  CTs, termination kits and the transformer LV breaker; for lines the poles, insulators, clamps and arresters.
 * **Engineer** — every input is open: voltage, pf, efficiency, growth margin, motor factor, soil
   resistivity, depth, grouping, spacing, formation, voltage-drop limit, fault level and clearing time
   (or breaker let-through I²t), motor starting, sizing basis (In or Ib), HV catalogue choice.
@@ -53,7 +59,7 @@ Full method with formulas and clauses: [docs/METHOD.md](docs/METHOD.md).
 Regenerate everything: `python scripts/build.py` (needs Python 3 and `openpyxl` only for re-reading the Excel file).
 
 ## Tests
-`node --test tests/*.test.js` — hand-checked worked examples (LV house feeder, motor pump, long
+`npm test` (42 tests) and `node scripts/validate_overhead.mjs` (156 published line ratings) — hand-checked worked examples (LV house feeder, motor pump, long
 run, parallel runs, Terai temperatures, 11 kV and 33 kV feeders) plus data self-checks. Worked
 examples are explained in [docs/WORKED_EXAMPLES.md](docs/WORKED_EXAMPLES.md).
 
@@ -65,7 +71,10 @@ src/core.js                 formulas (current, VD, short circuit, k values, PE s
 src/size.js                 the sizing process
 src/adapters/               data sources: IS LV, IS HV, IEC 60364-5-52
 src/jobs.js                 Simple-mode jobs: plain answers -> engineering input, protection, voltage at load
-src/explain.js              "What is this?" explainers (EN/NE) and line figures
+src/explain.js              "?" explainers (EN/NE) and line figures
+src/overhead.js             IEEE 738 ampacity, reactance, line drop, line sizing
+src/bom.js                  bill of materials rules (SP 30, CPWD, IS 3043, IS 1255, maker tables)
+src/icons.js                Lucide-style icons
 src/app.js  src/xsec.js     UI and the to-scale cable cross-section
 dist/app.bundle.js          generated single-file bundle
 scripts/                    extract Excel, build data, build bundle

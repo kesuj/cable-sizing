@@ -144,6 +144,13 @@ export const JOBS = {
     },
   },
 
+  line: {
+    level: "HV", icon: "line", kind: "line",
+    en: "Overhead or transmission line (11–132 kV)", ne: "ओभरहेड / प्रसारण लाइन (११–१३२ kV)",
+    fields: () => ["lineKv", "lineKva", "linePf", "lineType"],
+    defaults: { lineKv: "11", lineKva: 1000, linePf: 0.9, lineType: "acsr", lineKm: 8 },
+  },
+
   hvfeed: {
     level: "HV", icon: "hv",
     en: "11 or 33 kV cable to a transformer", ne: "ट्रान्सफर्मरसम्म ११/३३ kV केबल",
@@ -176,9 +183,9 @@ export const ROUTES = {
 };
 
 export const REGIONS = {
-  terai: { air: 45, ground: 35, en: "Terai / Madhesh (Biratnagar, Birgunj, Nepalgunj, Dhangadhi)", ne: "तराई / मधेस (विराटनगर, वीरगञ्ज, नेपालगञ्ज, धनगढी)" },
-  hills: { air: 35, ground: 25, en: "Hills and valleys (Kathmandu, Pokhara, Dhankuta, Tansen)", ne: "पहाड र उपत्यका (काठमाडौं, पोखरा, धनकुटा, तानसेन)" },
-  mountain: { air: 25, ground: 20, en: "High hills and mountains (above 2000 m)", ne: "उच्च पहाड र हिमाल (२००० मिटरभन्दा माथि)" },
+  terai: { air: 45, ground: 35, elev: 150, en: "Terai / Madhesh (Biratnagar, Birgunj, Nepalgunj, Dhangadhi)", ne: "तराई / मधेस (विराटनगर, वीरगञ्ज, नेपालगञ्ज, धनगढी)" },
+  hills: { air: 35, ground: 25, elev: 1400, en: "Hills and valleys (Kathmandu, Pokhara, Dhankuta, Tansen)", ne: "पहाड र उपत्यका (काठमाडौं, पोखरा, धनकुटा, तानसेन)" },
+  mountain: { air: 25, ground: 20, elev: 2500, en: "High hills and mountains (above 2000 m)", ne: "उच्च पहाड र हिमाल (२००० मिटरभन्दा माथि)" },
 };
 
 /** Which adapter + method a route uses for a job under the chosen standard. */

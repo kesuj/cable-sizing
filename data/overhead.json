@@ -1,0 +1,542 @@
+{
+ "source": "research/overhead_conductors.json (Satcon/Lumino/Apar IS 398-2 and IS 398-4 tables; Sierra BS 215 for Bear). Engine validated against 156 CEA/Satcon published ratings within 0.6 %.",
+ "acsr": [
+  {
+   "name": "Squirrel",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 6,
+   "al_dia_mm": 2.11,
+   "st_strands": 1,
+   "st_dia_mm": 2.11,
+   "al_area_mm2": 20.98,
+   "total_area_mm2": 24.48,
+   "dia_mm": 6.33,
+   "r20_ohm_km": 1.394,
+   "mass_kg_km": 85,
+   "uts_kn": 7.61
+  },
+  {
+   "name": "Weasel",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 6,
+   "al_dia_mm": 2.59,
+   "st_strands": 1,
+   "st_dia_mm": 2.59,
+   "al_area_mm2": 31.61,
+   "total_area_mm2": 36.88,
+   "dia_mm": 7.77,
+   "r20_ohm_km": 0.9289,
+   "mass_kg_km": 128,
+   "uts_kn": 11.12
+  },
+  {
+   "name": "Rabbit",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 6,
+   "al_dia_mm": 3.35,
+   "st_strands": 1,
+   "st_dia_mm": 3.35,
+   "al_area_mm2": 52.88,
+   "total_area_mm2": 61.7,
+   "dia_mm": 10.05,
+   "r20_ohm_km": 0.5524,
+   "mass_kg_km": 214,
+   "uts_kn": 18.25
+  },
+  {
+   "name": "Raccoon",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 6,
+   "al_dia_mm": 4.09,
+   "st_strands": 1,
+   "st_dia_mm": 4.09,
+   "al_area_mm2": 78.83,
+   "total_area_mm2": 91.97,
+   "dia_mm": 12.27,
+   "r20_ohm_km": 0.3712,
+   "mass_kg_km": 319,
+   "uts_kn": 26.91
+  },
+  {
+   "name": "Dog",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 6,
+   "al_dia_mm": 4.72,
+   "st_strands": 7,
+   "st_dia_mm": 1.57,
+   "al_area_mm2": 105.0,
+   "total_area_mm2": 118.5,
+   "dia_mm": 14.15,
+   "r20_ohm_km": 0.2792,
+   "mass_kg_km": 394,
+   "uts_kn": 32.41
+  },
+  {
+   "name": "Leopard",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 6,
+   "al_dia_mm": 5.28,
+   "st_strands": 7,
+   "st_dia_mm": 1.75,
+   "al_area_mm2": 131.4,
+   "total_area_mm2": 148.2,
+   "dia_mm": 15.81,
+   "r20_ohm_km": 0.2226,
+   "mass_kg_km": 492,
+   "uts_kn": 40.7
+  },
+  {
+   "name": "Coyote",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 26,
+   "al_dia_mm": 2.54,
+   "st_strands": 7,
+   "st_dia_mm": 1.91,
+   "al_area_mm2": 131.7,
+   "total_area_mm2": 152.2,
+   "dia_mm": 15.89,
+   "r20_ohm_km": 0.2246,
+   "mass_kg_km": 522,
+   "uts_kn": 46.4
+  },
+  {
+   "name": "Wolf",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 30,
+   "al_dia_mm": 2.59,
+   "st_strands": 7,
+   "st_dia_mm": 2.59,
+   "al_area_mm2": 158.1,
+   "total_area_mm2": 194.9,
+   "dia_mm": 18.13,
+   "r20_ohm_km": 0.1871,
+   "mass_kg_km": 726,
+   "uts_kn": 67.34
+  },
+  {
+   "name": "Lynx",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 30,
+   "al_dia_mm": 2.79,
+   "st_strands": 7,
+   "st_dia_mm": 2.79,
+   "al_area_mm2": 183.4,
+   "total_area_mm2": 226.2,
+   "dia_mm": 19.53,
+   "r20_ohm_km": 0.161,
+   "mass_kg_km": 844,
+   "uts_kn": 77.96
+  },
+  {
+   "name": "Panther",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 30,
+   "al_dia_mm": 3.0,
+   "st_strands": 7,
+   "st_dia_mm": 3.0,
+   "al_area_mm2": 212.1,
+   "total_area_mm2": 261.5,
+   "dia_mm": 21.0,
+   "r20_ohm_km": 0.139,
+   "mass_kg_km": 974,
+   "uts_kn": 89.67
+  },
+  {
+   "name": "Bear",
+   "standard": "BS 215 / BS EN 50182",
+   "al_strands": 30,
+   "al_dia_mm": 3.35,
+   "st_strands": 7,
+   "st_dia_mm": 3.35,
+   "al_area_mm2": 264.4,
+   "total_area_mm2": 326.1,
+   "dia_mm": 23.45,
+   "r20_ohm_km": 0.1093,
+   "mass_kg_km": 1213.4,
+   "uts_kn": 111.5
+  },
+  {
+   "name": "Goat",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 30,
+   "al_dia_mm": 3.71,
+   "st_strands": 7,
+   "st_dia_mm": 3.71,
+   "al_area_mm2": 324.3,
+   "total_area_mm2": 400.0,
+   "dia_mm": 25.97,
+   "r20_ohm_km": 0.09106,
+   "mass_kg_km": 1488,
+   "uts_kn": 137.0
+  },
+  {
+   "name": "Kundah",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 42,
+   "al_dia_mm": 3.5,
+   "st_strands": 7,
+   "st_dia_mm": 1.96,
+   "al_area_mm2": 404.1,
+   "total_area_mm2": 425.2,
+   "dia_mm": 26.88,
+   "r20_ohm_km": 0.07269,
+   "mass_kg_km": 1281,
+   "uts_kn": 88.8
+  },
+  {
+   "name": "Zebra",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 54,
+   "al_dia_mm": 3.18,
+   "st_strands": 7,
+   "st_dia_mm": 3.18,
+   "al_area_mm2": 428.9,
+   "total_area_mm2": 484.5,
+   "dia_mm": 28.62,
+   "r20_ohm_km": 0.06869,
+   "mass_kg_km": 1621,
+   "uts_kn": 130.32
+  },
+  {
+   "name": "Deer",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 30,
+   "al_dia_mm": 4.27,
+   "st_strands": 7,
+   "st_dia_mm": 4.27,
+   "al_area_mm2": 429.6,
+   "total_area_mm2": 529.8,
+   "dia_mm": 29.89,
+   "r20_ohm_km": 0.06854,
+   "mass_kg_km": 1979,
+   "uts_kn": 178.4
+  },
+  {
+   "name": "Moose",
+   "standard": "IS 398 (Part 2)",
+   "al_strands": 54,
+   "al_dia_mm": 3.53,
+   "st_strands": 7,
+   "st_dia_mm": 3.53,
+   "al_area_mm2": 528.5,
+   "total_area_mm2": 597.0,
+   "dia_mm": 31.77,
+   "r20_ohm_km": 0.05596,
+   "mass_kg_km": 1998,
+   "uts_kn": 159.6
+  }
+ ],
+ "aaac": [
+  {
+   "name": "AAAC 15 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 3,
+   "st_strands": null,
+   "al_area_mm2": 14.73,
+   "dia_mm": 5.39,
+   "r20_ohm_km": 2.2286,
+   "mass_kg_km": 40,
+   "uts_kn": 4.33,
+   "equivalent_acsr": "Mole"
+  },
+  {
+   "name": "AAAC 20 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 7,
+   "st_strands": null,
+   "al_area_mm2": 21.99,
+   "dia_mm": 6.0,
+   "r20_ohm_km": 1.4969,
+   "mass_kg_km": 60,
+   "uts_kn": 6.45,
+   "equivalent_acsr": "Squirrel"
+  },
+  {
+   "name": "AAAC 34 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 7,
+   "st_strands": null,
+   "al_area_mm2": 34.36,
+   "dia_mm": 7.5,
+   "r20_ohm_km": 0.958,
+   "mass_kg_km": 94,
+   "uts_kn": 10.11,
+   "equivalent_acsr": "Weasel"
+  },
+  {
+   "name": "AAAC 55 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 7,
+   "st_strands": null,
+   "al_area_mm2": 54.55,
+   "dia_mm": 9.45,
+   "r20_ohm_km": 0.6034,
+   "mass_kg_km": 149,
+   "uts_kn": 16.03,
+   "equivalent_acsr": "Rabbit"
+  },
+  {
+   "name": "AAAC 80 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 7,
+   "st_strands": null,
+   "al_area_mm2": 79.81,
+   "dia_mm": 11.43,
+   "r20_ohm_km": 0.4125,
+   "mass_kg_km": 218,
+   "uts_kn": 23.41,
+   "equivalent_acsr": "Raccoon"
+  },
+  {
+   "name": "AAAC 100 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 7,
+   "st_strands": null,
+   "al_area_mm2": 99.77,
+   "dia_mm": 12.78,
+   "r20_ohm_km": 0.3299,
+   "mass_kg_km": 273,
+   "uts_kn": 29.26,
+   "equivalent_acsr": "Dog"
+  },
+  {
+   "name": "AAAC 125 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 19,
+   "st_strands": null,
+   "al_area_mm2": 124.6,
+   "dia_mm": 14.45,
+   "r20_ohm_km": 0.2654,
+   "mass_kg_km": 342,
+   "uts_kn": 36.64,
+   "equivalent_acsr": "Dog (up)"
+  },
+  {
+   "name": "AAAC 150 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 19,
+   "st_strands": null,
+   "al_area_mm2": 148.1,
+   "dia_mm": 15.75,
+   "r20_ohm_km": 0.2234,
+   "mass_kg_km": 407,
+   "uts_kn": 43.5,
+   "equivalent_acsr": "Dog (up)/Coyote"
+  },
+  {
+   "name": "AAAC 175 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 19,
+   "st_strands": null,
+   "al_area_mm2": 172.5,
+   "dia_mm": 17.0,
+   "r20_ohm_km": 0.1918,
+   "mass_kg_km": 474,
+   "uts_kn": 50.54,
+   "equivalent_acsr": "Wolf"
+  },
+  {
+   "name": "AAAC 200 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 19,
+   "st_strands": null,
+   "al_area_mm2": 199.9,
+   "dia_mm": 18.3,
+   "r20_ohm_km": 0.1655,
+   "mass_kg_km": 549,
+   "uts_kn": 58.66,
+   "equivalent_acsr": "Wolf (up)"
+  },
+  {
+   "name": "AAAC 232 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 19,
+   "st_strands": null,
+   "al_area_mm2": 231.7,
+   "dia_mm": 19.7,
+   "r20_ohm_km": 0.1428,
+   "mass_kg_km": 637,
+   "uts_kn": 68.05,
+   "equivalent_acsr": "Panther"
+  },
+  {
+   "name": "AAAC 290 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 37,
+   "st_strands": null,
+   "al_area_mm2": 288.3,
+   "dia_mm": 22.05,
+   "r20_ohm_km": 0.115,
+   "mass_kg_km": null,
+   "uts_kn": 84.71,
+   "equivalent_acsr": "Panther (up)"
+  },
+  {
+   "name": "AAAC 345 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 37,
+   "st_strands": null,
+   "al_area_mm2": 345.9,
+   "dia_mm": 24.15,
+   "r20_ohm_km": 0.09585,
+   "mass_kg_km": null,
+   "uts_kn": 101.58,
+   "equivalent_acsr": "Panther (up)"
+  },
+  {
+   "name": "AAAC 400 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 37,
+   "st_strands": null,
+   "al_area_mm2": 400.0,
+   "dia_mm": 25.97,
+   "r20_ohm_km": 0.08289,
+   "mass_kg_km": null,
+   "uts_kn": 117.4,
+   "equivalent_acsr": "Kundah"
+  },
+  {
+   "name": "AAAC 465 mm²",
+   "standard": "IS 398 (Part 4)",
+   "al_strands": 37,
+   "st_strands": null,
+   "al_area_mm2": 465.0,
+   "dia_mm": 28.0,
+   "r20_ohm_km": 0.0713,
+   "mass_kg_km": null,
+   "uts_kn": 136.38,
+   "equivalent_acsr": "Zebra"
+  }
+ ],
+ "gmr_ratio": {
+  "acsr_6": 0.35,
+  "acsr_26": 0.806,
+  "acsr_30": 0.818,
+  "acsr_54": 0.805,
+  "aaac_7": 0.726,
+  "aaac_19": 0.758,
+  "aaac_37": 0.768,
+  "aaac_61": 0.772
+ },
+ "nepal_practice": {
+  "conductors_by_voltage": {
+   "11kV": {
+    "value": [
+     "ACSR Dog (100 mm2)",
+     "ACSR Rabbit (50 mm2)",
+     "ACSR Weasel (30 mm2)"
+    ],
+    "source": "aiib_nepal_dsuep",
+    "quote": "Standardized conductor sizes for the 11 kV feeders and distributors will be 100 mmsq ACSR (Dog), 50 sqmm ACSR (Rabbit) and 30 sqmm ACSR (Weasel), and voltage drop will be contained within 5%."
+   },
+   "33kV": {
+    "value": [
+     {
+      "for": "3 or 8 MVA 33/11 kV substation",
+      "conductor": "ACSR Dog (100 mm2)",
+      "configuration": "S/C triangular or D/C horizontal"
+     },
+     {
+      "for": "24 MVA substation",
+      "conductor": "ACSR Panther (200 mm2) or ACSR Zebra (420 mm2)",
+      "configuration": "S/C triangular or D/C horizontal"
+     }
+    ],
+    "source": "aiib_nepal_dsuep",
+    "note": "Table 2A-1; 'When the voltage drop is over 5% higher conductor size or double circuit configuration will be selected.' Wolf at 33 kV: not found."
+   },
+   "66kV": {
+    "value": null,
+    "note": "No NEA source found. CEA 2023 Table I(a) gives standard data for 66 kV single ACSR Dog D/C (India)."
+   },
+   "132kV": {
+    "value": [
+     "ACSR Bear (most existing NEA 132 kV)",
+     "ACSR Panther (some sections, e.g. Gandak-Bardaghat)",
+     "ACSR Cardinal (newer bids, e.g. Ghorahi-Madichaur - from search snippet, not opened)"
+    ],
+    "source": [
+     "tucl_neupane_2023"
+    ],
+    "note": "Thesis: ten 132 kV sections (515.82 ckt-km ACSR Bear, 28 ckt-km ACSR Panther) overloaded. BISON at 132 kV: not found. Several Bear lines being reconductored with HTLS (ACCC)."
+   },
+   "220kV_400kV": {
+    "value": "ACSR Moose (twin/quad) considered; 220 kV twin HTLS chosen for Kaligandaki/Marsyangdi corridors",
+    "source": "adb_htls_nepal_2015",
+    "note": "Slide lists options: 400 kV quad/twin Moose, 220 kV quad Moose, 220 kV twin HTLS. Gives ACSR Moose 876 A (single) / 1752 twin / 3504 quad - conditions NOT stated."
+   }
+  },
+  "voltage_limits": {
+   "statutory": {
+    "source": "nepal_electricity_rules",
+    "rule_41_HV_distribution": "3.3, 6.6, 11, 22, 33 kV: fluctuation not more than 5 %",
+    "rule_42_HV_transmission": "33, 66, 132, 220, 400 kV: fluctuation not more than 10 %",
+    "rule_43_frequency": "50 Hz, fluctuation not more than 2.5 %",
+    "rule_LV_note": "Low-voltage clause (230/400 V) also 5 % (sub-rule 2 text seen; clause numbers not captured)"
+   },
+   "design_voltage_drop": {
+    "value_pct": 5,
+    "applies_to": "11 kV and 33 kV feeders (NEA/AIIB design)",
+    "source": "aiib_nepal_dsuep",
+    "quote": "the voltage at line-ends will be within the permissible 5% drop at the target year. In addition, technical losses will also be limited to a peak value of 5%."
+   }
+  },
+  "design_temperatures": {
+   "NEA": {
+    "value": null,
+    "note": "No NEA document stating design ambient / max conductor temperature was accessible (NEA bid-doc PDFs returned 404 / DNS errors). Unverified."
+   },
+   "India_CEA_2023": {
+    "ambient_c": 45,
+    "quote": "Generally, the ambient temperature may be taken as 45 deg Celsius; however, in some areas like hilly areas where ambient temperatures are less, the same may be taken.",
+    "conductor_temps_tabulated_c": [
+     65,
+     75,
+     85,
+     95
+    ],
+    "note": "ACSR tabulated to 85 C (95 C = NA); AAAC/AL59 to 95 C. Emergency: 120 % for 1 h, 110 % for 2 h.",
+    "source": "cea_mtpc_2023"
+   },
+   "Indian_manufacturer_practice": {
+    "Apar_Lumino": "75 and 85 C at 45 C ambient",
+    "Satcon": "65 and 75 C at 40 C ambient"
+   }
+  },
+  "line_parameters_CEA_2023_per_unit_100MVA": {
+   "source": "cea_mtpc_2023",
+   "132kV_single_Panther_DC": {
+    "R_pu_km": 0.0007823,
+    "X_pu_km": 0.002323,
+    "R_ohm_km": 0.1363,
+    "X_ohm_km": 0.4048,
+    "conversion": "Zbase = 132^2/100 = 174.24 ohm (converted here)"
+   },
+   "66kV_single_Dog_DC": {
+    "R_pu_km": 0.006299,
+    "X_pu_km": 0.01024,
+    "R_ohm_km": 0.2744,
+    "X_ohm_km": 0.4461,
+    "conversion": "Zbase = 66^2/100 = 43.56 ohm (converted here)"
+   },
+   "implied_GMD_132kV_Panther_m": {
+    "value": 5.45,
+    "note": "derived here: GMD = GMR*exp(X/(2*pi*50*2e-4)) with GMR = 0.826*r (30/7 ratio from Prysmian) - derived, not quoted"
+   }
+  },
+  "phase_spacing": {
+   "11kV": null,
+   "33kV": null,
+   "132kV": null,
+   "note": "No authoritative NEA/REC spacing drawing found. Use CEA X values above or user-entered GMD."
+  },
+  "elevation_range_m": {
+   "value": {
+    "terai": "approx. 60-300",
+    "kathmandu": "approx. 1300-1400",
+    "hills": "up to approx. 3000"
+   },
+   "note": "From user brief / general geography - not sourced here."
+  }
+ }
+}

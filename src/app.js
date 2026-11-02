@@ -2,7 +2,10 @@
 import { ADAPTERS } from "./adapters/index.js";
 import { sizeConductor, cableDescription } from "./size.js";
 import { round, kValue } from "./core.js";
-import { drawCable } from "./xsec.js";
+import { drawCable, drawStrands } from "./xsec.js";
+import { sizeLine, LINE_DEFAULTS } from "./overhead.js";
+import { bomFor, bomHv, bomLine } from "./bom.js";
+import { DATA } from "./data.js";
 import { JOBS, ROUTES, REGIONS as NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } from "./jobs.js";
 import { explainHtml, routePic, houseMap } from "./explain.js";
 import { ic } from "./icons.js";
@@ -225,6 +228,11 @@ function buildInput() {
 // ---------- results ----------
 let last = null;
 function compute() {
+  if (!eng() && JOBS[S.job]?.kind === "line") {
+    try { const r = sizeLine(DATA.overhead, lineSpec()); last = { line: r }; renderLineResult(r); }
+    catch (e) { $("#answer").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+    return;
+  }
   let A = adapter();
   let res, err = null, notes = [], simple = null;
   try {
@@ -458,6 +466,7 @@ const ICONS = {
   pump: '<circle cx="18" cy="26" r="11" class="fa"/><circle cx="18" cy="26" r="4"/><path d="M29 26 H44 M18 15 V6 H30"/><path d="M36 30 q3 4 0 7 q-3 -3 0 -7" class="fw"/>',
   ev: '<path d="M6 30 L10 19 H32 L37 30 V36 H6 Z" class="fa"/><circle cx="13" cy="36" r="3.5" fill="var(--sheet)"/><circle cx="30" cy="36" r="3.5" fill="var(--sheet)"/><path d="M40 8 V20 M40 20 q0 6 -5 6" /><rect x="37" y="4" width="6" height="6" rx="1"/>',
   shop: '<path d="M6 16 H42 L39 7 H9 Z" class="fa"/><path d="M8 16 V40 H40 V16"/><rect x="20" y="27" width="8" height="13"/><path d="M12 22 H17 V28 H12 Z M31 22 H36 V28 H31 Z"/>',
+  line: '<path d="M10 44 L16 8 L22 44 M12 32 H20 M14 20 H18"/><path d="M28 44 L34 8 L40 44 M30 32 H38 M32 20 H36"/><path d="M4 10 Q 25 18 46 10" class="acc-s"/><path d="M4 14 Q 25 22 46 14" class="acc-s"/>',
   hv: '<path d="M24 4 L15 44 M24 4 L33 44 M16 36 H32 M19 24 H29"/><path d="M8 11 H40" stroke-width="2.4"/><circle cx="10" cy="15" r="1.6" class="fa"/><circle cx="24" cy="15" r="1.6" class="fa"/><circle cx="38" cy="15" r="1.6" class="fa"/>',
 };
 const icon = (k) => `<svg class="jobart" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ""}</svg>`;
@@ -471,7 +480,7 @@ function renderSimple() {
     Object.entries(JOBS).map(([k, j]) => `<label class="jobcard"><input type="radio" name="job" value="${k}"${S.job === k ? " checked" : ""} data-struct>${icon(j.icon)}<span>${esc(L2(j))}</span></label>`).join("") +
     `</div></fieldset>`;
   if (job.level === "LV") h += `<div class="figwrap map">${houseMap(ROUTE_HL[S.job], lang)}</div>${explainHtml("run", lang)}`;
-  else h += explainHtml("hv", lang);
+  else if (job.kind !== "line") h += explainHtml("hv", lang);
   const F = {
     phase: () => sel("phase", tr("phase"), [["1ph", tr("ph1")], ["3ph", tr("ph3")]], { struct: true }),
     houseBasis: () => sel("houseBasis", tr("houseBasis"), [["meter", tr("hbMeter")], ["load", tr("hbLoad")]], { struct: true }),
@@ -492,11 +501,25 @@ function renderSimple() {
     kva: () => num("kva", tr("kva"), { suffix: "kVA" }),
     faultKa: () => num("faultKa", tr("faultKa"), { suffix: "kA" }),
     faultT: () => num("faultT", tr("faultT"), { suffix: "s" }),
+    lineKv: () => sel("lineKv", tr("lineKv"), [["11", "11 kV"], ["33", "33 kV"], ["66", "66 kV"], ["132", "132 kV"]], { struct: true }),
+    lineKva: () => num("lineKva", tr("lineKva"), { suffix: "kVA" }),
+    linePf: () => num("linePf", tr("linePf"), { step: 0.01 }),
+    lineType: () => sel("lineType", tr("lineType"), [["acsr", tr("acsr")], ["aaac", tr("aaac")]]),
   };
   const fields = job.fields(S).map((f) => F[f]?.() || "");
   for (let i = 0; i < fields.length; i += 2) h += row(fields[i], fields[i + 1] || "");
   $("#load-fields").innerHTML = h;
 
+  if (job.kind === "line") {
+    if (!NP_REGIONS[S.region] && S.region !== "custom") S.region = "hills";
+    h = row(sel("region", tr("region"), [...Object.entries(NP_REGIONS).map(([k, r]) => [k, L2(r)]), ["custom", tr("custom")]], { struct: true }));
+    if (S.region === "custom") h += row(num("airTemp", tr("airTemp"), { suffix: "°C" }));
+    h += row(num("lineKm", tr("lineKm"), { suffix: "km" }));
+    $("#route-fields").innerHTML = h;
+    $("#cable-fields").innerHTML = `<p class="hint">${S.lang === "ne" ? "कन्डक्टरको प्रकार माथि छानिएको छ। NEA मा ACSR मानक हो।" : "Conductor type is chosen above. ACSR is the NEA standard."}</p>`;
+    $("#check-fields").innerHTML = "";
+    return;
+  }
   const routes = Object.entries(ROUTES).filter(([k]) => job.level === "LV" || ["buried", "duct", "tray", "clipped"].includes(k));
   if (!routes.some(([k]) => k === S.route)) S.route = routes[0][0];
   h = `<fieldset class="field"><legend class="lbl">${tr("route")}</legend><div class="routes">` +
@@ -541,6 +564,23 @@ function buildSimple() {
   return { inp, notes, A, simple: { t, job } };
 }
 
+/** Cable outer diameter from the IS catalogue rows (used for glands and buried pipe). */
+function cableOd(res) {
+  const s = res.spec, ins = s.insulation === "HRPVC" ? "PVC" : s.insulation;
+  const row = DATA.lvIs.tables[ins]?.[s.cores]?.rows.find((r) => r.size === res.chosen.size);
+  return row?.od ? (s.armoured ? row.od.arm : row.od.unarm) : null;
+}
+function bomCtx(res, sm) {
+  const kW = S.job === "pump" && S.motorBasis === "hp" ? +S.hp * 0.7457 : null;
+  return { res, kind: sm.t.kind, S, route: S.route, od: cableOd(res), kW, starter: S.starter, pumpType: S.pumpType };
+}
+function renderBom(items) {
+  if (!items.length) return "";
+  const ne = S.lang === "ne";
+  return `<h3 class="rh">${ic("cart", 18)} ${ne ? "किन्नुपर्ने सामान" : "What to buy"}</h3><ul class="bom">${items.map((x) =>
+    `<li><div class="bom-top"><b>${esc(ne ? x.item.ne : x.item.en)}</b><span class="qty">${esc(String(x.qty))}</span></div><div class="bom-spec">${esc(x.spec)}</div><div class="bom-why">${esc(ne ? x.why.ne : x.why.en)}</div></li>`).join("")}</ul>`;
+}
+
 function renderSimpleResult(res, sm) {
   let h = "";
   const v = voltageAtLoad(res);
@@ -549,13 +589,101 @@ function renderSimpleResult(res, sm) {
     <dt>${tr("vNom")} ${fmt(v.nominal, 0)} V</dt><dd>${fmt(v.atLoad, 0)} V</dd>
     <dt>${tr("vLow")} (${fmt(v.low, 0)} V)</dt><dd>${fmt(v.lowAtLoad, 0)} V</dd></dl>
     ${v.unit !== "V" ? `<p class="hint">${tr("ph3note")}</p>` : ""}${bad ? `<p class="err">${tr("vBad")}</p>` : ""}</div>`;
-  const prot = protectionFor(sm.t.kind, res, sm.t.starter);
-  h += `<h3 class="rh">${ic("shield", 18)} ${tr("prot")}</h3><ul class="plain">${prot.map((p) => `<li>${esc(L2(p))}</li>`).join("")}${sm.job.level === "LV" ? `<li>${tr("earth")}: ${res.earthSize} mm² ${res.spec.material === "cu" ? "Cu" : "Al"}</li>` : ""}</ul>`;
+  h += renderBom(sm.job.level === "HV" ? bomHv({ res, kva: +S.kva, kv: Number(S.hvKv) }) : bomFor(bomCtx(res, sm)));
   const sm1 = smallerSize(res);
   if (sm1 && sm1.why.length) h += `<p class="smaller">${ic("alert", 16)} <b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;
   h += `<details class="box"><summary>${ic("info", 17)} ${tr("assum")}</summary><ul class="plain">${last.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></details>`;
   if (sm.job.level === "LV") h += `<details class="box"><summary>${ic("cart", 17)} ${tr("shop")}</summary><ul class="plain">${tr("shopList").map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
   return h;
+}
+
+
+// ======================================================================
+// Overhead / transmission line job (ACSR / AAAC, IEEE 738 thermal rating)
+// ======================================================================
+const LT = {
+  en: { lineKv: "Line voltage", lineKva: "Power to carry", linePf: "Power factor", lineType: "Conductor type",
+    acsr: "ACSR — aluminium with steel core (NEA standard)", aaac: "AAAC — all aluminium alloy (lighter, no rust)",
+    lineKm: "Line length", useCond: "Use conductor", lineI: "Line current", ratingSite: "Rating at your site", lossTxt: "Losses at full load",
+    xTxt: "Reactance (from phase spacing)", neaUses: "NEA commonly uses at this voltage", siteTxt: "Site conditions used",
+    lineTried: "Every conductor tested", lineLead: "Ratings are calculated for your site with the IEEE 738 heat balance (sun, wind, air temperature and altitude), the same method behind Indian CEA tables. The smallest conductor that passes both checks is chosen.",
+    cName: "Conductor", cArea: "Al mm²", cAmp: "Rating A", cVd: "VD %", cLoss: "Loss %", cRes: "Result",
+    lName: "code name (IS 398)", lArea: "aluminium cross-section", lAmp: "current it can carry continuously at your site", lVd: "voltage lost along the line", lLoss: "power lost as heat in the conductor, % of load", lRes: "smallest passing conductor is chosen",
+    hot: "too hot", vd: "too much drop", none: "No single conductor passes. Use a higher voltage, a double circuit or bundled conductors." },
+  ne: { lineKv: "लाइनको भोल्टेज", lineKva: "बोक्नुपर्ने पावर", linePf: "पावर फ्याक्टर", lineType: "कन्डक्टरको प्रकार",
+    acsr: "ACSR — स्टिल कोर भएको एल्युमिनियम (NEA मानक)", aaac: "AAAC — एल्युमिनियम मिश्रधातु (हलुका, खिया नलाग्ने)",
+    lineKm: "लाइनको लम्बाइ", useCond: "प्रयोग गर्ने कन्डक्टर", lineI: "लाइन करेन्ट", ratingSite: "तपाईंको ठाउँमा क्षमता", lossTxt: "पूरा भारमा हानि",
+    xTxt: "रियाक्टेन्स (फेज दूरीबाट)", neaUses: "यो भोल्टेजमा NEA ले प्रायः प्रयोग गर्ने", siteTxt: "प्रयोग गरिएको ठाउँको अवस्था",
+    lineTried: "जाँचिएका सबै कन्डक्टर", lineLead: "क्षमता तपाईंको ठाउँका लागि IEEE 738 ताप सन्तुलन (घाम, हावा, तापक्रम र उचाइ) बाट निकालिएको हो — भारतको CEA तालिकाको आधार पनि यही हो। दुवै जाँच पास गर्ने सबैभन्दा सानो कन्डक्टर छानिन्छ।",
+    cName: "कन्डक्टर", cArea: "Al mm²", cAmp: "क्षमता A", cVd: "VD %", cLoss: "हानि %", cRes: "नतिजा",
+    lName: "कोड नाम (IS 398)", lArea: "एल्युमिनियमको क्षेत्रफल", lAmp: "तपाईंको ठाउँमा लगातार बोक्न सक्ने करेन्ट", lVd: "लाइनमा गुम्ने भोल्टेज", lLoss: "तातिएर गुम्ने पावर, भारको %", lRes: "पास हुने सबैभन्दा सानो छानिन्छ",
+    hot: "धेरै तातिन्छ", vd: "ड्रप बढी", none: "कुनै एउटा कन्डक्टर पुग्दैन। उच्च भोल्टेज, डबल सर्किट वा बन्डल कन्डक्टर प्रयोग गर्नुहोस्।" },
+};
+Object.assign(UI.en, LT.en); Object.assign(UI.ne, LT.ne);
+
+function lineSpec() {
+  const reg = NP_REGIONS[S.region] || NP_REGIONS.hills;
+  const kv = String(S.lineKv);
+  const D = LINE_DEFAULTS[kv];
+  return { kV: Number(kv), loadKVA: +S.lineKva, pf: +S.linePf || 0.9, lengthKm: +S.lineKm, type: S.lineType,
+    Ta: S.region === "custom" ? +S.airTemp : reg.air, elevation: S.region === "custom" ? 1000 : reg.elev,
+    wind: 0.56, solar: 1045, absorptivity: 0.8, emissivity: 0.45, Tc: D.tc, gmdMm: D.gmdMm, vdLimitPct: D.vd };
+}
+
+function renderLineResult(r) {
+  const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
+  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
+  $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`;
+  $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
+  const c = r.chosen, s = r.spec, ne = S.lang === "ne";
+  drawStrands($("#xsec"), c);
+  $("#xsec-cap").textContent = c ? (ne ? "कन्डक्टरको काटिएको भाग (तार मिलाएर देखाइएको)" : "Conductor cross-section, strands to scale") : "";
+  let h = "";
+  if (!c) { h = `<div class="fail-box"><p class="buy">${ic("alert", 20)} ${tr("none")}</p></div>`; sticky.textContent = tr("none"); }
+  else {
+    const strand = c.st_strands ? `${c.al_strands}/${c.al_dia_mm} + ${c.st_strands}/${c.st_dia_mm} mm` : `${c.al_strands} strands`;
+    h += `<p class="ask">${ic("cart", 16)} ${tr("useCond")}</p><p class="buy">${c.st_strands ? "ACSR" : ""} ${esc(c.name)} — ${esc(strand)}, ${esc(c.standard)}</p>`;
+    h += `<div class="kvs">`;
+    h += kvRow("ruler", ne ? "किन्ने कन्डक्टर (३ फेज + २ % झोल)" : "Conductor to order (3 phases + 2 % sag)", `${Math.ceil(s.lengthKm * 3 * 1.02 * 1000).toLocaleString("en-IN")} m`);
+    h += kvRow("zap", tr("lineI"), `${fmt(r.I)} A`);
+    h += kvRow("thermo", tr("ratingSite"), `${fmt(c.amp, 0)} A`);
+    h += kvRow("gauge", tr("xTxt"), `${c.x.toFixed(3)} Ω/km`);
+    h += kvRow("zap", tr("lossTxt"), `${fmt(c.lossKW, 0)} kW (${fmt(c.lossPct, 1)} %)`);
+    h += `</div>`;
+    h += meter(tr("mI"), r.I, c.amp, "A", c.pass.ampacity);
+    h += meter(tr("mVd"), c.pct, s.vdLimitPct, "%", c.pass.voltageDrop);
+    const DEC = { "current-carrying capacity": ne ? "करेन्ट बोक्ने क्षमता" : "current-carrying capacity", "voltage drop": ne ? "भोल्टेज ड्रप" : "voltage drop", "smallest size in the table": ne ? "तालिकाको सबैभन्दा सानो" : "smallest size in the table", "minimum conductor for this voltage": ne ? "यो भोल्टेजको न्यूनतम कन्डक्टर (कोरोना)" : "minimum conductor for this voltage (corona)" };
+    h += `<p class="decided">${ic("info", 16)}<span>${tr("decided")} <b>${r.decidedBy.map((d) => DEC[d] || d).join(ne ? " र " : " and ")}</b>.</span></p>`;
+    const D = LINE_DEFAULTS[String(s.kV)];
+    h += `<h3 class="rh">${ic("tower", 18)} ${tr("neaUses")}</h3><p class="hint">ACSR ${D.usual.join(", ")}</p>`;
+    h += `<details class="box"><summary>${ic("info", 17)} ${tr("siteTxt")}</summary><ul class="plain">
+      <li>${ne ? "हावाको तापक्रम" : "Air temperature"} ${s.Ta} °C, ${ne ? "उचाइ" : "altitude"} ${s.elevation} m, ${ne ? "हावाको गति" : "wind"} ${s.wind} m/s, ${ne ? "घाम" : "sun"} ${s.solar} W/m²</li>
+      <li>${ne ? "कन्डक्टरको अधिकतम तापक्रम" : "Maximum conductor temperature"} ${s.Tc} °C (${s.kV >= 132 ? "CEA transmission" : "ACSR distribution practice"})</li>
+      <li>${ne ? "फेजबीचको औसत दूरी (GMD)" : "Phase spacing (GMD)"} ${(s.gmdMm / 1000).toFixed(1)} m — ${ne ? "सामान्य मान; NEA को नक्सा हेर्नुहोस्" : "typical; check the NEA pole/tower drawing"}</li>
+      <li>${ne ? "भोल्टेज ड्रप सीमा" : "Voltage-drop limit"} ${s.vdLimitPct} % (${s.kV <= 33 ? "NEA distribution design" : "Electricity Regulation 2050: ±10 % transmission"})</li></ul></details>`;
+    h += renderBom(bomLine({ line: r }));
+    h += r.warnings.length ? `<ul class="notes">${r.warnings.map((w) => `<li>${ic("alert", 15)}<span>${esc(w)}</span></li>`).join("")}</ul>` : "";
+    sticky.textContent = `${c.name} · ${fmt(c.amp, 0)} A · VD ${fmt(c.pct, 1)} %`;
+  }
+  ans.innerHTML = h;
+  // calculation section
+  let w = `<p class="lead-s">${tr("lineLead")}</p>`;
+  w += `<ol class="trail"><li><b>${tr("lineI")}</b> I = S / (√3 × U) = ${fmt(s.loadKVA, 0)} kVA / (√3 × ${s.kV} kV) = <b>${fmt(r.I, 1)} A</b></li>`;
+  if (c) {
+    w += `<li><b>IEEE 738</b> q<sub>c</sub> + q<sub>r</sub> = q<sub>s</sub> + I²R → I = √((q<sub>c</sub> + q<sub>r</sub> − q<sub>s</sub>) / R) = √((${c.heat.qc.toFixed(1)} + ${c.heat.qr.toFixed(1)} − ${c.heat.qs.toFixed(1)}) / ${(c.heat.R * 1000).toFixed(4)}e-3) = <b>${fmt(c.amp, 0)} A</b></li>`;
+    w += `<li><b>${tr("w6")}</b> ΔU = √3 × I × L × (R cos φ + X sin φ) = √3 × ${fmt(r.I, 1)} × ${s.lengthKm} × (${c.rAc.toFixed(3)} × ${s.pf} + ${c.x.toFixed(3)} × ${Math.sqrt(1 - s.pf ** 2).toFixed(3)}) = <b>${fmt(c.dV, 0)} V (${fmt(c.pct, 2)} %)</b></li>`;
+    w += `<li><b>${tr("lossTxt")}</b> 3 × I² × R × L = <b>${fmt(c.lossKW, 1)} kW</b></li>`;
+  }
+  w += `</ol><h3>${ic("table", 20)} ${tr("lineTried")}</h3>`;
+  const cols = [["cName", "lName"], ["cArea", "lArea"], ["cAmp", "lAmp"], ["cVd", "lVd"], ["cLoss", "lLoss"], ["cRes", "lRes"]];
+  w += `<dl class="legend">${cols.map(([t, l]) => `<dt>${tr(t)}</dt><dd>${tr(l)}</dd>`).join("")}</dl>`;
+  w += `<div class="tablewrap"><table><thead><tr>${cols.map(([t], i) => `<th${i === 0 || i === 5 ? ' class="l"' : ""}>${tr(t)}</th>`).join("")}</tr></thead><tbody>`;
+  for (const x of r.cands) {
+    const why = [!x.pass.ampacity && tr("hot"), !x.pass.voltageDrop && tr("vd")].filter(Boolean);
+    w += `<tr class="${x === c ? "chosen" : ""}"><td class="l">${esc(x.name)}</td><td>${fmt(x.al_area_mm2, 1)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.amp, 0)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.pct, 2)}</td><td>${fmt(x.lossPct, 1)}</td><td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "✓ " + tr("rChosen") : tr("rPass")) : "✗ " + why.join(", ")}</td></tr>`;
+  }
+  w += `</tbody></table></div><p><small>${tr("dataSrc")} IS 398-2 / IS 398-4 (Satcon, Lumino, Apar), BS 215 (Bear). IEEE 738-2012 heat balance, validated against 156 CEA 2023 / manufacturer ratings within 0.6 %.</small></p>`;
+  work.innerHTML = w;
 }
 
 // ---------- events ----------
@@ -574,7 +702,7 @@ form.addEventListener("input", (e) => {
 function onStruct(name) {
   if (name === "job") { const j = JOBS[S.job]; Object.assign(S, j.defaults); S.level = j.level;
     if (j.level === "HV") { S.material = "al"; S.lengthM = 1500; S.faultOn = true; S.cores = "3"; S.method = "ground"; S.depthMm = Number(S.hvKv) >= 22 ? 1050 : 900; if (S.route === "conduit") S.route = "buried"; }
-    else if (S.lengthM > 500) S.lengthM = 40; }
+    else { if (S.lengthM > 500) S.lengthM = 40; if (S.level !== "HV") S.material = "cu"; } }
   if (name === "loadType") {
     if (S.loadType === "motor") { S.unit = "HP"; S.system = "3ph"; S.motorStartOn = true; }
     else if (S.loadType === "amps") S.unit = "A";

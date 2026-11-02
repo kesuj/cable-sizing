@@ -260,3 +260,14 @@ svg .fw { fill: #1F5FAF; stroke: none; opacity: .75; }
 .hero-art .acc { stroke: var(--accent); }
 @media (min-width: 1200px) { .top { padding-right: 320px; } }
 @media (max-width: 1199px) { .hero-art { display: none; } }
+
+svg .acc-s { stroke: var(--accent); stroke-width: 2.2; }
+
+/* bill of materials */
+ul.bom { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
+ul.bom li { padding: var(--s3) 0; border-bottom: 1px solid var(--rule); }
+.bom-top { display: flex; justify-content: space-between; gap: var(--s3); align-items: baseline; }
+.bom-top b { font-weight: 600; font-size: 15px; }
+.bom-top .qty { flex: none; font-size: 13px; font-weight: 600; background: var(--film); border: 1px solid var(--rule); border-radius: 3px; padding: 1px 6px; }
+.bom-spec { font-size: 14px; margin-top: 2px; }
+.bom-why { font-size: 13px; color: var(--graphite); margin-top: 2px; }

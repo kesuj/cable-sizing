@@ -39,10 +39,10 @@ ERRATA = [
 # XLPE multi-core: DC=14,15 AC=16,17 cap=18 amps=19..24 SC=25,26
 # PVC multi-core:  DC=14,15 AC=16,17 cap=18,19 amps=20..25 SC=26,27
 LAYOUT = {
-    ("XLPE", "1"): dict(dc=15, ac=17, amp=21, sc=27),
-    ("PVC", "1"): dict(dc=15, ac=17, amp=21, sc=27),
-    ("XLPE", "multi"): dict(dc=14, ac=16, amp=19, sc=25),
-    ("PVC", "multi"): dict(dc=14, ac=16, amp=20, sc=26),
+    ("XLPE", "1"): dict(dc=15, ac=17, amp=21, sc=27, od=9),
+    ("PVC", "1"): dict(dc=15, ac=17, amp=21, sc=27, od=9),
+    ("XLPE", "multi"): dict(dc=14, ac=16, amp=19, sc=25, od=8),
+    ("PVC", "multi"): dict(dc=14, ac=16, amp=20, sc=26, od=8),
 }
 CORE_FROM_TITLE = {"SINGLE CORE": "1", "2 CORE": "2", "3 CORE": "3", "3.5 CORE": "3.5", "4 CORE": "4"}
 
@@ -87,6 +87,7 @@ def extract(path: str) -> dict:
                     "air": {"al": num(row[m + 4]), "cu": num(row[m + 5])},
                 },
                 "isc1s": {"al": num(row[s]), "cu": num(row[s + 1])},
+                "od": {"arm": num(row[lay["od"]]), "unarm": num(row[lay["od"] + 1])},  # approx. overall diameter, mm
             })
     return out
 

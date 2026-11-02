@@ -23,6 +23,7 @@ except ImportError:
     print("openpyxl not installed: using the committed data/lv_is.json and data/derating_is.json")
 step("build_lv_ref.py")
 step("build_hv.py")
+step("build_overhead.py")
 import shutil
 shutil.copy(ROOT / "research" / "iec_60364_5_52.json", ROOT / "data" / "iec_60364_5_52.json")
 step("build_data.py")

@@ -1,0 +1,2330 @@
+{
+ "meta": {
+  "title": "BOM selection rules (LV + 11/33 kV) for cable-sizing tool - Nepal (IS/IEC practice)",
+  "generated": "2026-11-03",
+  "verified_legend": {
+   "true": "read in the cited primary/manufacturer source",
+   "partial": "core fact sourced, some parts are practice/inference",
+   "derived": "computed from sourced inputs with a standard formula",
+   "false": "not verified - do not present as fact; show as 'typical, confirm'"
+  },
+  "companion": "bom_rules_notes.md; cable data in lv_reference.json"
+ },
+ "sources": [
+  {
+   "id": "B1",
+   "title": "CPWD General Specifications for Electrical Works Part I (Internal) 2013",
+   "url": "https://dgll.nic.in/sites/default/files/2023-06/CPWD%20%E0%A4%95%E0%A5%87%20General%20Specifications%20for%20Electrical%20Works%20%28Part-1%20Internal%29%202013_compressed.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Table I (conduit fill, p.47), Table V (trunking), Ch.8 earthing incl. Table IX (rev.) electrode sizes, 8.6 earth resistance, 8.7 RCD sensitivities, 3.3/3.10 DB & circuit capacity, Tables 4 & 5 (MCB curves, switch duty categories), Appendix G (RCCB extract of IS 12640). Primary text read."
+  },
+  {
+   "id": "B2",
+   "title": "IS 3043:1987 Code of practice for earthing (with Amd 1)",
+   "url": "https://law.resource.org/pub/in/bis/S05/is.3043.1987.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Cl. 9.2.1 plates, 9.2.2 pipes/rods (Amd 1 text), 22.1.3 earth-resistance philosophy. Primary text read (OCR)."
+  },
+  {
+   "id": "B3",
+   "title": "IS 732:1989 Code of practice for electrical wiring installations",
+   "url": "https://law.resource.org/pub/in/bis/S05/is.732.1989.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Cl. 2.98 space factor, B-5.3.2 + Table 7 (non-metallic conduit fill, 40 % space factor), 9.0.1, 9.1.2.1. OCR text read."
+  },
+  {
+   "id": "B4",
+   "title": "SP 30:2011 National Electrical Code of India (BIS)",
+   "url": "https://archive.org/download/gov.in.is.sp.30.2011/is.sp.30.2011.txt",
+   "accessed": "2026-11-03",
+   "notes": "Part 1/Sec 20 Table 4 (conduit fill, 1.1 kV cables), Part 1/Sec 16 (SPD, Table 3 Uc), Annex F Table 5 (motor capacitor kVAR), DB clauses, cascading/breaking-capacity text, lightning earth 10 ohm. Primary text read."
+  },
+  {
+   "id": "B5",
+   "title": "Nepal Electricity Rules, 2050 (1993) English translation, Nepal Law Commission",
+   "url": "https://giwmscdnone.gov.np/media/pdf_upload/electricity-rules-2050-1993_omynmfd.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Rules 56-60 (lightning, changeover switch, cutout/CB at meter, isolating switch, consumer earthing). Primary text read."
+  },
+  {
+   "id": "B6",
+   "title": "BIS - Standards on Transformers (IS 1180 series summary, Table 1 max losses and recommended % impedance)",
+   "url": "https://www.bis.gov.in/wp-content/uploads/2022/04/Transformers-_compressed.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Table 1: three-phase DTs 16-2500 kVA impedance 4.5/5.0/6.25 %. Primary text read."
+  },
+  {
+   "id": "B7",
+   "title": "Havells PowerSafe catalogue (electrika flipbook) p.77 - MCB data",
+   "url": "https://storage.electrika.com/flips/6090-havells-powersafe-15/files/assets/basic-html/page-77.html",
+   "accessed": "2026-11-03",
+   "notes": "B 3-5 In, C 5-10 In, D 10-20 In; 0.5-63 A; 10 kA; EN 60898-1. Fetched."
+  },
+  {
+   "id": "B8",
+   "title": "ABB Tmax XT MCCB brochure (Voltimum-hosted PDF)",
+   "url": "https://content.voltimum.com/au/288/ABB_TMAX_XT.pdf",
+   "accessed": "2026-11-03",
+   "notes": "XT1 160 A frame Icu @415 V B/C/N/S/H = 18/25/36/50/70 kA; Ics % table. Primary PDF read."
+  },
+  {
+   "id": "B9",
+   "title": "Mersen EduPack TM-104 - IEC 60269 gG & aM standard low-voltage fuses (2012)",
+   "url": "https://ep-ca.mersen.com/sites/mersen_ca/files/2018-11/TM-104-Mersen-EduPack-IEC60269-gG-aM-Standard-Low-Voltage-Fuses.pdf",
+   "accessed": "2026-11-03",
+   "notes": "gG/aM definitions, aM gates, cable protection IB<=In<=Iz and I2<=1.45Iz, selectivity ratio 1.6, temperature factors. Primary PDF read."
+  },
+  {
+   "id": "B10",
+   "title": "ABB fuse-links type CEF-S data sheet 2401PL1561 - choice of fuse-links for transformer protection",
+   "url": "https://library.e.abb.com/public/439254da769f4bf78415dbd2669a0779/LE_Fuse-links_CEF-S(EN)A_2401PL1561.pdf",
+   "accessed": "2026-11-03",
+   "notes": "kVA x kV selection table, IEC 60787/IEC 62271-105 basis, 12xIn 100 ms inrush, max LV gG fuse row. Primary PDF read with coordinates."
+  },
+  {
+   "id": "B11",
+   "title": "ABB brochure 'RCD Type F' 2CSC423012B0201",
+   "url": "https://library.e.abb.com/public/25f7108d2ff2713ec1257dd300603c50/2CSC423012B0201.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Type AC/A/F/B/B+ application guidance; Type F for single-phase inverters, Type B for three-phase frequency converters. Primary PDF read."
+  },
+  {
+   "id": "B12",
+   "title": "DEHN DEHNguard M TT 2P 275 NL product page (IEC 61643-11 Type 2+3)",
+   "url": "https://www.dehn-international.com/store/p/en-DE/F239092/dehnguard-modular-nl",
+   "accessed": "2026-11-03",
+   "notes": "Uc 275 V, In 20 kA, Imax 40 kA, Up <=1.5 kV, 125 A gG backup. Fetched."
+  },
+  {
+   "id": "B13",
+   "title": "Wikipedia - Utilization categories (IEC 60947)",
+   "url": "https://en.wikipedia.org/wiki/Utilization_categories",
+   "accessed": "2026-11-03",
+   "notes": "AC-1..AC-4 (60947-4-1), AC-20..AC-23 (60947-3) descriptions. Secondary; consistent with B1 Table 5."
+  },
+  {
+   "id": "B14",
+   "title": "Siemens Raja+ DOL starter (3TW72) operating instructions - Table A",
+   "url": "https://assets.new.siemens.com/siemens/assets/api/uuid:56bedd7c-a269-4501-ac97-dd06b45c3cf1/raja-2b-dol-starter-oi-new-design.pdf",
+   "accessed": "2026-11-03",
+   "notes": "HP/kW vs contactor, O/L range, back-up fuse (3NA HRC and rewirable SWG), Cu cable, FLC per IS 8789 / IS 9283 / IS 996. Primary PDF read."
+  },
+  {
+   "id": "B15",
+   "title": "Siemens FASD (fully automatic star-delta) starter handbook",
+   "url": "https://assets.new.siemens.com/siemens/assets/api/uuid:ae74ad97-c994-4ca5-a164-90086d3dcef9/fasd-starter-handbook.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Table 8 (10-75 HP), O/L set 0.58 x motor current, line monitoring relay. Primary PDF read."
+  },
+  {
+   "id": "B16",
+   "title": "Schneider Electric FAQ FA136856 - star-delta starter components 7.5-132 kW",
+   "url": "https://www.se.com/uk/en/faqs/FA136856",
+   "accessed": "2026-11-03",
+   "notes": "kW, FLC, contactors, O/L setting = FLC x 0.58 (relay in delta loop). Fetched."
+  },
+  {
+   "id": "B17",
+   "title": "CMP Products - Cable gland sizes (technical page)",
+   "url": "https://www.cmp-products.com/cable-glands/technical/cable-gland-sizes/",
+   "accessed": "2026-11-03",
+   "notes": "Gland size vs entry thread and outer-sheath OD range (T3CDS armoured, A2F unarmoured). Fetched. UK maker; Indian brands (Comet, Dowells) use same size codes but ranges differ."
+  },
+  {
+   "id": "B18",
+   "title": "Cembre A-M copper tube crimping lugs data sheet (CERN-hosted)",
+   "url": "https://sy-dep-epc-lpc.web.cern.ch/components/datasheets/epc-lpc%20(converters)/Copper%20tube%20crimping%20lug%20-%20CEMBRE.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Each conductor size offered with several stud holes; hole dia per stud. Primary PDF read."
+  },
+  {
+   "id": "B19",
+   "title": "IS 1255:1983 Code of practice for installation and maintenance of power cables up to 33 kV",
+   "url": "https://law.resource.org/pub/in/bis/S05/is.1255.1983.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Cl. 6.3.4.3 duct dia >= 1.5 x cable OD; 6.3.4.5 duct bend radius; 6.3.4.6 single-core in one duct. Primary OCR read."
+  },
+  {
+   "id": "B20",
+   "title": "MSEDCL Technical Specification for 11 kV/22 kV Surge Arresters with Disconnector (DIST/MM-I/11&22 kV S.A./2007)",
+   "url": "https://www.mahadiscom.in/supplier/wp-content/uploads/2018/10/1122kV_LA_0307_corectn_Final.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Annexure: 11 kV -> 9 kV rated, 8 kV MCOV, 5 kA, distribution class, metal-oxide gapless. Primary PDF read."
+  },
+  {
+   "id": "B21",
+   "title": "MSEDCL Technical Specification for RMU (D1, 2011 revised 2017)",
+   "url": "https://www.mahadiscom.in/supplier/wp-content/uploads/2018/09/D1-RMU-Tech-spec-2011-Revised-on-2017.pdf",
+   "accessed": "2026-11-03",
+   "notes": "630 A, 20 kA 3 s (11 kV), 200 A CB for transformer up to 630 kVA, CT 100-50/1 A 5P10, self-powered IDMT relay O/C 10-200 %, E/F 10-40 %. Primary PDF read."
+  },
+  {
+   "id": "B22",
+   "title": "Schneider Electric FAQ FA369327 - conventional tripping currents IEC 60898-1 vs IEC 60947-2",
+   "url": "https://www.se.com/de/de/faqs/FA369327/",
+   "accessed": "2026-11-03",
+   "notes": "1.13/1.45 In (MCB), 1.05/1.30 In (MCCB). Carried over from lv_reference.json S11."
+  },
+  {
+   "id": "B23",
+   "title": "VIOX - EV charger RCD selection: Type B vs F vs EV (IEC 62955 & IEC 62423)",
+   "url": "https://viox.com/ev-charger-rcd-selection-type-b-vs-type-f-vs-type-ev-iec-62955-iec-62423/",
+   "accessed": "2026-11-03",
+   "notes": "Vendor article, secondary. Only seen via search summary - NOT a primary source."
+  },
+  {
+   "id": "B24",
+   "title": "Power and Cables (SPS) - 11 kV 3-core heat-shrink termination kits indoor 3TIS-12X / outdoor 3TES-12X",
+   "url": "https://www.powerandcables.com/tag/11kv-terminations/",
+   "accessed": "2026-11-03",
+   "notes": "Size groups 16-25, 35-95, 120-240, 300-500 mm2. Search summary only."
+  },
+  {
+   "id": "B25",
+   "title": "KSEB specification - 11 kV and 33 kV station class polymer lightning arrester",
+   "url": "https://kseb.in/uploads/Downloadtemsuppy/11%20kV%20and%2033%20kV%20station%20class%20Polymer%20type%20Lightning%20Arrester-1698398726175419493.pdf",
+   "accessed": "2026-11-03",
+   "notes": "Server refused connection; content known only from search summary (30 kV, 10 kA for 33 kV)."
+  },
+  {
+   "id": "B26",
+   "title": "Power and Water Corp (Australia) S01-04-02-04 Pole top substation fuse charts 11 kV/22 kV EDO and LV fuse",
+   "url": "https://www.powerwater.com.au/__data/assets/pdf_file/0023/415292/S01-04-02-04-DESIGN-DATA,-POLE-TOP-SUBSTATION-FUSE-CHARTS,-11kV-and-22kV-EDO-and-LV-FUSE.PDF",
+   "accessed": "2026-11-03",
+   "notes": "HTTP 403; values known only from search summary. Foreign utility, reference only."
+  }
+ ],
+ "rules": {
+  "mcb": {
+   "standard": "IS/IEC 60898-1 (household/similar). For industrial MCBs makers also cite IEC 60947-2.",
+   "rated_current_series_A": {
+    "value": [
+     0.5,
+     1,
+     2,
+     3,
+     4,
+     6,
+     10,
+     16,
+     20,
+     25,
+     32,
+     40,
+     50,
+     63
+    ],
+    "verified": false,
+    "source": "B7 (range 0.5-63 A only), B14 (fuse steps 2/6/10/16/25/32 A)",
+    "note": "Range 0.5-63 A verified (Havells). Individual steps listed are the common catalogue steps; IEC 60898-1 preferred-value list itself not seen."
+   },
+   "curves": {
+    "verified": true,
+    "source": "B1 Table 4; B7",
+    "table": [
+     {
+      "curve": "B",
+      "magnetic_trip_x_In": [
+       3,
+       5
+      ],
+      "use": "Circuits whose equipment does not cause surge current: lighting and socket-outlet circuits (B1)."
+     },
+     {
+      "curve": "C",
+      "magnetic_trip_x_In": [
+       5,
+       10
+      ],
+      "use": "Circuits with equipment that causes surge current: inductive and motor circuits (B1). Default for mixed domestic/commercial power circuits."
+     },
+     {
+      "curve": "D",
+      "magnetic_trip_x_In": [
+       10,
+       20
+      ],
+      "use": "High inrush when switched on, typically ~15x running current: transformers, heavy-start motors, 2-pole motors (B1). Havells: inrush typically 12-15x (B7)."
+     }
+    ]
+   },
+   "conventional_tripping": {
+    "non_trip_x_In": 1.13,
+    "trip_x_In": 1.45,
+    "verified": true,
+    "source": "B22"
+   },
+   "breaking_capacity": {
+    "rule": "Icn of the MCB (or Icu of the upstream device when cascading) must be >= prospective short-circuit current at its point of installation.",
+    "rule_source": "B4 (SP 30 cascading clause: 'The upstream device must have an ultimate breaking capacity greater than or equal to the assumed short-circuit current at the installation point'); B1 G.2.5 for RCCB back-up",
+    "rule_verified": true,
+    "common_ratings_kA": [
+     4.5,
+     6,
+     10
+    ],
+    "common_ratings_verified": false,
+    "common_ratings_note": "10 kA verified as a catalogue value (B7, Legrand/Schneider listings). 4.5 and 6 kA are commonly sold; IEC 60898-1 Icn list not seen.",
+    "selection_vs_transformer": {
+     "verified": "derived",
+     "source": "B6 impedances + standard formula",
+     "method": "Isc = S / (sqrt3 x 400 V x z). Infinite HV source, bolted 3-phase fault at LV terminals, cable impedance ignored -> upper bound. Using 433 V gives ~8 % less.",
+     "guidance": [
+      {
+       "transformer_kVA_max": 100,
+       "isc_terminals_kA_max": 3.2,
+       "suggest": "6 kA MCBs adequate even close to the transformer; 4.5 kA only if > ~30 m of service cable (check)."
+      },
+      {
+       "transformer_kVA_max": 200,
+       "isc_terminals_kA_max": 6.4,
+       "suggest": "10 kA MCBs if the DB is near the transformer; 6 kA OK once service-cable impedance brings Isc below 6 kA (calculate)."
+      },
+      {
+       "transformer_kVA_max": 400,
+       "isc_terminals_kA_max": 12.8,
+       "suggest": "Main incomer MCCB >= 16-25 kA at/near the transformer LV board; downstream 10 kA MCBs only after calculating cable impedance or using maker cascading tables."
+      },
+      {
+       "transformer_kVA_max": 630,
+       "isc_terminals_kA_max": 20.2,
+       "suggest": "MCCB/ACB >= 25 kA at LV board."
+      }
+     ],
+     "note": "Thresholds (6/10 kA steps) are this tool's suggestion derived from the computed Isc; not taken from a code. NEA transformer impedances not verified (IS 1180 values used)."
+    }
+   },
+   "poles": {
+    "verified": "partial",
+    "source": "B3 cl. 9.0.1 & 9.1.2.1; B4 (sub-circuit: protective device on live conductor, neutral to common link); B5 Rule 59(2) isolating switch near meter",
+    "table": [
+     {
+      "poles": "SP",
+      "supply": "1-phase final sub-circuit",
+      "note": "Device on phase only; neutral to DB neutral link (B4). Verified practice."
+     },
+     {
+      "poles": "SPN / 1P+N",
+      "supply": "1-phase final circuit where neutral must also be switched",
+      "note": "Common catalogue item; not a code requirement found."
+     },
+     {
+      "poles": "DP",
+      "supply": "1-phase main incomer / isolator",
+      "note": "Isolates phase and neutral together; Nepal rule requires an isolating switch near the meter (B5). Neutral must not open before phase (B3 9.0.1)."
+     },
+     {
+      "poles": "TP",
+      "supply": "3-phase 3-wire load (e.g. motor without neutral)",
+      "note": "Practice."
+     },
+     {
+      "poles": "TPN",
+      "supply": "3-phase 4-wire incomer where neutral is switched but not protected",
+      "note": "Practice."
+     },
+     {
+      "poles": "4P",
+      "supply": "3-phase 4-wire incomer, 4P RCCB/RCBO, generator changeover where neutral must be switched/protected",
+      "note": "RCDs must disconnect all phase conductors (B3 9.1.2.1)."
+     }
+    ]
+   }
+  },
+  "mccb": {
+   "standard": "IEC 60947-2 / IS/IEC 60947-2",
+   "conventional_tripping": {
+    "non_trip_x_In": 1.05,
+    "trip_x_In": 1.3,
+    "verified": true,
+    "source": "B22"
+   },
+   "frame_sizes_A": {
+    "value": [
+     100,
+     125,
+     160,
+     250,
+     400,
+     630,
+     800,
+     1000,
+     1250,
+     1600
+    ],
+    "verified": "partial",
+    "source": "B8 (ABB XT1 160 A); Lauritz Knudsen DN0-DN4 / Schneider EasyPact CVS 100/160/250/400/630 seen only in reseller listings",
+    "note": "Frame steps are typical; exact list is manufacturer-specific."
+   },
+   "icu_example_ABB_XT1_160A_415V": {
+    "verified": true,
+    "source": "B8",
+    "table": [
+     {
+      "version": "B",
+      "Icu_kA": 18,
+      "Ics_pct": 100
+     },
+     {
+      "version": "C",
+      "Icu_kA": 25,
+      "Ics_pct": 100
+     },
+     {
+      "version": "N",
+      "Icu_kA": 36,
+      "Ics_pct": 100
+     },
+     {
+      "version": "S",
+      "Icu_kA": 50,
+      "Ics_pct": 75
+     },
+     {
+      "version": "H",
+      "Icu_kA": 70,
+      "Ics_pct": 50
+     }
+    ]
+   },
+   "icu_choices_kA": {
+    "value": [
+     16,
+     18,
+     25,
+     36,
+     50,
+     70
+    ],
+    "verified": "partial",
+    "source": "B8; L&T/LK listings (25/36/50 kA) not primary"
+   },
+   "thermal_adjustment": {
+    "value": "Ir adjustable approx 0.7-1.0 x In (TM-D) or 0.8-1.0 x In depending on make",
+    "verified": false,
+    "note": "Only a reseller listing of Schneider CVS250B (0.7...1 x In) was seen; no primary catalogue retrieved. Treat as typical, confirm per make."
+   },
+   "when_mccb_instead_of_mcb": {
+    "verified": "partial",
+    "rule": "Use MCCB when In > 63 A (top of IEC 60898-1 MCB range in Indian catalogues; B7 0.5-63 A) or when prospective Isc exceeds the MCB's 10 kA, or when adjustable trip/selectivity is needed. Some makers sell 80-125 A MCBs (e.g. Legrand 3P 100 A 10 kA listing) - acceptable if Icn suffices.",
+    "source": "B7; B4 cascading/breaking-capacity clause"
+   },
+   "selection": {
+    "rule": "In (frame/trip) >= IB; set Ir so IB <= Ir <= Iz; Icu >= prospective Isc at that point (Ics >= Isc preferred for main incomers).",
+    "verified": "partial",
+    "source": "B4; B9 (IB<=In<=Iz, I2<=1.45 Iz)"
+   }
+  },
+  "hrc_fuse": {
+   "standards": "IS 13703 / IEC 60269-1, -2 (industrial NH and cylindrical)",
+   "classes": {
+    "verified": true,
+    "source": "B9",
+    "table": [
+     {
+      "class": "gG",
+      "meaning": "Full-range breaking, general purpose - protects cables against overload and short circuit."
+     },
+     {
+      "class": "aM",
+      "meaning": "Partial-range, short-circuit protection of motor circuits only; must be associated with an overload device (thermal relay) because it must not operate for times above 60 s."
+     },
+     {
+      "class": "gL/gF/gI/gII",
+      "meaning": "Former designations replaced by gG."
+     }
+    ]
+   },
+   "aM_gates_x_In": {
+    "verified": true,
+    "source": "B9",
+    "table": [
+     {
+      "I_x_In": 4,
+      "tmin_s": 60
+     },
+     {
+      "I_x_In": 6.3,
+      "tmax_s": 60
+     },
+     {
+      "I_x_In": 8,
+      "tmin_s": 0.5
+     },
+     {
+      "I_x_In": 10,
+      "tmin_s": 0.2
+     },
+     {
+      "I_x_In": 12.5,
+      "tmax_s": 0.5
+     },
+     {
+      "I_x_In": 19,
+      "tmax_s": 0.1
+     }
+    ]
+   },
+   "gG_conventional_currents": {
+    "value": "Inf 1.25 In (non-fusing), If 1.6 In (fusing) within conventional time 1-4 h depending on rating",
+    "verified": true,
+    "source": "B9 (curve annotations 1.25In/1.6In)"
+   },
+   "cable_protection": {
+    "rule": "IB <= In <= Iz and I2 <= 1.45 Iz",
+    "verified": true,
+    "source": "B9"
+   },
+   "selectivity": {
+    "rule": "gG-to-gG selectivity when ratio of ratings about 1.6",
+    "verified": true,
+    "source": "B9"
+   },
+   "ambient_derating": {
+    "verified": true,
+    "source": "B9",
+    "formula": "In >= IB x K_theta / K_v",
+    "K_theta": [
+     {
+      "T_C": 40,
+      "K": 1.0
+     },
+     {
+      "T_C": 45,
+      "K": 1.03
+     },
+     {
+      "T_C": 50,
+      "K": 1.07
+     },
+     {
+      "T_C": 55,
+      "K": 1.11
+     },
+     {
+      "T_C": 60,
+      "K": 1.16
+     },
+     {
+      "T_C": 65,
+      "K": 1.21
+     },
+     {
+      "T_C": 70,
+      "K": 1.27
+     }
+    ]
+   },
+   "rating_series_A": {
+    "value": [
+     2,
+     4,
+     6,
+     10,
+     16,
+     20,
+     25,
+     32,
+     40,
+     50,
+     63,
+     80,
+     100,
+     125,
+     160,
+     200,
+     250,
+     315,
+     400,
+     500,
+     630,
+     800
+    ],
+    "verified": false,
+    "note": "Common IEC 60269 / Indian HRC steps; standard's preferred-value list not seen. Siemens 3NA steps 2/6/10/16/25/32/40/63/80/160/200 seen in B14/B15."
+   },
+   "motor_backup_fuse_examples": {
+    "verified": true,
+    "source": "B14 (DOL) and B15 (star-delta)",
+    "note": "See motor_starter tables (HRC 3NA back-up fuse column)."
+   },
+   "fuse_switch_unit": {
+    "rule": "Switch-fuse/fuse-switch rating >= fuse rating; for motor feeders AC-23 category (see isolator).",
+    "verified": "partial",
+    "source": "B1 Table 5 (duty categories)"
+   }
+  },
+  "rccb_rcbo": {
+   "standards": "IEC 61008 (RCCB), IEC 61009 (RCBO), IEC 62423 (Type F/B), IS 12640 (Indian RCCB; extract in B1 App. G)",
+   "sensitivities_mA": {
+    "value": [
+     10,
+     30,
+     100,
+     300,
+     500
+    ],
+    "verified": true,
+    "source": "B1 8.7 (30/100/300/500 mA as specified) and App. G.2.4 (preferred 10, 30, 100, 300 mA)",
+    "use": [
+     {
+      "mA": 30,
+      "use": "Additional protection against direct contact / final circuits, socket outlets, bathrooms (high sensitivity <=30 mA, B1 G.2.4)"
+     },
+     {
+      "mA": 100,
+      "use": "Indirect-contact protection of groups of circuits (practice)"
+     },
+     {
+      "mA": 300,
+      "use": "Fire protection / incomer, selective (S-type) upstream of 30 mA (practice; S-type requirement downstream of SPD in B4 6.4)"
+     }
+    ]
+   },
+   "rated_current_limit": {
+    "value": "IS restricts RCCB rated current to the order of 125 A",
+    "verified": true,
+    "source": "B1 G.2.3"
+   },
+   "types": {
+    "verified": "partial",
+    "source": "B11 (ABB Type F brochure); B23 for EV (secondary)",
+    "table": [
+     {
+      "type": "AC",
+      "detects": "sinusoidal AC residual current",
+      "use": "Resistive loads (ovens, lights) (B11)."
+     },
+     {
+      "type": "A",
+      "detects": "AC + pulsating DC",
+      "use": "Dimmers, SMPS, fans, AC units, general domestic (B11). Recommended default."
+     },
+     {
+      "type": "F",
+      "detects": "A + mixed frequency up to 1 kHz, short-time delay, tolerates 10 mA smooth DC",
+      "use": "Single-phase inverter/VFD loads (inverter ACs, washing machines, 1-ph pump drives) (B11)."
+     },
+     {
+      "type": "B",
+      "detects": "F + smooth DC",
+      "use": "Three-phase frequency converters/VFDs (B11: 'only RCD type B ... suitable to detect smooth DC ... three phase frequency converter')."
+     },
+     {
+      "type": "B+",
+      "detects": "B with higher-frequency range",
+      "use": "Three-phase inverters with very high switching frequency (B11)."
+     }
+    ]
+   },
+   "ev_charging": {
+    "rule": "Each EV charge point: 30 mA RCD at least Type A plus 6 mA DC detection (RDC-DD in charger, IEC 62955) or a Type B RCD; Type AC not allowed.",
+    "verified": false,
+    "source": "B23 (secondary vendor article citing IEC 60364-7-722)",
+    "note": "IEC 60364-7-722 text not accessed."
+   },
+   "solar_inverter": {
+    "rule": "If inverter maker states it cannot feed smooth DC fault current into the AC side, Type A is used; otherwise Type B.",
+    "verified": false,
+    "note": "IEC 60364-7-712 not accessed; follow inverter manual."
+   },
+   "rating_vs_upstream": {
+    "rule": "RCCB has no overcurrent protection; its rated current In must be >= the rating of the MCB/fuse protecting it (series back-up), and its conditional short-circuit current must be >= prospective Isc with that back-up device.",
+    "verified": "partial",
+    "source": "B1 G.2.5 (back-up protection by fuse or MCB in series; RCBO alternative)",
+    "note": "The '>= upstream' sizing statement is manufacturer practice; exact wording not found in a code."
+   },
+   "spd_interaction": {
+    "rule": "If SPD is downstream of an RCD, use an S-type RCD with impulse immunity >= 3 kA 8/20.",
+    "verified": true,
+    "source": "B4 Part 1/Sec 16 cl. 6.4(b)"
+   }
+  },
+  "isolator_switch": {
+   "standard": "IEC 60947-3",
+   "utilization_categories": {
+    "verified": true,
+    "source": "B1 Table 5; B13",
+    "table": [
+     {
+      "cat": "AC-20",
+      "use": "Connecting/disconnecting under no load"
+     },
+     {
+      "cat": "AC-21",
+      "use": "Resistive loads incl. moderate overloads; can switch 150 % of rated current (B1)"
+     },
+     {
+      "cat": "AC-22",
+      "use": "Mixed resistive/inductive loads incl. moderate overloads; can switch 300 % of rated current (B1)"
+     },
+     {
+      "cat": "AC-23",
+      "use": "Highly inductive / motor loads; can interrupt stalled-motor current (B1)"
+     }
+    ]
+   },
+   "rating_rule": {
+    "rule": "Isolator rated operational current Ie (in the right category at 415 V) >= rating of the protective device it is paired with (>= In of upstream/downstream MCB/MCCB/fuse) and >= IB. Use AC-22 for general DB incomers, AC-23 for motor feeders.",
+    "verified": "partial",
+    "source": "B1 Table 5 (categories); sizing step is practice"
+   },
+   "changeover_switch": {
+    "rule": "Mandatory where a standby generator is installed (Nepal Rule 57). Must be break-before-make, 4-pole for 3-phase 4-wire so neutral is switched; rating >= incomer.",
+    "verified": "partial",
+    "source": "B5 Rule 57 (requirement only); B1 3.3 (viii) only one source may be switched on at a time"
+   },
+   "main_switch_at_meter": {
+    "rule": "Licensee installs sealed cutout/CB at meter; consumer installs isolating switch near meter.",
+    "verified": true,
+    "source": "B5 Rule 59"
+   }
+  },
+  "motor_starter": {
+   "dol_vs_star_delta": {
+    "verified": "partial",
+    "source": "B14, B15, B16",
+    "rule": "Siemens Raja+ DOL range covers 0.25-7.5 kW (0.33-10 HP); submersible pump on DOL recommended max 5.5 kW / 7.5 HP (B14). Star-delta packages start at 7.5 kW/10 HP (B15, B16). Tool default: DOL <= 5.5 kW (submersible) / <= 7.5 kW (surface); star-delta above, motor must be delta-rated at 415 V.",
+    "note": "No NEA/Nepal limit on DOL size found."
+   },
+   "contactor_rule": {
+    "rule": "DOL: contactor AC-3 rated current Ie >= motor FLC. Star-delta: line and delta contactors >= 0.58 x FLC, star contactor >= 0.33 x FLC.",
+    "verified": "partial",
+    "source": "B16 (contactor choice by kW), 0.58/0.33 factors seen in multiple secondary sources; AC-3 definition B13"
+   },
+   "overload_relay": {
+    "rule": "DOL: relay range must include FLC; set to FLC. Star-delta with relay in delta loop (normal): set 0.58 x FLC and never higher than phase current (B15).",
+    "verified": true,
+    "source": "B15, B16"
+   },
+   "single_phasing_and_dry_run": {
+    "rule": "Siemens FASD includes a line-monitoring relay (7UG0613) for phase loss; dry-run protection for submersibles is a separate underload/level relay.",
+    "verified": "partial",
+    "source": "B15 (line monitoring relay in table)",
+    "note": "No code requirement found; dry-run device recommendation is practice."
+   },
+   "mpcb": {
+    "rule": "MPCB (IEC 60947-2/-4-1) can replace fuse+overload: set to FLC; Icu >= Isc.",
+    "verified": false
+   },
+   "dol_table_siemens_raja_415V": {
+    "verified": true,
+    "source": "B14",
+    "columns": [
+     "HP",
+     "kW",
+     "olr_range_A",
+     "hrc_3NA_A",
+     "rewirable_SWG",
+     "cu_cable_mm2",
+     "flc_3ph_squirrel_IS8789_A",
+     "flc_3ph_submersible_IS9283_A",
+     "flc_1ph_240V_IS996_A"
+    ],
+    "rows": [
+     [
+      0.33,
+      0.25,
+      "0.63-1",
+      2,
+      "36 SWG",
+      1,
+      null,
+      null,
+      3.8
+     ],
+     [
+      0.75,
+      0.55,
+      "1-1.6",
+      6,
+      "34 SWG",
+      1,
+      1.7,
+      null,
+      7
+     ],
+     [
+      1,
+      0.75,
+      "1.6-2.5",
+      6,
+      "27 SWG",
+      1,
+      2.2,
+      null,
+      7
+     ],
+     [
+      1.5,
+      1.1,
+      "2-3.2",
+      10,
+      "26 SWG",
+      1,
+      2.9,
+      3.25,
+      13
+     ],
+     [
+      2,
+      1.5,
+      "3.2-5",
+      16,
+      "25 SWG",
+      1,
+      3.8,
+      4.5,
+      18
+     ],
+     [
+      3,
+      2.2,
+      "4-6.3",
+      16,
+      "24 SWG",
+      1.5,
+      5.1,
+      6.5,
+      null
+     ],
+     [
+      5,
+      3.7,
+      "6.3-10",
+      16,
+      "21 SWG",
+      1.5,
+      8.1,
+      10,
+      null
+     ],
+     [
+      7.5,
+      5.5,
+      "8-12.5",
+      25,
+      "19 SWG",
+      1.5,
+      11.4,
+      14.5,
+      null
+     ],
+     [
+      7.5,
+      5.5,
+      "10-16",
+      25,
+      "18 SWG",
+      2.5,
+      null,
+      null,
+      null
+     ],
+     [
+      10,
+      7.5,
+      "12.5-20",
+      32,
+      "18 SWG",
+      4,
+      15.4,
+      19.5,
+      null
+     ]
+    ],
+    "note": "Two 5.5 kW rows exist (different relay range codes); cable column as printed."
+   },
+   "star_delta_table_siemens_fasd": {
+    "verified": true,
+    "source": "B15",
+    "columns": [
+     "HP",
+     "kW",
+     "IL_A",
+     "Iph_A",
+     "olr_range_A",
+     "hrc_3NA_A",
+     "cu_cable_in_out_mm2"
+    ],
+    "rows": [
+     [
+      10,
+      7.5,
+      15.4,
+      8.9,
+      "6.3-10",
+      25,
+      "2.5/1.5"
+     ],
+     [
+      10,
+      7.5,
+      19.5,
+      11.2,
+      "8-12.5",
+      25,
+      "2.5/1.5"
+     ],
+     [
+      15,
+      11,
+      23,
+      13.3,
+      "10-16",
+      32,
+      "4.0/2.5"
+     ],
+     [
+      15,
+      11,
+      29,
+      16.7,
+      "12.5-20",
+      null,
+      "6.0/2.5"
+     ],
+     [
+      20,
+      15,
+      32,
+      18.5,
+      "12.5-20",
+      null,
+      "6.0/2.5"
+     ],
+     [
+      25,
+      18.5,
+      36,
+      20.8,
+      "16-25",
+      40,
+      "10/4.0"
+     ],
+     [
+      20,
+      15,
+      39,
+      22.5,
+      "20-32",
+      63,
+      "10/6.0"
+     ],
+     [
+      30,
+      22,
+      45,
+      26,
+      "20-32",
+      null,
+      null
+     ],
+     [
+      30,
+      22,
+      57,
+      32.9,
+      "32-40",
+      63,
+      "16/10"
+     ],
+     [
+      40,
+      30,
+      59,
+      34.1,
+      "32-40",
+      null,
+      null
+     ],
+     [
+      50,
+      37,
+      71,
+      41,
+      "36-45",
+      80,
+      "25/10"
+     ],
+     [
+      40,
+      30,
+      76,
+      43.9,
+      "40-57",
+      80,
+      "25/10"
+     ],
+     [
+      50,
+      37,
+      85,
+      49.1,
+      "40-57",
+      160,
+      "25/10"
+     ],
+     [
+      75,
+      55,
+      104.4,
+      60.3,
+      "50-63",
+      160,
+      "35/16"
+     ],
+     [
+      75,
+      55,
+      158,
+      91.2,
+      "85-105",
+      160,
+      "70/35"
+     ]
+    ],
+    "note": "Rows reproduced as printed (some rows share a starter type; blanks = not printed). Row with IL 158 A appears to be a different motor design."
+   },
+   "star_delta_table_schneider_415V": {
+    "verified": true,
+    "source": "B16",
+    "columns": [
+     "kW",
+     "FLC_A",
+     "olr_setting_A_(0.58xFLC)",
+     "olr_range_A"
+    ],
+    "rows": [
+     [
+      7.5,
+      14,
+      8,
+      "7-10"
+     ],
+     [
+      11,
+      21,
+      12,
+      "9-13"
+     ],
+     [
+      22,
+      40,
+      23,
+      "16-24"
+     ],
+     [
+      30,
+      55,
+      32,
+      "30-38"
+     ],
+     [
+      37,
+      66,
+      38,
+      "30-40"
+     ],
+     [
+      55,
+      100,
+      58,
+      "48-65"
+     ],
+     [
+      75,
+      135,
+      78,
+      "63-80"
+     ],
+     [
+      110,
+      200,
+      116,
+      "95-120"
+     ],
+     [
+      132,
+      240,
+      139,
+      "110-140"
+     ]
+    ]
+   }
+  },
+  "cable_lugs": {
+   "standards": "IS 8309 (copper crimp), IS 8394 (aluminium crimp) - standard texts not retrieved (IS 8394 scan unreadable)",
+   "size_rule": {
+    "rule": "Lug barrel size = conductor cross-section (copper lug on copper, aluminium lug on aluminium, bimetallic Al-Cu lug when Al cable lands on copper busbar/terminal). For flexible fine-strand cable a larger barrel may be needed.",
+    "verified": "partial",
+    "source": "B18 (lugs specified per conductor size); bimetallic and fine-strand rule from maker listings, not standard"
+   },
+   "crimp": {
+    "rule": "Compression (hexagonal) crimp with die matched to lug size; tin-plated electrolytic copper for Cu.",
+    "verified": true,
+    "source": "B18"
+   },
+   "stud_hole": {
+    "rule": "Hole size is chosen to match the equipment terminal stud, not the cable size; each conductor size is offered with several stud holes.",
+    "verified": true,
+    "source": "B18",
+    "table_hole_dia_mm": [
+     {
+      "stud": "M3",
+      "hole": 3.2
+     },
+     {
+      "stud": "M3.5",
+      "hole": 3.7
+     },
+     {
+      "stud": "M4",
+      "hole": 4.3
+     },
+     {
+      "stud": "M5",
+      "hole": 5.3
+     },
+     {
+      "stud": "M6",
+      "hole": 6.4
+     },
+     {
+      "stud": "M8",
+      "hole": 8.4
+     },
+     {
+      "stud": "M10",
+      "hole": 10.5
+     },
+     {
+      "stud": "M12",
+      "hole": 13.2
+     },
+     {
+      "stud": "M14",
+      "hole": 15.0
+     },
+     {
+      "stud": "M16",
+      "hole": 17.0
+     }
+    ]
+   },
+   "typical_stud_by_size": {
+    "value": null,
+    "verified": false,
+    "note": "No Indian (Dowells/Comet) catalogue retrieved; do not auto-assign a stud by cable size - ask user for terminal stud or default to the device datasheet."
+   }
+  },
+  "cable_glands": {
+   "standards": "BS 6121 / IS 12943 (double compression brass glands for armoured cable) - standard text not retrieved",
+   "rule": {
+    "rule": "Choose gland size whose outer-seal range brackets the measured cable outer sheath OD (armoured: also inner bedding range). Double-compression for armoured cable outdoors/industrial.",
+    "verified": "partial",
+    "source": "B17; maker charts note ODs differ between cable makers - measure the actual cable"
+   },
+   "size_table_CMP": {
+    "verified": true,
+    "source": "B17",
+    "columns": [
+     "size",
+     "thread_metric",
+     "armoured_OD_min_mm",
+     "armoured_OD_max_mm",
+     "unarmoured_OD_min_mm",
+     "unarmoured_OD_max_mm"
+    ],
+    "rows": [
+     [
+      "20S16",
+      "M20",
+      6.1,
+      13.1,
+      3.2,
+      8.7
+     ],
+     [
+      "20S",
+      "M20",
+      9.5,
+      15.9,
+      6.1,
+      11.7
+     ],
+     [
+      "20",
+      "M20",
+      12.5,
+      20.9,
+      6.5,
+      14.0
+     ],
+     [
+      "25",
+      "M25",
+      18.2,
+      26.2,
+      11.1,
+      20.0
+     ],
+     [
+      "32",
+      "M32",
+      23.7,
+      33.9,
+      17.0,
+      26.3
+     ],
+     [
+      "40",
+      "M40",
+      27.9,
+      40.4,
+      23.5,
+      32.2
+     ],
+     [
+      "50S",
+      "M50",
+      35.2,
+      46.7,
+      31.0,
+      38.2
+     ],
+     [
+      "50",
+      "M50",
+      40.4,
+      53.0,
+      35.6,
+      44.0
+     ],
+     [
+      "63S",
+      "M63",
+      45.6,
+      59.4,
+      41.5,
+      49.9
+     ],
+     [
+      "63",
+      "M63",
+      54.6,
+      65.8,
+      47.2,
+      55.9
+     ],
+     [
+      "75S",
+      "M75",
+      59.0,
+      72.0,
+      54.0,
+      61.9
+     ],
+     [
+      "75",
+      "M75",
+      66.7,
+      78.4,
+      61.1,
+      67.9
+     ],
+     [
+      "90",
+      "M90",
+      76.2,
+      90.3,
+      66.6,
+      79.9
+     ]
+    ],
+    "note": "CMP T3CDS (armoured) and A2F (unarmoured). Indian Comet/Dowells ranges differ slightly; overlaps mean pick the size whose range centres on the OD."
+   }
+  },
+  "conduit": {
+   "space_factor": {
+    "rule": "Space factor (sum of cable overall areas / conduit internal area) does not exceed 40 % in the IS 732 tables.",
+    "verified": true,
+    "source": "B3 cl. 2.98 and B-5.3.2"
+   },
+   "min_size": {
+    "rule": "No steel conduit less than 20 mm; wall >= 1.6 mm up to 32 mm, >= 2 mm above.",
+    "verified": true,
+    "source": "B1 4.2.1"
+   },
+   "pvc_conduit_table_SP30": {
+    "verified": true,
+    "source": "B4 Part 1/Sec 20 Table 4 (1.1 kV single-core, rigid non-metallic conduit); identical figures in B3 Table 7 (OCR)",
+    "conduit_mm": [
+     16,
+     20,
+     25,
+     32,
+     40,
+     50
+    ],
+    "rows": [
+     {
+      "mm2": 1.0,
+      "max": [
+       5,
+       7,
+       13,
+       20,
+       null,
+       null
+      ]
+     },
+     {
+      "mm2": 1.5,
+      "max": [
+       4,
+       6,
+       10,
+       14,
+       null,
+       null
+      ]
+     },
+     {
+      "mm2": 2.5,
+      "max": [
+       3,
+       5,
+       10,
+       14,
+       null,
+       null
+      ]
+     },
+     {
+      "mm2": 4,
+      "max": [
+       2,
+       3,
+       6,
+       10,
+       14,
+       null
+      ]
+     },
+     {
+      "mm2": 6,
+      "max": [
+       null,
+       2,
+       5,
+       9,
+       11,
+       null
+      ]
+     },
+     {
+      "mm2": 10,
+      "max": [
+       null,
+       null,
+       4,
+       7,
+       9,
+       null
+      ]
+     },
+     {
+      "mm2": 16,
+      "max": [
+       null,
+       null,
+       2,
+       4,
+       5,
+       12
+      ]
+     },
+     {
+      "mm2": 25,
+      "max": [
+       null,
+       null,
+       null,
+       2,
+       2,
+       6
+      ]
+     },
+     {
+      "mm2": 35,
+      "max": [
+       null,
+       null,
+       null,
+       null,
+       2,
+       5
+      ]
+     },
+     {
+      "mm2": 50,
+      "max": [
+       null,
+       null,
+       null,
+       null,
+       2,
+       5
+      ]
+     }
+    ],
+    "note": "Conduit size = nominal outside diameter. 2.5 mm2 shows 10 in 25 mm and 14 in 32 mm (same as 1.5 mm2) in both SP 30 and IS 732 - reproduced as printed."
+   },
+   "steel_conduit_table_CPWD": {
+    "verified": true,
+    "source": "B1 Table I (PVC 650/1100 V cables IS 694, steel conduit)",
+    "note": "S = straight runs <= 4.25 m between draw boxes with <= 15 deg deflection; B = runs with bends > 15 deg. Conduit size = nominal external diameter.",
+    "conduit_mm": [
+     20,
+     25,
+     32,
+     38,
+     51,
+     64
+    ],
+    "rows": [
+     {
+      "mm2": 1.5,
+      "S": [
+       5,
+       10,
+       18,
+       null,
+       null,
+       null
+      ],
+      "B": [
+       4,
+       8,
+       12,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "mm2": 2.5,
+      "S": [
+       5,
+       8,
+       12,
+       null,
+       null,
+       null
+      ],
+      "B": [
+       3,
+       6,
+       10,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "mm2": 4,
+      "S": [
+       3,
+       6,
+       10,
+       null,
+       null,
+       null
+      ],
+      "B": [
+       2,
+       5,
+       8,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "mm2": 6,
+      "S": [
+       2,
+       5,
+       8,
+       null,
+       null,
+       null
+      ],
+      "B": [
+       null,
+       4,
+       7,
+       null,
+       null,
+       null
+      ]
+     },
+     {
+      "mm2": 10,
+      "S": [
+       2,
+       4,
+       6,
+       8,
+       null,
+       null
+      ],
+      "B": [
+       null,
+       3,
+       5,
+       6,
+       null,
+       null
+      ]
+     },
+     {
+      "mm2": 16,
+      "S": [
+       null,
+       2,
+       3,
+       6,
+       10,
+       12
+      ],
+      "B": [
+       null,
+       2,
+       3,
+       5,
+       7,
+       8
+      ]
+     },
+     {
+      "mm2": 25,
+      "S": [
+       null,
+       null,
+       3,
+       5,
+       8,
+       9
+      ],
+      "B": [
+       null,
+       null,
+       2,
+       3,
+       6,
+       7
+      ]
+     },
+     {
+      "mm2": 35,
+      "S": [
+       null,
+       null,
+       null,
+       3,
+       6,
+       8
+      ],
+      "B": [
+       null,
+       null,
+       null,
+       2,
+       5,
+       6
+      ]
+     },
+     {
+      "mm2": 50,
+      "S": [
+       null,
+       null,
+       null,
+       null,
+       5,
+       6
+      ],
+      "B": [
+       null,
+       null,
+       null,
+       null,
+       3,
+       5
+      ]
+     },
+     {
+      "mm2": 70,
+      "S": [
+       null,
+       null,
+       null,
+       null,
+       4,
+       5
+      ],
+      "B": [
+       null,
+       null,
+       null,
+       null,
+       3,
+       4
+      ]
+     }
+    ]
+   },
+   "buried_duct": {
+    "rule": "Diameter of cable conduit/pipe/duct at least 1.5 x cable outer diameter; duct bend radius not less than 1.5 m (OCR 'J'S m'); the three single-core cables of one circuit in one duct (never singly in steel ducts).",
+    "verified": true,
+    "source": "B19 cl. 6.3.4.3, 6.3.4.5, 6.3.4.6",
+    "note": "HDPE/DWC catalogue sizes (e.g. 50/63/75/90/110/125/160 mm OD) not sourced - choose the next size whose ID >= 1.5 x OD."
+   }
+  },
+  "earthing": {
+   "electrodes_CPWD_Table_IX": {
+    "verified": true,
+    "source": "B1 Table IX (revised)",
+    "rows": [
+     {
+      "type": "Pipe",
+      "material": "GI medium class",
+      "size": "40 mm dia, 4.5 m long (without joint)"
+     },
+     {
+      "type": "Plate",
+      "material": "GI",
+      "size": "600 x 600 x 6 mm"
+     },
+     {
+      "type": "Plate",
+      "material": "Copper",
+      "size": "600 x 600 x 3 mm"
+     },
+     {
+      "type": "Strip",
+      "material": "GI",
+      "size": "100 mm2 section"
+     },
+     {
+      "type": "Strip",
+      "material": "Copper",
+      "size": "40 mm2 section"
+     },
+     {
+      "type": "Conductor",
+      "material": "Copper",
+      "size": "4 mm dia (8 SWG)"
+     }
+    ]
+   },
+   "electrodes_IS3043": {
+    "verified": true,
+    "source": "B2 cl. 9.2.1, 9.2.2 (Amd 1)",
+    "rules": [
+     "Plate at least 600 x 600 mm; GI/steel plate >= 6.3 mm thick; Cu plate >= 3.15 mm thick; top edge >= 1.5 m deep.",
+     "Pipes: cast iron >= 100 mm dia, 2.5-3 m long, 13 mm thick; or MS water pipe 38-50 mm; Amd 1: 40 mm GI pipe in treated pit or 40 mm MS rod driven in virgin soil, rod placed 1.25 m below ground.",
+     "Driven rods 13/16/19 mm dia, 1.22-2.44 m long; parallel rods spaced >= driven depth; 2 m separation already gives substantial gain."
+    ]
+   },
+   "installation_CPWD": {
+    "verified": true,
+    "source": "B1 8.2-8.4",
+    "rules": [
+     "Electrode >= 1.5 m from building; pipe top >= 20 cm below ground; plate top >= 3.0 m below ground (CPWD - deeper than IS 3043's 1.5 m); >= 2 m between electrodes; strip electrode >= 15 m long in trench >= 0.5 m deep.",
+     "Earthing conductor same material as electrode, not less than 4 mm dia Cu wire, 25 x 4 mm GI strip or 20 x 3 mm Cu strip; need not exceed 150 mm2 GI / 100 mm2 Cu.",
+     "Watering: 20 mm pipe for plate; 40 x 20 mm reducer for pipe electrode."
+    ]
+   },
+   "protective_conductor_size": {
+    "verified": true,
+    "source": "B1 8.2.3",
+    "table": [
+     {
+      "phase_mm2": "<=16",
+      "pe": "same as phase"
+     },
+     {
+      "phase_mm2": ">16 to 35",
+      "pe": "16 mm2"
+     },
+     {
+      "phase_mm2": ">35",
+      "pe": "half of phase"
+     }
+    ]
+   },
+   "substation_strips": {
+    "verified": true,
+    "source": "B1 Table VIII A",
+    "rows": [
+     {
+      "installation": "Indoor S/S with HT panel, transformer up to 1600 kVA, LT panel, DG",
+      "electrode": "Copper plate",
+      "strip": "25 x 5 mm Cu"
+     },
+     {
+      "installation": "Indoor S/S, transformer above 1600 kVA",
+      "electrode": "Copper plate",
+      "strip": "32 x 5 mm Cu"
+     },
+     {
+      "installation": "HT outdoor S/S",
+      "electrode": "Copper plate",
+      "strip": "25 x 5 mm Cu"
+     },
+     {
+      "installation": "LT indoor S/S with generator",
+      "electrode": "Copper plate",
+      "strip": "25 x 5 mm Cu"
+     },
+     {
+      "installation": "LT switch room with main LT board",
+      "electrode": "Copper plate",
+      "strip": "20 x 3 mm Cu"
+     }
+    ],
+    "note": "Column alignment in the PDF text is ambiguous for rows 2-5; mapping above follows row order."
+   },
+   "target_resistance": {
+    "verified": "partial",
+    "rules": [
+     {
+      "value": "Each electrode <= 5 ohm; up to 8 ohm in rocky soil",
+      "source": "B1 8.6",
+      "verified": true
+     },
+     {
+      "value": "Lightning protection: each termination <= 10 x number of terminations ohm; whole system <= 10 ohm before bonding",
+      "source": "B4 (IS 2309 based) and B1 9.x",
+      "verified": true
+     },
+     {
+      "value": "IS 3043: no fixed target - resistance must be low enough to operate the earth-fault protection in the required time (coordinate with relay/RCD settings)",
+      "source": "B2 cl. 22.1.3, 22.3.2",
+      "verified": true
+     },
+     {
+      "value": "<= 1 ohm for substations / <= 2 ohm etc.",
+      "source": null,
+      "verified": false,
+      "note": "Common practice figure; not found in IS 3043, SP 30 or CPWD text accessed."
+     }
+    ]
+   },
+   "chemical_earthing": {
+    "rule": "Artificial chemical treatment of soil is an allowed remedy when 5 ohm is not achieved (B1 8.6(ii)); IS 3043 warns of corrosion and water contamination from salt treatment (cl. 8.8.4).",
+    "verified": true,
+    "source": "B1, B2",
+    "note": "Maintenance-free 'chemical earthing' electrode products (IS 3043 compliance claims) not evaluated."
+   },
+   "nepal": {
+    "verified": true,
+    "source": "B5 Rules 58, 60",
+    "rules": [
+     "All metallic supports on HV systems permanently earthed (Rule 58).",
+     "Consumer: separate earthed circuit for water heater/AC; 3-pin sockets connected to earth; earthing per 'technically proper system' (Rule 60)."
+    ],
+    "nbc_207": {
+     "verified": false,
+     "note": "NBC 207 (Electrical Design Requirements for Public Buildings) text not found online; no Nepal numeric earth-resistance limit verified."
+    }
+   }
+  },
+  "spd": {
+   "standard": "IEC 61643-11 (product), IEC 61643-12 / SP 30 Part 1 Sec 16 (selection)",
+   "test_classes": {
+    "verified": true,
+    "source": "B4 Part1/Sec16 4.4",
+    "table": [
+     {
+      "class": "I (Type 1)",
+      "test": "Iimp 10/350 + In",
+      "use": "High exposure, e.g. line entrance to buildings with a lightning protection system"
+     },
+     {
+      "class": "II (Type 2)",
+      "test": "In 8/20, Imax",
+      "use": "Distribution boards, less exposed locations"
+     },
+     {
+      "class": "III (Type 3)",
+      "test": "combination wave",
+      "use": "Point of use near sensitive equipment"
+     }
+    ]
+   },
+   "uc_rule": {
+    "verified": true,
+    "source": "B4 Table 3",
+    "table": [
+     {
+      "system": "TN-S / TT",
+      "L-N": "1.1 Uo",
+      "L-PE": "1.1 Uo (TT, TN-S)",
+      "N-PE": "Uo"
+     },
+     {
+      "system": "TN-C",
+      "L-PEN": "1.1 Uo"
+     }
+    ],
+    "derived": "Uo 230 V -> Uc >= 253 V, so commercial Uc 275 V units satisfy it (verified example product B12). Uc 320 V/385 V units used where supply overvoltage is frequent - practice, not verified."
+   },
+   "typical_house_type2": {
+    "verified": true,
+    "source": "B12",
+    "value": {
+     "Uc_V": 275,
+     "In_kA": 20,
+     "Imax_kA": 40,
+     "Up_kV": "<=1.5",
+     "backup_fuse_max": "125 A gG"
+    },
+    "note": "Example product (DEHN); ABB OVR T2 40-275 has same In/Imax per listings."
+   },
+   "at_origin": {
+    "rule": "SP 30 6.4(b) text as published: at origin supplied by utility network, 'rated discharge current may be lower than 5 kA' - almost certainly a misprint of 'may not be lower than 5 kA' (IEC 60364-5-53).",
+    "verified": "partial",
+    "source": "B4"
+   },
+   "when_recommended": {
+    "rule": "SP 30 requires main and branch DBs to be provided with SPD and earth-leakage device (incoming). Nepal Rule 56 places lightning protection duty on the licensee.",
+    "verified": true,
+    "source": "B4 DB clause; B5 Rule 56"
+   }
+  },
+  "distribution_board": {
+   "rules": {
+    "verified": true,
+    "source": "B1 3.3, 3.10, 7.x; B4",
+    "items": [
+     "Only MCB/MCCB/HRC-fuse DBs; rewirable-fuse DBs not used (B1 3.3.2).",
+     "Separate DBs for light and power where possible; three-phase DBs not for final circuit distribution as far as possible (B1).",
+     "Each DB: reasonable spare outgoing ways; balance 3-phase circuits (B1 3.3 ix, x). No numeric spare % found.",
+     "Lighting circuit <= 800 W or <= 10 points; residential power circuit <= 2 x 16 A or <= 3 x 6 A outlets; non-residential power circuit 1 outlet (B1 3.10).",
+     "Prewired DB: copper busbar, phase/neutral/earth terminal blocks, DIN channel, incomer MCB/RCCB/RCBO/MCCB (B1 6.x).",
+     "Enclosure IP 42 minimum indoor, IP 54 outdoor for panels/bus trunking (B1 7.x).",
+     "Neutral of sub-circuits to a common link, individually disconnectable (B4)."
+    ]
+   },
+   "ways_rule": {
+    "rule": "ways = number of outgoing circuits (+ incomer poles) rounded up to next catalogue size (4/6/8/12/16 way SPN; 4/6/8/12 way TPN) with spare ways",
+    "verified": false,
+    "note": "Catalogue way-counts not sourced."
+   }
+  },
+  "motor_capacitor": {
+   "rule": {
+    "text": "Capacitive current supplied by capacitors directly across induction motor terminals should not exceed the motor's magnetizing current (to avoid transient torques and overvoltages / self-excitation). Higher correction must be a separate circuit with its own control gear.",
+    "verified": true,
+    "source": "B4 Annex F Table 5 notes 2 and 3"
+   },
+   "table_SP30_kVAR": {
+    "verified": true,
+    "source": "B4 Annex F Table 5 'Capacitor ratings at rated voltage'",
+    "motor_kW": [
+     2.25,
+     3.7,
+     5.7,
+     7.5,
+     11.2,
+     15,
+     18.7,
+     22.5,
+     37,
+     57,
+     75,
+     102,
+     150,
+     187
+    ],
+    "kVAR_by_rpm": {
+     "3000": [
+      1,
+      2,
+      2.5,
+      3,
+      4,
+      5,
+      6,
+      7,
+      11,
+      16,
+      21,
+      31,
+      40,
+      46
+     ],
+     "1500": [
+      1,
+      2,
+      3,
+      4,
+      5,
+      6,
+      7,
+      8,
+      12.5,
+      17,
+      23,
+      33,
+      42,
+      50
+     ],
+     "1000": [
+      1.5,
+      2.5,
+      3.5,
+      4.5,
+      6,
+      7,
+      9,
+      10,
+      16,
+      21,
+      26,
+      36,
+      45,
+      53
+     ],
+     "750": [
+      2,
+      3.5,
+      4.5,
+      5.5,
+      7.5,
+      9,
+      10.5,
+      12,
+      18,
+      23,
+      28,
+      38,
+      47,
+      55
+     ],
+     "600": [
+      2.5,
+      4,
+      5,
+      6,
+      8.5,
+      11,
+      13,
+      15,
+      23,
+      29,
+      35,
+      48,
+      60,
+      68
+     ],
+     "500": [
+      2.5,
+      4,
+      5.5,
+      6.5,
+      9,
+      12,
+      14.5,
+      17,
+      25,
+      32,
+      40,
+      55,
+      67,
+      76
+     ]
+    }
+   },
+   "general_kvar_formula": {
+    "text": "kVAR = kW x [tan(acos pf1) - tan(acos pf2)] (SP 30 Table 5 multiplying factors)",
+    "verified": true,
+    "source": "B4 Part1 Table 5"
+   }
+  },
+  "hv_switchgear": {
+   "rmu": {
+    "verified": true,
+    "source": "B21",
+    "value": {
+     "Ur_kV": 12,
+     "busbar_and_LBS_A": 630,
+     "short_time_kA": 20,
+     "duration_s": 3,
+     "transformer_CB_A": 200,
+     "transformer_CB_for": "up to 630 kVA",
+     "enclosure": "IP 54"
+    },
+    "note": "MSEDCL (India) spec; 22 kV version 16 kA 3 s. Other Indian utilities accept 18.4-21 kA (search summaries only)."
+   },
+   "pole_mounted": {
+    "rule": "Pole-mounted DT: gang-operated AB switch + drop-out (expulsion) fuses + gapless MO lightning arresters on HV side.",
+    "verified": false,
+    "note": "Standard Indian/Nepali construction practice; NEA/REC construction standard not retrieved."
+   },
+   "vcb": {
+    "rule": "VCB/CB with IDMT relay for larger or indoor substations (>= ~630 kVA or where RMU used).",
+    "verified": false
+   },
+   "rating_36kV": {
+    "value": "36 kV switchgear for 33 kV systems; 630 A / 25 kA typical",
+    "verified": false
+   }
+  },
+  "hv_fuse": {
+   "hrc_current_limiting_ABB_CEF_S": {
+    "verified": true,
+    "source": "B10",
+    "basis": "IEC 60787 & IEC 62271-105; transformer overload 120 %; inrush 12 x In for 100 ms (<=800 kVA), 10 x In (>800 kVA); '*' = fuse cannot clear LV terminal short circuit on its own. For other line voltages use the next smaller voltage row.",
+    "kVA": [
+     25,
+     50,
+     75,
+     100,
+     125,
+     160,
+     200,
+     250,
+     315,
+     400,
+     500,
+     630,
+     800,
+     1000,
+     1250,
+     1600,
+     2000,
+     2500
+    ],
+    "fuse_A_11kV": [
+     10,
+     10,
+     16,
+     20,
+     20,
+     25,
+     40,
+     40,
+     40,
+     50,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "fuse_star_11kV": [
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null,
+     null
+    ],
+    "fuse_A_30kV_row_use_for_33kV": [
+     6.3,
+     6.3,
+     6.3,
+     6.3,
+     6.3,
+     10,
+     16,
+     16,
+     20,
+     40,
+     40,
+     40,
+     40,
+     40,
+     40,
+     50,
+     63,
+     63
+    ],
+    "fuse_star_30kV": [
+     true,
+     true,
+     true,
+     true,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false,
+     false
+    ],
+    "max_LV_gG_A": [
+     40,
+     80,
+     125,
+     160,
+     160,
+     200,
+     250,
+     250,
+     300,
+     400,
+     400,
+     800,
+     1000,
+     1000,
+     1000,
+     1000,
+     1250,
+     1250
+    ],
+    "note": "11 kV row ends at 400 kVA in the table (6/12 kV CEF-S max 63 A). 33 kV: per ABB note use the next smaller row (30 kV). Ratio fuse/FLC is 2-4x, i.e. larger than a '1.5-2x FLC' rule because of the inrush criterion."
+   },
+   "rule_of_thumb_1_5_to_2_FLC": {
+    "verified": false,
+    "note": "Not supported by the sourced ABB table (which gives ~2-4x HV FLC)."
+   },
+   "do_fuse_element": {
+    "verified": false,
+    "note": "NEA/REC table of DO fuse-element ratings vs kVA not found. Foreign example (Power & Water, Australia, B26, search summary only): 11 kV EDO 25 kVA 5 A, 63 kVA 8 A, 100 kVA 16 A. Do not use without NEA confirmation.",
+    "source": "B26"
+   }
+  },
+  "lightning_arrester": {
+   "11kV": {
+    "verified": true,
+    "source": "B20",
+    "value": {
+     "rated_kV": 9,
+     "MCOV_kV": 8,
+     "In_kA": 5,
+     "class": "distribution, metal-oxide gapless, with disconnector",
+     "creepage_mm": 300
+    }
+   },
+   "22kV": {
+    "verified": true,
+    "source": "B20",
+    "value": {
+     "rated_kV": 18,
+     "MCOV_kV": 15,
+     "In_kA": 5,
+     "creepage_mm": 600
+    }
+   },
+   "33kV": {
+    "verified": false,
+    "source": "B25",
+    "value": {
+     "rated_kV": 30,
+     "In_kA": 10,
+     "class": "station class (KSEB)"
+    },
+    "note": "From search summary only; document not retrievable."
+   },
+   "11kV_station_10kA": {
+    "verified": false,
+    "note": "9 kV / 10 kA station class seen only in search summaries/retail listings."
+   }
+  },
+  "hv_termination": {
+   "rule": {
+    "text": "Select kit by (1) voltage grade Uo/U (6.35/11 kV, 19/33 kV), (2) cores (1C/3C), (3) indoor vs outdoor (outdoor has rain sheds), (4) conductor size range, (5) technology heat-shrink or cold-shrink; straight-through joints likewise by size range.",
+    "verified": "partial",
+    "source": "B24 (size groups); Raychem HST indoor / HVT outdoor conforming IS 13573-2 per retail listings (search only)"
+   },
+   "example_size_groups_11kV_3C_mm2": {
+    "value": [
+     "16-25",
+     "35-95",
+     "120-240",
+     "300-500"
+    ],
+    "verified": false,
+    "source": "B24",
+    "note": "One maker (SPS); Raychem and 3M use different groupings."
+   }
+  },
+  "ct_relay": {
+   "ct": {
+    "rule": "CT primary >= transformer HV FLC (and >= CB-rated current if CB is the limit); e.g. MSEDCL RMU transformer CB uses dual-ratio 100-50/1 A class 5P10.",
+    "verified": "partial",
+    "source": "B21 (CT spec)",
+    "note": "'Primary >= FLC' rule is general practice."
+   },
+   "relay": {
+    "value": "Self-powered IDMT O/C + E/F relay, 3 s IDMT characteristic; O/C setting range 10-200 % of CT secondary, E/F 10-40 %",
+    "verified": true,
+    "source": "B21"
+   },
+   "pickup_rule": {
+    "value": "O/C pickup about 1.2-1.5 x transformer FLC; E/F 10-40 % of CT rating; grade with LV main and upstream feeder (0.3-0.4 s margin)",
+    "verified": false,
+    "note": "Only textbook/worked-example sources (1.25x, 1.5x) found; no utility setting guideline accessed."
+   }
+  },
+  "transformer_lv_side": {
+   "flc_and_fault_table": {
+    "verified": "derived",
+    "source": "B6 (impedance) + formulas",
+    "method": "Isc = S / (sqrt3 x 400 V x z). Infinite HV source, bolted 3-phase fault at LV terminals, cable impedance ignored -> upper bound. Using 433 V gives ~8 % less.",
+    "rows": [
+     {
+      "kva": 25,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 36.1,
+      "flc_hv_11kV_A": 1.31,
+      "flc_hv_33kV_A": 0.44,
+      "isc_lv_terminals_kA_infinite_source": 0.8
+     },
+     {
+      "kva": 50,
+      "z_percent": 4.5,
+      "z_source": "assumed 4.5 % (50 kVA not in IS 1180 Table 1; 25 and 63 kVA are 4.5 %)",
+      "flc_lv_400V_A": 72.2,
+      "flc_hv_11kV_A": 2.62,
+      "flc_hv_33kV_A": 0.87,
+      "isc_lv_terminals_kA_infinite_source": 1.6
+     },
+     {
+      "kva": 63,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 90.9,
+      "flc_hv_11kV_A": 3.31,
+      "flc_hv_33kV_A": 1.1,
+      "isc_lv_terminals_kA_infinite_source": 2.02
+     },
+     {
+      "kva": 100,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 144.3,
+      "flc_hv_11kV_A": 5.25,
+      "flc_hv_33kV_A": 1.75,
+      "isc_lv_terminals_kA_infinite_source": 3.21
+     },
+     {
+      "kva": 160,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 230.9,
+      "flc_hv_11kV_A": 8.4,
+      "flc_hv_33kV_A": 2.8,
+      "isc_lv_terminals_kA_infinite_source": 5.13
+     },
+     {
+      "kva": 200,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 288.7,
+      "flc_hv_11kV_A": 10.5,
+      "flc_hv_33kV_A": 3.5,
+      "isc_lv_terminals_kA_infinite_source": 6.42
+     },
+     {
+      "kva": 250,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 360.8,
+      "flc_hv_11kV_A": 13.12,
+      "flc_hv_33kV_A": 4.37,
+      "isc_lv_terminals_kA_infinite_source": 8.02
+     },
+     {
+      "kva": 315,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 454.7,
+      "flc_hv_11kV_A": 16.53,
+      "flc_hv_33kV_A": 5.51,
+      "isc_lv_terminals_kA_infinite_source": 10.1
+     },
+     {
+      "kva": 400,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 577.4,
+      "flc_hv_11kV_A": 20.99,
+      "flc_hv_33kV_A": 7.0,
+      "isc_lv_terminals_kA_infinite_source": 12.83
+     },
+     {
+      "kva": 500,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 721.7,
+      "flc_hv_11kV_A": 26.24,
+      "flc_hv_33kV_A": 8.75,
+      "isc_lv_terminals_kA_infinite_source": 16.04
+     },
+     {
+      "kva": 630,
+      "z_percent": 4.5,
+      "z_source": "B6",
+      "flc_lv_400V_A": 909.3,
+      "flc_hv_11kV_A": 33.07,
+      "flc_hv_33kV_A": 11.02,
+      "isc_lv_terminals_kA_infinite_source": 20.21
+     }
+    ]
+   },
+   "lv_incomer": {
+    "rule": "LV main breaker (MCCB/ACB) rated current >= transformer LV FLC (next standard frame above FLC; adjustable Ir set at ~FLC, allowing for permitted overload); Icu >= LV terminal Isc in table. LT cable/busbar sized for the breaker setting.",
+    "verified": "partial",
+    "source": "B4 breaking-capacity clause; B10 'max LV gG fuse' row gives the largest LV fuse that still coordinates with the HV CEF-S fuse",
+    "note": "The 'FLC x 1.0-1.25' factor is practice; not found in an accessible standard."
+   }
+  },
+  "nepal_context": {
+   "voltage": "230 V 1-ph / 400 V 3-ph +/-5 %, 50 Hz (Electricity Rules 2050 Rule 40/43 - see lv_reference.json)",
+   "rules_relevant_to_bom": {
+    "source": "B5",
+    "verified": true,
+    "items": [
+     "Rule 56 lightning protection by licensee",
+     "Rule 57 change-over switch mandatory with standby generator",
+     "Rule 59 sealed cutout/CB at meter by licensee; consumer isolating switch near meter",
+     "Rule 60 earthing of appliances, 3-pin sockets"
+    ]
+   },
+   "nea_standards": {
+    "verified": false,
+    "note": "NEA distribution construction standards / tender technical specs (DO fuse tables, DT protection) not retrievable (nea.org.np downloads failed)."
+   }
+  }
+ }
+}

@@ -51,6 +51,7 @@
       <li><a href="#nepal">How it is done in Nepal</a></li>
       <li><a href="#world">How the world does it</a></li>
       <li><a href="#hv">High voltage (3.3–33 kV)</a></li>
+      <li><a href="#lines">Overhead and transmission lines</a></li>
       <li><a href="#buy">Buying and installing</a></li>
       <li><a href="#limits">Limits and sources</a></li>
     </ol>
@@ -172,8 +173,21 @@
     </details>
   </section>
 
+  <section id="lines">
+    <h2>Overhead and transmission lines</h2>
+    <p>Bare overhead conductors (ACSR and AAAC) are not rated from tables like cables. Their rating comes from a heat balance: the sun and the current heat the conductor, the wind and radiation cool it. The calculator uses the IEEE 738-2012 method, the same one behind India's CEA transmission tables, and reproduces 156 published ratings within 0.6 %.</p>
+    <ul>
+      <li><b>Altitude matters here, unlike for cables.</b> At Kathmandu's 1400 m the air is about 15 % thinner than in the Terai, so wind removes less heat and the same conductor carries less.</li>
+      <li><b>Long 11 kV lines run out of voltage before they run out of current.</b> Line reactance (about 0.35–0.4 Ω/km) dominates; 3 MVA over 15 km cannot be carried at 11 kV within 5 %. That is why NEA builds 33 kV.</li>
+      <li><b>At 66 and 132 kV a minimum conductor applies</b> (about Dog and Panther): thinner conductors cause corona losses and lack strength, even if they pass thermally.</li>
+      <li><b>Losses are shown.</b> When they exceed 3 % of the load, the next conductor that cuts them by a third is suggested; the saved energy often pays for it.</li>
+    </ul>
+    <p>NEA's usual conductors: 11 kV Weasel, Rabbit, Dog; 33 kV Dog, Panther, Zebra; 132 kV Bear, Panther. Phase spacing and pole spans are typical values — check the NEA drawings.</p>
+  </section>
+
   <section id="buy">
     <h2>Buying and installing</h2>
+    <p>The calculator now lists everything to buy with its rating: breaker (MCB or MCCB, trip curve, poles, breaking capacity), RCD type and sensitivity, isolator (Rule 59) and changeover switch (Rule 57), surge protector, motor starter with overload setting and back-up fuse, power-factor capacitor, lugs, glands sized from the cable's diameter, conduit or buried pipe, earth electrodes, and for HV the RMU or breaker, HV fuses, arresters, CTs and the transformer's LV breaker.</p>
     <h3>At the shop</h3>
     <ul>
       <li>The printing on the sheath must show the maker, the standard (IS 694, IS 1554, IS 7098), the size in mm², the number of cores and the voltage grade (1.1 kV, or 450/750 V for house wire).</li>
