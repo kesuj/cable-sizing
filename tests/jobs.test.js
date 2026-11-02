@@ -9,7 +9,7 @@ function run(jobId, answers, route, lengthM, std = "IS") {
   const t = job.toInput({ ...job.defaults, ...answers });
   const r = routeFor(route, std, job.level);
   const input = { ...t.input, method: r.method, lengthM, material: job.level === "HV" ? "al" : "cu",
-    insulation: t.input.insulation || "XLPE", armoured: true, env: { airTemp: 35, groundTemp: 25, soilRes: 150, depthMm: 750 } };
+    insulation: t.input.insulation || (["A1", "B1"].includes(r.method) ? "PVC" : "XLPE"), armoured: true, env: { airTemp: 35, groundTemp: 25, soilRes: 150, depthMm: 750 } };
   input.cores = t.input.cores || coresFor(t, input.system, r.method, r.adapterKey);
   return { res: sizeConductor(ADAPTERS[r.adapterKey], input), t };
 }
