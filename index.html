@@ -8,26 +8,39 @@
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23F2A516%27/%3E%3Cpath d=%27M18 5 9 18h6l-1 9 9-13h-6l1-9z%27 fill=%27%23111A2B%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
+<script>try{var t=localStorage.getItem("cs-theme");if(t)document.documentElement.dataset.theme=t;}catch(e){}</script>
 </head>
 <body>
 <header class="nav">
+  <div class="phase-bar" aria-hidden="true"></div>
   <div class="wrap nav-in">
     <a class="logo" href="#top" aria-label="CableCalc Nepal home"><span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="#111A2B"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>CableCalc Nepal</a>
     <nav class="nav-links" aria-label="Sections">
       <a href="#calculator" data-en="Calculator" data-ne="क्याल्कुलेटर">Calculator</a>
       <a href="#examples" data-en="Examples" data-ne="उदाहरण">Examples</a>
+      <a href="components.html" data-en="Components" data-ne="कम्पोनेन्ट">Components</a>
       <a href="guide.html" data-en="How sizing works" data-ne="नाप्ने तरिका">How sizing works</a>
       <div class="seg seg-sm" role="radiogroup" aria-label="Language" data-only="simple">
         <button type="button" role="radio" data-set="lang" data-val="en">EN</button>
         <button type="button" role="radio" data-set="lang" data-val="ne" lang="ne">नेपाली</button>
       </div>
+      <button type="button" class="theme-btn" id="theme" aria-label="Switch light or dark mode" title="Light / dark">
+        <svg class="i-sun" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="i-moon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+      </button>
     </nav>
   </div>
 </header>
 
 <section class="hero" id="top">
+  <svg class="hero-wires" viewBox="0 0 1440 560" preserveAspectRatio="none" aria-hidden="true" fill="none" stroke-width="2">
+    <path d="M-20 470 C 300 430, 520 520, 820 450 S 1300 380, 1460 420" stroke="var(--ph-r)" opacity=".18"/>
+    <path d="M-20 490 C 300 450, 520 540, 820 470 S 1300 400, 1460 440" stroke="var(--ph-y)" opacity=".22"/>
+    <path d="M-20 510 C 300 470, 520 560, 820 490 S 1300 420, 1460 460" stroke="var(--ph-b)" opacity=".18"/>
+    <path d="M-20 530 C 300 490, 520 580, 820 510 S 1300 440, 1460 480" stroke="var(--ph-n)" opacity=".14"/>
+  </svg>
   <div class="wrap hero-in">
     <div class="hero-copy">
       <p class="pill" data-en="Free · Made for Nepal · Works offline" data-ne="निःशुल्क · नेपालका लागि · इन्टरनेट बिना पनि चल्छ">Free · Made for Nepal · Works offline</p>
@@ -63,13 +76,13 @@
     <h2 data-en="One tool for every cable job in Nepal" data-ne="नेपालका सबै तारको कामका लागि एउटै उपकरण">One tool for every cable job in Nepal</h2>
     <p class="sub" data-en="It asks only what you can read off a nameplate, a bill or a tape measure, and explains every term." data-ne="नेमप्लेट, बिल वा टेपबाट थाहा हुने कुरा मात्र सोध्छ, र हरेक शब्द बुझाउँछ।">It asks only what you can read off a nameplate, a bill or a tape measure, and explains every term.</p>
     <div class="cards4">
-      <article class="card"><span class="card-ic" data-ic="plug"></span><h3 data-en="Houses, shops, motors" data-ne="घर, पसल, मोटर">Houses, shops, motors</h3>
+      <article class="card" data-sheath="lv"><span class="card-ic" data-ic="plug"></span><h3 data-en="Houses, shops, motors" data-ne="घर, पसल, मोटर">Houses, shops, motors</h3>
         <p data-en="Main cable from the NEA meter, geysers, ACs, borewell pumps, EV chargers — copper or aluminium, IS or IEC." data-ne="NEA मिटरदेखिको मुख्य तार, गिजर, AC, बोरिङ पम्प, EV चार्जर — तामा वा एल्युमिनियम।">Main cable from the NEA meter, geysers, ACs, borewell pumps, EV chargers — copper or aluminium, IS or IEC.</p></article>
-      <article class="card"><span class="card-ic" data-ic="cable"></span><h3 data-en="11 and 33 kV cables" data-ne="११ र ३३ kV केबल">11 and 33 kV cables</h3>
+      <article class="card" data-sheath="hv"><span class="card-ic" data-ic="cable"></span><h3 data-en="11 and 33 kV cables" data-ne="११ र ३३ kV केबल">11 and 33 kV cables</h3>
         <p data-en="XLPE cables to transformers, sized for load, NEA fault level and voltage drop, with RMU, fuses and arresters." data-ne="ट्रान्सफर्मरसम्मका XLPE केबल — भार, फल्ट लेभल र भोल्टेज ड्रपअनुसार।">XLPE cables to transformers, sized for load, NEA fault level and voltage drop, with RMU, fuses and arresters.</p></article>
-      <article class="card"><span class="card-ic" data-ic="tower"></span><h3 data-en="Lines from 11 to 400 kV" data-ne="११ देखि ४०० kV सम्मका लाइन">Lines from 11 to 400 kV</h3>
+      <article class="card" data-sheath="line"><span class="card-ic" data-ic="tower"></span><h3 data-en="Lines from 11 to 400 kV" data-ne="११ देखि ४०० kV सम्मका लाइन">Lines from 11 to 400 kV</h3>
         <p data-en="ACSR and AAAC, single or bundled, rated for your site's heat, wind and altitude, with loadability for transmission." data-ne="ACSR र AAAC, एकल वा बन्डल — ठाउँको ताप, हावा र उचाइअनुसार।">ACSR and AAAC, single or bundled, rated for your site's heat, wind and altitude, with loadability for transmission.</p></article>
-      <article class="card"><span class="card-ic" data-ic="cart"></span><h3 data-en="What to buy" data-ne="के किन्ने">What to buy</h3>
+      <article class="card" data-sheath="buy"><span class="card-ic" data-ic="cart"></span><h3 data-en="What to buy" data-ne="के किन्ने">What to buy</h3>
         <p data-en="Breaker, RCD, isolator, surge protector, starter, lugs, glands, conduit, earthing — each with its rating and reason." data-ne="ब्रेकर, RCD, आइसोलेटर, SPD, स्टार्टर, लग, ग्ल्यान्ड, पाइप, अर्थिङ — रेटिङ र कारणसहित।">Breaker, RCD, isolator, surge protector, starter, lugs, glands, conduit, earthing — each with its rating and reason.</p></article>
     </div>
   </div>

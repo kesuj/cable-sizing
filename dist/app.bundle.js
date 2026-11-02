@@ -1961,6 +1961,12 @@ const WARN_NE = [
 ];
 const warnText = (w) => (S.lang === "ne" && !eng() ? (WARN_NE.find(([k]) => w.startsWith(k))?.[1] ?? w) : w);
 
+/** Printed marking, like the text along a real cable sheath. */
+function sheathPrint(parts) {
+  const line = ["CABLECALC NEPAL", ...parts].join("  ◆  ");
+  return `<div class="sheath-print" aria-hidden="true"><span>${esc(line)}  ◆  ${esc(line)}</span></div>`;
+}
+
 function renderResult() {
   const { res, err, notes, A } = last;
   const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
@@ -1980,6 +1986,8 @@ function renderResult() {
     h = `<div class="fail-box"><p class="buy">${ic("alert", 20)} ${tr("noCable")}</p>${res.warnings.map((w) => `<p>${esc(warnText(w))}</p>`).join("")}</div>`;
     sticky.textContent = tr("noCable");
   } else {
+    h += sheathPrint([`${s.cores === "1" ? "1C" : s.cores + "C"} × ${c.size} mm² ${s.material === "cu" ? "CU" : "AL"}`, s.insulation === "HRPVC" ? "HR-PVC" : s.insulation,
+      s.armoured ? "ARMOURED" : "UNARMOURED", grade.replace(" grade", ""), `${Math.ceil(s.lengthM * 1.1)} M`]);
     h += `<p class="ask">${ic("cart", 16)} ${tr("askFor")}</p><p class="buy">${esc(cableDescription(res, grade))}</p>`;
     h += `<div class="kvs">`;
     h += kvRow("ruler", tr("order"), `${Math.ceil(s.lengthM * 1.1)} m${res.runs > 1 ? ` × ${res.runs}` : ""}`);
@@ -2277,11 +2285,17 @@ function bomCtx(res, sm) {
   const kW = S.job === "pump" && S.motorBasis === "hp" ? +S.hp * 0.7457 : null;
   return { res, kind: sm.t.kind, S, route: S.route, od: cableOd(res), kW, starter: S.starter, pumpType: S.pumpType };
 }
+const COMP_MAP = [[/MCCB/, "mccb"], [/MCB/, "mcb"], [/RCD|RCCB/, "rccb"], [/isolating/i, "isolator"], [/Changeover/, "changeover"], [/SPD/, "spd"],
+  [/Distribution board/, "db"], [/HRC/, "hrc-fuse"], [/starter/i, "dol-starter"], [/capacitor/i, "capacitor"], [/lugs/i, "lug"], [/glands/i, "gland"],
+  [/conduit/i, "conduit-pipe"], [/HDPE/, "hdpe"], [/Earth electrode|earthing/i, "earth-electrode"], [/termination/i, "termination-kit"],
+  [/Ring main/, "rmu"], [/Vacuum/, "vcb"], [/Lightning/, "lightning-arrester"], [/Current transformers/, "ct"], [/Insulators/, "insulator"],
+  [/^Poles/, "pole"], [/^Towers/, "tower"], [/Spacer/, "spacer-damper"], [/^Conductor$/, "acsr"]];
+const compLink = (en, label) => { const m = COMP_MAP.find(([re]) => re.test(en)); return m ? `<a href="components.html#${m[1]}">${label}</a>` : label; };
 function renderBom(items) {
   if (!items.length) return "";
   const ne = S.lang === "ne";
   return `<h3 class="rh">${ic("cart", 18)} ${ne ? "किन्नुपर्ने सामान" : "What to buy"}</h3><ul class="bom">${items.map((x) =>
-    `<li><div class="bom-top"><b>${esc(ne ? x.item.ne : x.item.en)}</b><span class="qty">${esc(String(x.qty))}</span></div><div class="bom-spec">${esc(x.spec)}</div><div class="bom-why">${esc(ne ? x.why.ne : x.why.en)}</div></li>`).join("")}</ul>`;
+    `<li><div class="bom-top"><b>${compLink(x.item.en, esc(ne ? x.item.ne : x.item.en))}</b><span class="qty">${esc(String(x.qty))}</span></div><div class="bom-spec">${esc(x.spec)}</div><div class="bom-why">${esc(ne ? x.why.ne : x.why.en)}</div></li>`).join("")}</ul>`;
 }
 
 function renderSimpleResult(res, sm) {
@@ -2348,6 +2362,7 @@ function renderLineResult(r) {
   if (!c) { h = `<div class="fail-box"><p class="buy">${ic("alert", 20)} ${tr("none")}</p></div>`; sticky.textContent = tr("none"); }
   else {
     const strand = c.st_strands ? `${c.al_strands}/${c.al_dia_mm} + ${c.st_strands}/${c.st_dia_mm} mm` : `${c.al_strands} strands`;
+    h += sheathPrint([`${c.st_strands ? "ACSR" : "AAAC"} ${c.name}`, c.standard, `${s.kV} KV`, `${fmt(c.amp, 0)} A AT SITE`]);
     h += `<p class="ask">${ic("cart", 16)} ${tr("useCond")}</p><p class="buy">${c.st_strands ? "ACSR" : ""} ${esc(c.name)} — ${esc(strand)}, ${esc(c.standard)}</p>`;
     h += `<div class="kvs">`;
     h += kvRow("ruler", ne ? "किन्ने कन्डक्टर (३ फेज + २ % झोल)" : "Conductor to order (3 phases + 2 % sag)", `${Math.ceil(s.lengthKm * 3 * 1.02 * 1000).toLocaleString("en-IN")} m`);
@@ -2482,6 +2497,13 @@ document.addEventListener("click", (e) => {
     if (g.dataset.go === "line") openState({ mode: "simple", level: "HV", job: "line", lineKv: "11", lineKva: 1000, lineKm: 8, lineCct: "1", region: S.region || "hills" });
     else openState({ mode: "simple", level: "LV", job: "house", material: "cu", lengthM: 25 });
   }
+});
+
+document.getElementById("theme")?.addEventListener("click", () => {
+  const dark = document.documentElement.dataset.theme === "dark" ||
+    (!document.documentElement.dataset.theme && matchMedia("(prefers-color-scheme: dark)").matches);
+  document.documentElement.dataset.theme = dark ? "light" : "dark";
+  try { localStorage.setItem("cs-theme", document.documentElement.dataset.theme); } catch { /* ignore */ }
 });
 
 function paintCardIcons() {
