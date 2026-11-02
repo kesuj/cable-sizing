@@ -65,3 +65,28 @@ test("132 kV never picks a conductor thinner than Panther (corona/mechanical min
     elevation: 150, solar: 1045, absorptivity: 0.8, emissivity: 0.45, Tc: 85, gmdMm: 5400, vdLimitPct: 10 });
   assert.ok(r.chosen.dia_mm >= 20.95, r.chosen.name);
 });
+
+import { longLine, stClair, bundleRadius, reactance as Xof } from "../src/overhead.js";
+
+test("bundled 400 kV reactance and SIL match textbook values", () => {
+  const gmrMoose = 0.805 * 31.77 / 2;
+  const xTwin = Xof({ gmdMm: 12000, gmrMm: bundleRadius(gmrMoose, 2) });
+  const xQuad = Xof({ gmdMm: 12000, gmrMm: bundleRadius(gmrMoose, 4) });
+  assert.ok(xTwin > 0.30 && xTwin < 0.34, `twin ${xTwin}`);
+  assert.ok(xQuad > 0.24 && xQuad < 0.28, `quad ${xQuad}`);
+  const cTwin = (2 * Math.PI * 8.854e-12 * 1000) / Math.log(12000 / bundleRadius(31.77 / 2, 2));
+  const L = longLine({ kV: 400, I: 500, pf: 0.95, lengthKm: 100, r: 0.03, x: xTwin, cFkm: cTwin });
+  assert.ok(L.silMW > 480 && L.silMW < 560, `SIL ${L.silMW}`); // twin Moose 400 kV is about 515 MW
+});
+
+test("St. Clair loadability curve", () => {
+  assert.equal(stClair(50), 3.0);
+  assert.equal(stClair(160), 2.0);
+  assert.ok(Math.abs(stClair(240) - 1.65) < 1e-9);
+});
+
+test("400 kV, 1000 MW over 150 km needs a bundle", () => {
+  const r = sizeLine(DATA.overhead, { kV: 400, loadKVA: 1052600, pf: 0.95, lengthKm: 150, type: "acsr", Ta: 45, wind: 0.56,
+    elevation: 150, solar: 1045, absorptivity: 0.8, emissivity: 0.45, Tc: 85, gmdMm: 12000, vdLimitPct: 10 });
+  assert.ok(r.chosen && r.chosen.n >= 2, r.chosen?.name);
+});

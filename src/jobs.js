@@ -146,9 +146,9 @@ export const JOBS = {
 
   line: {
     level: "HV", icon: "line", kind: "line",
-    en: "Overhead or transmission line (11–132 kV)", ne: "ओभरहेड / प्रसारण लाइन (११–१३२ kV)",
-    fields: () => ["lineKv", "lineKva", "linePf", "lineType"],
-    defaults: { lineKv: "11", lineKva: 1000, linePf: 0.9, lineType: "acsr", lineKm: 8 },
+    en: "Overhead or transmission line (11–400 kV)", ne: "ओभरहेड / प्रसारण लाइन (११–४०० kV)",
+    fields: () => ["lineKv", "lineKva", "linePf", "lineCct", "lineType"],
+    defaults: { lineKv: "11", lineKva: 1000, linePf: 0.9, lineType: "acsr", lineKm: 8, lineCct: "1" },
   },
 
   hvfeed: {

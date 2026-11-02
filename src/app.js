@@ -3,7 +3,7 @@ import { ADAPTERS } from "./adapters/index.js";
 import { sizeConductor, cableDescription } from "./size.js";
 import { round, kValue } from "./core.js";
 import { drawCable, drawStrands } from "./xsec.js";
-import { sizeLine, LINE_DEFAULTS } from "./overhead.js";
+import { sizeLine, LINE_DEFAULTS, stClair } from "./overhead.js";
 import { bomFor, bomHv, bomLine } from "./bom.js";
 import { DATA } from "./data.js";
 import { JOBS, ROUTES, REGIONS as NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } from "./jobs.js";
@@ -501,8 +501,9 @@ function renderSimple() {
     kva: () => num("kva", tr("kva"), { suffix: "kVA" }),
     faultKa: () => num("faultKa", tr("faultKa"), { suffix: "kA" }),
     faultT: () => num("faultT", tr("faultT"), { suffix: "s" }),
-    lineKv: () => sel("lineKv", tr("lineKv"), [["11", "11 kV"], ["33", "33 kV"], ["66", "66 kV"], ["132", "132 kV"]], { struct: true }),
-    lineKva: () => num("lineKva", tr("lineKva"), { suffix: "kVA" }),
+    lineKv: () => sel("lineKv", tr("lineKv"), [["11", "11 kV (distribution)"], ["33", "33 kV (sub-transmission)"], ["66", "66 kV"], ["132", "132 kV (transmission)"], ["220", "220 kV (transmission)"], ["400", "400 kV (cross-border / national grid)"]], { struct: true }),
+    lineKva: () => num("lineKva", tr("lineKva"), { suffix: Number(S.lineKv) >= 132 ? "MW" : "kVA" }),
+    lineCct: () => sel("lineCct", S.lang === "ne" ? "सर्किट संख्या" : "Number of circuits", [["1", S.lang === "ne" ? "एक सर्किट" : "Single circuit"], ["2", S.lang === "ne" ? "डबल सर्किट (भार बाँडिन्छ)" : "Double circuit (load shared)"]]),
     linePf: () => num("linePf", tr("linePf"), { step: 0.01 }),
     lineType: () => sel("lineType", tr("lineType"), [["acsr", tr("acsr")], ["aaac", tr("aaac")]]),
   };
@@ -609,7 +610,7 @@ const LT = {
     lineTried: "Every conductor tested", lineLead: "Ratings are calculated for your site with the IEEE 738 heat balance (sun, wind, air temperature and altitude), the same method behind Indian CEA tables. The smallest conductor that passes both checks is chosen.",
     cName: "Conductor", cArea: "Al mm²", cAmp: "Rating A", cVd: "VD %", cLoss: "Loss %", cRes: "Result",
     lName: "code name (IS 398)", lArea: "aluminium cross-section", lAmp: "current it can carry continuously at your site", lVd: "voltage lost along the line", lLoss: "power lost as heat in the conductor, % of load", lRes: "smallest passing conductor is chosen",
-    hot: "too hot", vd: "too much drop", none: "No single conductor passes. Use a higher voltage, a double circuit or bundled conductors." },
+    hot: "too hot", vd: "too much drop", loadF: "beyond loadability", cLoad: "Limit MW", lLoad: "practical loadability: SIL × St. Clair factor for this length (220/400 kV planning limit)", none: "No single conductor passes. Use a higher voltage, a double circuit or bundled conductors." },
   ne: { lineKv: "लाइनको भोल्टेज", lineKva: "बोक्नुपर्ने पावर", linePf: "पावर फ्याक्टर", lineType: "कन्डक्टरको प्रकार",
     acsr: "ACSR — स्टिल कोर भएको एल्युमिनियम (NEA मानक)", aaac: "AAAC — एल्युमिनियम मिश्रधातु (हलुका, खिया नलाग्ने)",
     lineKm: "लाइनको लम्बाइ", useCond: "प्रयोग गर्ने कन्डक्टर", lineI: "लाइन करेन्ट", ratingSite: "तपाईंको ठाउँमा क्षमता", lossTxt: "पूरा भारमा हानि",
@@ -617,15 +618,18 @@ const LT = {
     lineTried: "जाँचिएका सबै कन्डक्टर", lineLead: "क्षमता तपाईंको ठाउँका लागि IEEE 738 ताप सन्तुलन (घाम, हावा, तापक्रम र उचाइ) बाट निकालिएको हो — भारतको CEA तालिकाको आधार पनि यही हो। दुवै जाँच पास गर्ने सबैभन्दा सानो कन्डक्टर छानिन्छ।",
     cName: "कन्डक्टर", cArea: "Al mm²", cAmp: "क्षमता A", cVd: "VD %", cLoss: "हानि %", cRes: "नतिजा",
     lName: "कोड नाम (IS 398)", lArea: "एल्युमिनियमको क्षेत्रफल", lAmp: "तपाईंको ठाउँमा लगातार बोक्न सक्ने करेन्ट", lVd: "लाइनमा गुम्ने भोल्टेज", lLoss: "तातिएर गुम्ने पावर, भारको %", lRes: "पास हुने सबैभन्दा सानो छानिन्छ",
-    hot: "धेरै तातिन्छ", vd: "ड्रप बढी", none: "कुनै एउटा कन्डक्टर पुग्दैन। उच्च भोल्टेज, डबल सर्किट वा बन्डल कन्डक्टर प्रयोग गर्नुहोस्।" },
+    hot: "धेरै तातिन्छ", vd: "ड्रप बढी", loadF: "क्षमताभन्दा बढी", cLoad: "सीमा MW", lLoad: "व्यावहारिक क्षमता: SIL × लम्बाइअनुसार St. Clair फ्याक्टर", none: "कुनै एउटा कन्डक्टर पुग्दैन। उच्च भोल्टेज, डबल सर्किट वा बन्डल कन्डक्टर प्रयोग गर्नुहोस्।" },
 };
 Object.assign(UI.en, LT.en); Object.assign(UI.ne, LT.ne);
 
+const stClairTxt = (L) => (stClair(L)).toFixed(2);
 function lineSpec() {
   const reg = NP_REGIONS[S.region] || NP_REGIONS.hills;
   const kv = String(S.lineKv);
   const D = LINE_DEFAULTS[kv];
-  return { kV: Number(kv), loadKVA: +S.lineKva, pf: +S.linePf || 0.9, lengthKm: +S.lineKm, type: S.lineType,
+  const mw = Number(kv) >= 132;
+  return { kV: Number(kv), loadKVA: mw ? (+S.lineKva * 1000) / (+S.linePf || 0.95) : +S.lineKva, pf: +S.linePf || 0.9, lengthKm: +S.lineKm, type: S.lineType,
+    circuits: +S.lineCct || 1,
     Ta: S.region === "custom" ? +S.airTemp : reg.air, elevation: S.region === "custom" ? 1000 : reg.elev,
     wind: 0.56, solar: 1045, absorptivity: 0.8, emissivity: 0.45, Tc: D.tc, gmdMm: D.gmdMm, vdLimitPct: D.vd };
 }
@@ -648,11 +652,17 @@ function renderLineResult(r) {
     h += kvRow("zap", tr("lineI"), `${fmt(r.I)} A`);
     h += kvRow("thermo", tr("ratingSite"), `${fmt(c.amp, 0)} A`);
     h += kvRow("gauge", tr("xTxt"), `${c.x.toFixed(3)} Ω/km`);
-    h += kvRow("zap", tr("lossTxt"), `${fmt(c.lossKW, 0)} kW (${fmt(c.lossPct, 1)} %)`);
+    h += kvRow("zap", tr("lossTxt"), `${fmt(c.lossKW / (c.lossKW > 5000 ? 1000 : 1), 1)} ${c.lossKW > 5000 ? "MW" : "kW"} (${fmt(c.lossPct, 1)} %)`);
+    if (c.sil != null) {
+      h += kvRow("gauge", ne ? "सर्ज इम्पिडेन्स लोडिङ (SIL)" : "Surge impedance loading (SIL)", `${fmt(c.sil, 0)} MW`);
+      h += kvRow("shield", ne ? "व्यावहारिक क्षमता (St. Clair)" : "Practical loadability (St. Clair)", `${fmt(c.loadability, 0)} MW`);
+    }
+    if (r.circuits > 1) h += kvRow("layers", ne ? "सर्किट" : "Circuits", `${r.circuits} × ${fmt(r.I, 0)} A`);
     h += `</div>`;
     h += meter(tr("mI"), r.I, c.amp, "A", c.pass.ampacity);
-    h += meter(tr("mVd"), c.pct, s.vdLimitPct, "%", c.pass.voltageDrop);
-    const DEC = { "current-carrying capacity": ne ? "करेन्ट बोक्ने क्षमता" : "current-carrying capacity", "voltage drop": ne ? "भोल्टेज ड्रप" : "voltage drop", "smallest size in the table": ne ? "तालिकाको सबैभन्दा सानो" : "smallest size in the table", "minimum conductor for this voltage": ne ? "यो भोल्टेजको न्यूनतम कन्डक्टर (कोरोना)" : "minimum conductor for this voltage (corona)" };
+    if (s.kV <= 132) h += meter(tr("mVd"), c.pct, s.vdLimitPct, "%", c.pass.voltageDrop);
+    else h += meter(ne ? "भार र व्यावहारिक क्षमता" : "Power vs practical loadability", c.PMW, c.loadability, "MW", c.pass.loadability);
+    const DEC = { "current-carrying capacity": ne ? "करेन्ट बोक्ने क्षमता" : "current-carrying capacity", "voltage drop": ne ? "भोल्टेज ड्रप" : "voltage drop", "smallest size in the table": ne ? "तालिकाको सबैभन्दा सानो" : "smallest size in the table", "minimum conductor for this voltage": ne ? "यो भोल्टेजको न्यूनतम कन्डक्टर (कोरोना)" : "minimum conductor for this voltage (corona)", "line loadability (St. Clair)": ne ? "लाइनको व्यावहारिक क्षमता (St. Clair)" : "line loadability (St. Clair)" };
     h += `<p class="decided">${ic("info", 16)}<span>${tr("decided")} <b>${r.decidedBy.map((d) => DEC[d] || d).join(ne ? " र " : " and ")}</b>.</span></p>`;
     const D = LINE_DEFAULTS[String(s.kV)];
     h += `<h3 class="rh">${ic("tower", 18)} ${tr("neaUses")}</h3><p class="hint">ACSR ${D.usual.join(", ")}</p>`;
@@ -671,16 +681,17 @@ function renderLineResult(r) {
   w += `<ol class="trail"><li><b>${tr("lineI")}</b> I = S / (√3 × U) = ${fmt(s.loadKVA, 0)} kVA / (√3 × ${s.kV} kV) = <b>${fmt(r.I, 1)} A</b></li>`;
   if (c) {
     w += `<li><b>IEEE 738</b> q<sub>c</sub> + q<sub>r</sub> = q<sub>s</sub> + I²R → I = √((q<sub>c</sub> + q<sub>r</sub> − q<sub>s</sub>) / R) = √((${c.heat.qc.toFixed(1)} + ${c.heat.qr.toFixed(1)} − ${c.heat.qs.toFixed(1)}) / ${(c.heat.R * 1000).toFixed(4)}e-3) = <b>${fmt(c.amp, 0)} A</b></li>`;
-    w += `<li><b>${tr("w6")}</b> ΔU = √3 × I × L × (R cos φ + X sin φ) = √3 × ${fmt(r.I, 1)} × ${s.lengthKm} × (${c.rAc.toFixed(3)} × ${s.pf} + ${c.x.toFixed(3)} × ${Math.sqrt(1 - s.pf ** 2).toFixed(3)}) = <b>${fmt(c.dV, 0)} V (${fmt(c.pct, 2)} %)</b></li>`;
+    if (!r.ehv) w += `<li><b>${tr("w6")}</b> ΔU = √3 × I × L × (R cos φ + X sin φ) = √3 × ${fmt(r.I, 1)} × ${s.lengthKm} × (${c.rAc.toFixed(3)} × ${s.pf} + ${c.x.toFixed(3)} × ${Math.sqrt(1 - s.pf ** 2).toFixed(3)}) = <b>${fmt(c.dV, 0)} V (${fmt(c.pct, 2)} %)</b></li>`;
+    else w += `<li><b>${S.lang === "ne" ? "लामो लाइन मोडेल" : "Long-line model"}</b> Z<sub>c</sub> = √(z/y), V<sub>s</sub> = cosh(γl)·V<sub>r</sub> + Z<sub>c</sub>·sinh(γl)·I<sub>r</sub>; ${S.lang === "ne" ? "रेगुलेसन" : "regulation"} <b>${fmt(c.pct, 1)} %</b>, SIL = V²/Z<sub>c</sub> = <b>${fmt(c.sil, 0)} MW</b>, ${S.lang === "ne" ? "क्षमता" : "loadability"} = ${stClairTxt(s.lengthKm)} × SIL = <b>${fmt(c.loadability, 0)} MW</b> (X ${c.x.toFixed(3)} Ω/km, C ${(c.cFkm * 1e9).toFixed(1)} nF/km)</li>`;
     w += `<li><b>${tr("lossTxt")}</b> 3 × I² × R × L = <b>${fmt(c.lossKW, 1)} kW</b></li>`;
   }
   w += `</ol><h3>${ic("table", 20)} ${tr("lineTried")}</h3>`;
-  const cols = [["cName", "lName"], ["cArea", "lArea"], ["cAmp", "lAmp"], ["cVd", "lVd"], ["cLoss", "lLoss"], ["cRes", "lRes"]];
+  const cols = [["cName", "lName"], ["cArea", "lArea"], ["cAmp", "lAmp"], ["cVd", "lVd"], ["cLoss", "lLoss"], ...(r.ehv ? [["cLoad", "lLoad"]] : []), ["cRes", "lRes"]];
   w += `<dl class="legend">${cols.map(([t, l]) => `<dt>${tr(t)}</dt><dd>${tr(l)}</dd>`).join("")}</dl>`;
-  w += `<div class="tablewrap"><table><thead><tr>${cols.map(([t], i) => `<th${i === 0 || i === 5 ? ' class="l"' : ""}>${tr(t)}</th>`).join("")}</tr></thead><tbody>`;
+  w += `<div class="tablewrap"><table><thead><tr>${cols.map(([t], i) => `<th${i === 0 || i === cols.length - 1 ? ' class="l"' : ""}>${tr(t)}</th>`).join("")}</tr></thead><tbody>`;
   for (const x of r.cands) {
-    const why = [!x.pass.ampacity && tr("hot"), !x.pass.voltageDrop && tr("vd")].filter(Boolean);
-    w += `<tr class="${x === c ? "chosen" : ""}"><td class="l">${esc(x.name)}</td><td>${fmt(x.al_area_mm2, 1)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.amp, 0)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.pct, 2)}</td><td>${fmt(x.lossPct, 1)}</td><td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "✓ " + tr("rChosen") : tr("rPass")) : "✗ " + why.join(", ")}</td></tr>`;
+    const why = [!x.pass.ampacity && tr("hot"), !x.pass.voltageDrop && tr("vd"), !x.pass.loadability && tr("loadF")].filter(Boolean);
+    w += `<tr class="${x === c ? "chosen" : ""}"><td class="l">${esc(x.name)}</td><td>${fmt(x.al_area_mm2 * x.n, 0)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.amp, 0)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.pct, 2)}</td><td>${fmt(x.lossPct, 1)}</td>${r.ehv ? `<td class="${x.pass.loadability ? "" : "no"}">${fmt(x.loadability, 0)}</td>` : ""}<td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "✓ " + tr("rChosen") : tr("rPass")) : "✗ " + why.join(", ")}</td></tr>`;
   }
   w += `</tbody></table></div><p><small>${tr("dataSrc")} IS 398-2 / IS 398-4 (Satcon, Lumino, Apar), BS 215 (Bear). IEEE 738-2012 heat balance, validated against 156 CEA 2023 / manufacturer ratings within 0.6 %.</small></p>`;
   work.innerHTML = w;
@@ -711,6 +722,11 @@ function onStruct(name) {
   if (name === "system" && !eng()) S.voltage = S.system === "1ph" ? 230 : 400;
   if (name === "system" && eng()) S.voltage = S.system === "1ph" ? 230 : S.system === "dc" ? 48 : 400;
   if (name === "hvKv") S.depthMm = Number(S.hvKv) >= 22 ? 1050 : 900;
+  if (name === "lineKv") {
+    const LD = { "11": [1000, 8, 0.9], "33": [8000, 20, 0.9], "66": [20000, 30, 0.9], "132": [60, 60, 0.95], "220": [250, 120, 0.95], "400": [1000, 150, 0.95] };
+    const [load, km, pf] = LD[String(S.lineKv)] || LD["11"];
+    S.lineKva = load; S.lineKm = km; S.linePf = pf; S.lineCct = "1";
+  }
   if (name === "region" && REGIONS[S.region]?.air) { S.airTemp = REGIONS[S.region].air; S.groundTemp = REGIONS[S.region].ground; }
   const active = document.activeElement?.name;
   renderForm();

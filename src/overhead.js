@@ -91,18 +91,22 @@ export function lineDrop({ kV, I, lengthKm, rOhmKm, xOhmKm, pf }) {
 }
 
 // ---------------------------------------------------------------------------------------------
-// Line sizing: smallest conductor whose thermal rating and voltage regulation both pass.
+// Line sizing: smallest conductor (and bundle) passing thermal rating, voltage regulation and,
+// for transmission, practical loadability.
 
-/** Typical phase spacing → GMD (mm). Editable; NEA drawings not published.
- *  132 kV and 66 kV values back-calculated from CEA 2023 line reactances (Panther 0.405, Dog 0.446 Ω/km). */
+/** Per voltage: typical GMD (mm), max conductor temperature, regulation limit, minimum conductor
+ *  diameter (corona / strength), allowed bundles, NEA usual choices. 66/132 kV GMDs back-calculated from
+ *  CEA 2023 reactances; 220/400 kV give X ≈ 0.41 (single Zebra) / 0.32 (twin Moose) / 0.26 (quad Moose) Ω/km,
+ *  the textbook values. Spacing and spans are typical — check the NEA tower drawings. */
 export const LINE_DEFAULTS = {
-  // minDiaMm: smallest conductor used in practice at this voltage (corona and mechanical strength):
-  // 66 kV ≈ Dog (14.2 mm), 132 kV ≈ Panther (21 mm) — Indian CEA / NEA practice.
-  "11": { gmdMm: 1000, tc: 75, vd: 5, minDiaMm: 0, usual: ["Weasel", "Rabbit", "Dog"] },
-  "33": { gmdMm: 1500, tc: 75, vd: 5, minDiaMm: 0, usual: ["Dog", "Panther", "Zebra"] },
-  "66": { gmdMm: 3000, tc: 75, vd: 10, minDiaMm: 14, usual: ["Dog", "Wolf", "Panther"] },
-  "132": { gmdMm: 5400, tc: 85, vd: 10, minDiaMm: 21, usual: ["Bear", "Panther"] },
+  "11": { gmdMm: 1000, tc: 75, vd: 5, minDiaMm: 0, bundles: [1], usual: ["Weasel", "Rabbit", "Dog"] },
+  "33": { gmdMm: 1500, tc: 75, vd: 5, minDiaMm: 0, bundles: [1], usual: ["Dog", "Panther", "Zebra"] },
+  "66": { gmdMm: 3000, tc: 75, vd: 10, minDiaMm: 14, bundles: [1], usual: ["Dog", "Wolf", "Panther"] },
+  "132": { gmdMm: 5400, tc: 85, vd: 10, minDiaMm: 21, bundles: [1], usual: ["Bear", "Panther"] },
+  "220": { gmdMm: 8000, tc: 85, vd: 10, minDiaMm: 28, bundles: [1, 2], usual: ["Zebra", "twin Moose", "twin HTLS"] },
+  "400": { gmdMm: 12000, tc: 85, vd: 10, minDiaMm: 31, bundles: [2, 4], usual: ["twin Moose", "quad Moose (Dhalkebar–Muzaffarpur)"] },
 };
+export const BUNDLE_SPACING_MM = 450; // Indian EHV practice
 
 export function gmrMm(c, G) {
   const r = c.dia_mm / 2;
@@ -112,34 +116,102 @@ export function gmrMm(c, G) {
   return k * r;
 }
 
-/** spec: { kV, loadKVA, pf, lengthKm, type: "acsr"|"aaac", Ta, wind, elevation, solar, absorptivity, emissivity, Tc, gmdMm, vdLimitPct } */
+/** Equivalent radius of an n-conductor bundle with spacing s: n=2 √(r·s), n=3 ∛(r·s²), n=4 1.0905·⁴√(r·s³). */
+export function bundleRadius(r, n, s = BUNDLE_SPACING_MM) {
+  if (n === 1) return r;
+  if (n === 2) return Math.sqrt(r * s);
+  if (n === 3) return Math.cbrt(r * s * s);
+  return 1.0905 * (r * s ** 3) ** 0.25;
+}
+
+// minimal complex arithmetic for the long-line equations
+const Cx = (re, im = 0) => ({ re, im });
+const cadd = (a, b) => Cx(a.re + b.re, a.im + b.im);
+const cmul = (a, b) => Cx(a.re * b.re - a.im * b.im, a.re * b.im + a.im * b.re);
+const cdiv = (a, b) => { const d = b.re * b.re + b.im * b.im; return Cx((a.re * b.re + a.im * b.im) / d, (a.im * b.re - a.re * b.im) / d); };
+const cabs = (a) => Math.hypot(a.re, a.im);
+const csqrt = (a) => { const m = Math.sqrt(cabs(a)), t = Math.atan2(a.im, a.re) / 2; return Cx(m * Math.cos(t), m * Math.sin(t)); };
+const cexp = (a) => Cx(Math.exp(a.re) * Math.cos(a.im), Math.exp(a.re) * Math.sin(a.im));
+const ccosh = (a) => { const e = cexp(a), f = cexp(Cx(-a.re, -a.im)); return Cx((e.re + f.re) / 2, (e.im + f.im) / 2); };
+const csinh = (a) => { const e = cexp(a), f = cexp(Cx(-a.re, -a.im)); return Cx((e.re - f.re) / 2, (e.im - f.im) / 2); };
+
+/** Long-line (distributed) model. r, x in Ω/km; capacitance in F/km. Returns regulation %, Zc (Ω), SIL (MW), sending kV. */
+export function longLine({ kV, I, pf, lengthKm, r, x, cFkm, f = 50 }) {
+  const z = Cx(r, x), y = Cx(0, 2 * Math.PI * f * cFkm);
+  const Zc = csqrt(cdiv(z, y));
+  const gl = cmul(csqrt(cmul(z, y)), Cx(lengthKm));
+  const A = ccosh(gl), B = cmul(Zc, csinh(gl));
+  const Vr = Cx((kV * 1000) / Math.sqrt(3));
+  const Ir = Cx(I * pf, -I * Math.sqrt(1 - pf * pf));
+  const Vs = cadd(cmul(A, Vr), cmul(B, Ir));
+  const VrNoLoad = cabs(Vs) / cabs(A);
+  return { regPct: ((VrNoLoad - cabs(Vr)) / cabs(Vr)) * 100, Zc: cabs(Zc), silMW: (kV * kV) / cabs(Zc), VsKV: (cabs(Vs) * Math.sqrt(3)) / 1000 };
+}
+
+/** St. Clair practical loadability (× SIL) vs length, as used in transmission planning (Dunlop et al. 1979). */
+export function stClair(lengthKm) {
+  const pts = [[0, 3.0], [80, 3.0], [160, 2.0], [320, 1.3], [480, 1.0], [640, 0.75]];
+  if (lengthKm >= 640) return 0.75;
+  const i = pts.findIndex(([l]) => l >= lengthKm);
+  if (i <= 0) return 3.0;
+  const [l0, m0] = pts[i - 1], [l1, m1] = pts[i];
+  return m0 + ((m1 - m0) * (lengthKm - l0)) / (l1 - l0);
+}
+
+/** spec: { kV, loadKVA, pf, lengthKm, type, Ta, wind, elevation, solar, absorptivity, emissivity, Tc, gmdMm, vdLimitPct, circuits } */
 export function sizeLine(OH, spec) {
+  const D = LINE_DEFAULTS[String(spec.kV)] || LINE_DEFAULTS["11"];
   const all = spec.type === "aaac" ? OH.aaac : OH.acsr;
-  const minDia = spec.minDiaMm ?? LINE_DEFAULTS[String(spec.kV)]?.minDiaMm ?? 0;
-  const list = all.filter((c) => c.dia_mm >= minDia - 0.05);
-  const I = spec.loadKVA / (Math.sqrt(3) * spec.kV);
+  const minDia = spec.minDiaMm ?? D.minDiaMm ?? 0;
+  const circuits = Math.max(1, spec.circuits || 1);
+  const I = spec.loadKVA / (Math.sqrt(3) * spec.kV) / circuits; // per circuit
+  const ehv = spec.kV >= 66 || spec.lengthKm > 80;
   const env = { Tc: spec.Tc, Ta: spec.Ta, wind: spec.wind, elevation: spec.elevation, solar: spec.solar,
     absorptivity: spec.absorptivity, emissivity: spec.emissivity, phiDeg: 90 };
-  const cands = list.map((c) => {
+  const combos = [];
+  for (const n of D.bundles) for (const c of all) {
+    if (c.dia_mm < minDia - 0.05) continue; // corona / strength minimum, also for each subconductor of a bundle
+    combos.push({ c, n });
+  }
+  // Prefer fewer subconductors (less hardware), then the smaller conductor.
+  combos.sort((p, q) => p.n - q.n || p.c.al_area_mm2 - q.c.al_area_mm2);
+  const cands = combos.map(({ c, n }) => {
     const a = ampacity(c, env);
-    const rAc = resistanceAt(c.r20_ohm_km, (spec.Ta + spec.Tc) / 2, acRatio(c)) * 1000; // Ω/km at a mid temperature for VD/losses
-    const x = reactance({ gmdMm: spec.gmdMm, gmrMm: gmrMm(c, OH.gmr_ratio) });
+    const rAc = (resistanceAt(c.r20_ohm_km, (spec.Ta + spec.Tc) / 2, acRatio(c)) * 1000) / n;
+    const x = reactance({ gmdMm: spec.gmdMm, gmrMm: bundleRadius(gmrMm(c, OH.gmr_ratio), n) });
+    const cFkm = (2 * Math.PI * 8.854e-12 * 1000) / Math.log(spec.gmdMm / bundleRadius(c.dia_mm / 2, n));
     const d = lineDrop({ kV: spec.kV, I, lengthKm: spec.lengthKm, rOhmKm: rAc, xOhmKm: x, pf: spec.pf });
-    const pass = { ampacity: a.I >= I, voltageDrop: d.pct <= spec.vdLimitPct };
-    return { ...c, amp: a.I, heat: a, rAc, x, ...d, pass, ok: pass.ampacity && pass.voltageDrop };
+    let reg = d.pct, sil = null, loadability = null;
+    if (ehv) {
+      const L = longLine({ kV: spec.kV, I, pf: spec.pf, lengthKm: spec.lengthKm, r: rAc, x, cFkm });
+      reg = L.regPct; sil = L.silMW; loadability = stClair(spec.lengthKm) * L.silMW;
+    }
+    const PMW = (Math.sqrt(3) * spec.kV * I * spec.pf) / 1000;
+    // ≤ 132 kV: regulation limit applies. 220/400 kV: voltage is held by reactive compensation; the St. Clair
+    // loadability (which already embeds a ~5 % drop and a stability margin) is the planning limit.
+    const regApplies = spec.kV <= 132;
+    const pass = { ampacity: a.I * n >= I, voltageDrop: !regApplies || reg <= spec.vdLimitPct, loadability: loadability == null || PMW <= loadability };
+    const name = n === 1 ? c.name : `${n === 2 ? "twin" : n === 4 ? "quad" : n + "×"} ${c.name}`;
+    return { ...c, name, conductor: c.name, n, amp: a.I * n, heat: a, rAc, x, cFkm, ...d, pct: reg, sil, loadability, PMW, pass,
+      ok: pass.ampacity && pass.voltageDrop && pass.loadability };
   });
   const chosen = cands.find((c) => c.ok) || null;
-  const decidedBy = !chosen ? [] : cands.indexOf(chosen) === 0 ? [minDia > 0 && all.findIndex((c) => c.name === chosen.name) > 0 ? "minimum conductor for this voltage" : "smallest size in the table"]
-    : ["ampacity", "voltageDrop"].filter((k) => cands.find((c) => c.pass[k]) === chosen)
-        .map((k) => (k === "ampacity" ? "current-carrying capacity" : "voltage drop"));
+  const labels = { ampacity: "current-carrying capacity", voltageDrop: "voltage drop", loadability: "line loadability (St. Clair)" };
+  const first = cands[0];
+  const thinnerExist = chosen && all.findIndex((c) => c.name === chosen.conductor) > 0 && chosen.n === D.bundles[0];
+  const decidedBy = !chosen ? [] : chosen === first
+    ? [minDia > 0 && thinnerExist ? "minimum conductor for this voltage" : "smallest size in the table"]
+    : Object.keys(labels).filter((k) => cands.find((c) => c.pass[k]) === chosen).map((k) => labels[k]);
   const warnings = [];
-  if (spec.lengthKm > 80) warnings.push("Line longer than 80 km: the short-line model understates the drop; use a medium-line (π) model.");
-  if (!chosen) warnings.push("No conductor in the list passes: use a higher voltage, a double circuit or bundled conductors.");
-  if (minDia > 0 && chosen && cands.indexOf(chosen) === 0 && all.findIndex((c) => c.name === chosen.name) > 0)
+  if (!chosen) warnings.push(spec.kV >= 220 ? "No conductor or bundle passes on one circuit: use two circuits (double-circuit towers) or a higher voltage." : "No conductor in the list passes: use a higher voltage, more circuits or bigger bundles.");
+  if (spec.kV >= 220) warnings.push("At 220/400 kV, voltage is held by reactive compensation at the substations; the St. Clair loadability limit is applied instead of a regulation limit. Regulation is shown for information.");
+  if (chosen && chosen === first && minDia > 0 && thinnerExist)
     warnings.push(`Smaller conductors pass thermally but are not used at ${spec.kV} kV: below about ${minDia} mm diameter, corona losses and mechanical strength rule them out (CEA practice).`);
   if (chosen && chosen.lossPct > 3) {
-    const better = cands.slice(cands.indexOf(chosen) + 1).find((c) => c.lossPct <= chosen.lossPct * 0.7);
+    const better = cands.slice(cands.indexOf(chosen) + 1).find((c) => c.ok && c.lossPct <= chosen.lossPct * 0.7);
     if (better) warnings.push(`Losses are ${chosen.lossPct.toFixed(1)} % of the load. ${better.name} would cut them to ${better.lossPct.toFixed(1)} % — over the line's life the saved energy often pays for the bigger conductor.`);
   }
-  return { I, cands, chosen, decidedBy, warnings, spec };
+  if (ehv && chosen && chosen.PMW < 0.5 * chosen.sil && spec.lengthKm > 100)
+    warnings.push(`Light load on a long line (${chosen.PMW.toFixed(0)} MW vs SIL ${chosen.sil.toFixed(0)} MW): line charging raises the far-end voltage; shunt reactors may be needed.`);
+  return { I, circuits, cands, chosen, decidedBy, warnings, spec, ehv };
 }

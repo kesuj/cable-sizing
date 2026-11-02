@@ -201,15 +201,21 @@ export function bomLine(ctx) {
   const r = ctx.line, c = r.chosen; if (!c) return [];
   const s = r.spec, kv = s.kV;
   const out = []; const add = (item, spec, qty, why) => out.push({ item, spec, qty, why });
-  const span = kv <= 11 ? 70 : kv <= 33 ? 90 : kv <= 66 ? 200 : 300;
+  const span = kv <= 11 ? 70 : kv <= 33 ? 90 : kv <= 66 ? 200 : kv <= 132 ? 300 : kv <= 220 ? 330 : 400;
   const supports = Math.ceil((s.lengthKm * 1000) / span) + 1;
-  add(B("Conductor", "कन्डक्टर"), `${c.st_strands ? "ACSR " : ""}${c.name}, ${c.standard}`, `${Math.ceil(s.lengthKm * 3 * 1.02 * 1000).toLocaleString("en-IN")} m`, B("Three phases plus 2 % for sag and jumpers.", "तीन फेज र २ % झोल।"));
-  add(B(kv <= 33 ? "Poles" : "Towers", kv <= 33 ? "पोल" : "टावर"), kv <= 11 ? "PSC / steel tubular pole 9–11 m" : kv <= 33 ? "steel tubular / RSJ pole 11–13 m" : "lattice steel tower", supports,
+  const cct = r.circuits || 1, nb = c.n || 1;
+  add(B("Conductor", "कन्डक्टर"), `${c.st_strands ? "ACSR " : ""}${c.conductor || c.name}${nb > 1 ? ` (${nb} per phase, 450 mm bundle spacing)` : ""}, ${c.standard}`,
+    `${Math.ceil(s.lengthKm * 3 * nb * cct * 1.02 * 1000).toLocaleString("en-IN")} m`, B(`3 phases × ${nb} subconductor(s) × ${cct} circuit(s), plus 2 % for sag and jumpers.`, "फेज × बन्डल × सर्किट, र २ % झोल।"));
+  if (kv >= 132) add(B("Earth wire (shield wire) on the tower peaks", "टावरको टुप्पोमा अर्थ वायर"), kv >= 220 ? "7/3.66 mm GS wire or OPGW (fibre)" : "7/3.15 mm GS wire or OPGW", `${Math.ceil(s.lengthKm * 1.02 * 1000).toLocaleString("en-IN")} m`,
+    B("Shields the phases from lightning; OPGW also carries the grid's communication fibre (typical practice).", "बिजुलीबाट जोगाउन; OPGW ले फाइबर पनि बोक्छ।"));
+  if (nb > 1) add(B("Spacer dampers", "स्पेसर ड्याम्पर"), `${nb}-conductor, 450 mm`, `${Math.ceil(s.lengthKm * 1000 / 70) * 3 * cct} (about one per 70 m per phase)`,
+    B("Keep the bundle spacing and damp wind vibration (typical practice).", "बन्डलको दूरी कायम राख्न र कम्पन रोक्न।"));
+  add(B(kv <= 33 ? "Poles" : "Towers", kv <= 33 ? "पोल" : "टावर"), kv <= 11 ? "PSC / steel tubular pole 9–11 m" : kv <= 33 ? "steel tubular / RSJ pole 11–13 m" : `lattice steel tower, ${cct === 2 ? "double" : "single"}-circuit`, supports,
     B(`Typical span ${span} m (practice; the line survey sets the real spans and angle points).`, `सामान्य स्प्यान ${span} m।`));
-  add(B("Insulators", "इन्सुलेटर"), kv <= 11 ? "11 kV pin insulators (straight poles) + disc/polymer strain sets at angles and ends" : kv <= 33 ? "33 kV pin / post insulators + strain sets" : kv <= 66 ? "disc strings, about 5–6 × 70 kN discs or polymer long-rod" : "disc strings, about 9–10 × 90 kN discs or polymer long-rod",
-    kv <= 33 ? `${supports * 3} + strain sets` : `${supports * 3} strings`, B("Number of discs per string is typical practice; pollution and altitude can raise it.", "डिस्क संख्या सामान्य अभ्यास; प्रदूषण र उचाइले बढ्न सक्छ।"));
+  add(B("Insulators", "इन्सुलेटर"), kv <= 11 ? "11 kV pin insulators (straight poles) + disc/polymer strain sets at angles and ends" : kv <= 33 ? "33 kV pin / post insulators + strain sets" : kv <= 66 ? "disc strings, about 5–6 × 70 kN discs or polymer long-rod" : kv <= 132 ? "disc strings, about 9–10 × 90 kN discs or polymer long-rod" : kv <= 220 ? "disc strings, about 14–15 × 120 kN discs (double strings at crossings)" : "disc strings, about 23–25 × 120–160 kN discs, double I or V strings",
+    kv <= 33 ? `${supports * 3} + strain sets` : `${supports * 3 * cct} strings`, B("Number of discs per string is typical practice; pollution and altitude can raise it.", "डिस्क संख्या सामान्य अभ्यास; प्रदूषण र उचाइले बढ्न सक्छ।"));
   add(B("Clamps and joints", "क्ल्याम्प र जोइन्ट"), `suspension and tension clamps for Ø ${c.dia_mm} mm, compression mid-span joints, PG clamps for jumpers`, "per design", B("Hardware must match the conductor diameter and strength.", "कन्डक्टरको व्यासअनुसार हार्डवेयर।"));
-  add(B("Lightning arresters", "लाइटनिङ एरेस्टर"), kv <= 11 ? "9 kV, 5 kA" : kv <= 33 ? "30 kV, 10 kA" : `${kv <= 66 ? 60 : 120} kV station class`, "3 per end", B("At both ends and at cable transitions.", "दुवै छेउ र केबल जोडमा।"));
+  add(B("Lightning arresters", "लाइटनिङ एरेस्टर"), kv <= 11 ? "9 kV, 5 kA" : kv <= 33 ? "30 kV, 10 kA" : kv <= 66 ? "60 kV station class" : kv <= 132 ? "120 kV station class, 10 kA" : kv <= 220 ? "198 kV station class, 10 kA" : "336–390 kV station class, 10–20 kA", `3 per end${cct > 1 ? " per circuit" : ""}`, B("At both ends and at cable transitions.", "दुवै छेउ र केबल जोडमा।"));
   add(B("Pole/tower earthing", "पोल/टावर अर्थिङ"), "earth every metal support (pipe or coil electrode)", supports,
     B("Nepal Electricity Rules 2050, Rule 58: metal supports of HV lines must be earthed.", "नियम ५८: HV लाइनका धातुका पोल अर्थ गर्नुपर्छ।"));
   return out;
