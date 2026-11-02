@@ -33,13 +33,23 @@
 </style>
 </head>
 <body>
-<header class="top">
-  <div class="brand">
-    <h1>How cable sizing works</h1>
-    <p>Why one cable is right and another is dangerous, how it is done in Nepal, and how the rest of the world does it.</p>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="index.html" aria-label="CableCalc Nepal home"><span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="#111A2B"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>CableCalc Nepal</a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="index.html#calculator">Calculator</a>
+      <a href="index.html#examples">Examples</a>
+      <a class="btn" href="index.html#calculator" style="padding:8px 14px;color:var(--primary-ink)">Open the calculator</a>
+    </nav>
   </div>
-  <nav class="switches" aria-label="Pages"><a class="btn" href="index.html">Open the calculator</a></nav>
 </header>
+<section class="hero" style="padding:var(--s6) 0">
+  <div class="wrap">
+    <p class="pill">Guide · Nepal and world practice</p>
+    <h1 style="max-width:none">How cable sizing works</h1>
+    <p class="lead">Why one cable is right and another is dangerous, how it is done in Nepal, and how the rest of the world does it.</p>
+  </div>
+</section>
 
 <div class="doc">
   <nav class="toc" aria-label="Contents">
@@ -180,9 +190,10 @@
       <li><b>Altitude matters here, unlike for cables.</b> At Kathmandu's 1400 m the air is about 15 % thinner than in the Terai, so wind removes less heat and the same conductor carries less.</li>
       <li><b>Long 11 kV lines run out of voltage before they run out of current.</b> Line reactance (about 0.35–0.4 Ω/km) dominates; 3 MVA over 15 km cannot be carried at 11 kV within 5 %. That is why NEA builds 33 kV.</li>
       <li><b>At 66 and 132 kV a minimum conductor applies</b> (about Dog and Panther): thinner conductors cause corona losses and lack strength, even if they pass thermally.</li>
+      <li><b>220 and 400 kV use bundles and a different limit.</b> Twin or quad Moose (450 mm spacing) lower the reactance and corona. At these voltages the substations hold the voltage with reactive compensation, so the planning limit is the line's loadability: surge impedance loading × the St. Clair factor for its length (about 3 up to 80 km, 2 at 160 km, 1.3 at 320 km), calculated with the long-line model.</li>
       <li><b>Losses are shown.</b> When they exceed 3 % of the load, the next conductor that cuts them by a third is suggested; the saved energy often pays for it.</li>
     </ul>
-    <p>NEA's usual conductors: 11 kV Weasel, Rabbit, Dog; 33 kV Dog, Panther, Zebra; 132 kV Bear, Panther. Phase spacing and pole spans are typical values — check the NEA drawings.</p>
+    <p>NEA's usual conductors: 11 kV Weasel, Rabbit, Dog; 33 kV Dog, Panther, Zebra; 132 kV Bear, Panther; 220 kV twin Moose or HTLS; 400 kV quad Moose (Dhalkebar–Muzaffarpur). Phase spacing and pole spans are typical values — check the NEA drawings.</p>
   </section>
 
   <section id="buy">

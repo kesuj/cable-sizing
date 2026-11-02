@@ -697,6 +697,95 @@ function renderLineResult(r) {
   work.innerHTML = w;
 }
 
+
+// ======================================================================
+// Landing page: card icons, hero shortcuts, live worked examples
+// ======================================================================
+const EXAMPLES = [
+  { id: "pump", en: "Borewell pump, Terai", ne: "बोरिङ पम्प, तराई",
+    story: { en: "A 1 HP single-phase submersible pump in a field near Nepalgunj, 200 m from the meter, cable buried.", ne: "नेपालगञ्ज नजिकको खेतमा १ HP सिङ्गल फेज सबमर्सिबल पम्प, मिटरबाट २०० m, तार गाडिएको।" },
+    state: { mode: "simple", level: "LV", std: "IS", job: "pump", phase: "1ph", pumpType: "sub", motorBasis: "hp", hp: 1, starter: "dol", route: "buried", region: "terai", lengthM: 200, groupCount: 1, material: "cu" } },
+  { id: "house", en: "House main, Kathmandu", ne: "घरको मुख्य तार, काठमाडौं",
+    story: { en: "A 30 A NEA single-phase meter on the gate, the board inside the house 25 m away, cable buried.", ne: "गेटमा ३० A NEA सिङ्गल फेज मिटर, घरभित्रको बोर्ड २५ m टाढा, तार गाडिएको।" },
+    state: { mode: "simple", level: "LV", std: "IS", job: "house", phase: "1ph", houseBasis: "meter", meterA: 30, route: "buried", region: "hills", lengthM: 25, groupCount: 1, material: "cu" } },
+  { id: "ev", en: "EV charger, Lalitpur", ne: "EV चार्जर, ललितपुर",
+    story: { en: "A 7.4 kW wallbox in the garage, wired in PVC conduit 20 m from the board.", ne: "ग्यारेजमा ७.४ kW चार्जर, बोर्डबाट २० m, PVC पाइपभित्र।" },
+    state: { mode: "simple", level: "LV", std: "IS", job: "ev", evKw: "7.4", route: "conduit", region: "hills", lengthM: 20, groupCount: 1, material: "cu" } },
+  { id: "feeder", en: "11 kV line to a factory", ne: "उद्योगसम्म ११ kV लाइन",
+    story: { en: "A 1 MVA rice mill 8 km from the substation near Birgunj, overhead ACSR.", ne: "वीरगञ्ज नजिक सबस्टेसनबाट ८ km टाढा १ MVA चामल मिल, ओभरहेड ACSR।" },
+    state: { mode: "simple", level: "HV", std: "IS", job: "line", lineKv: "11", lineKva: 1000, linePf: 0.9, lineKm: 8, lineCct: "1", lineType: "acsr", region: "terai" } },
+  { id: "grid", en: "400 kV cross-border line", ne: "४०० kV सीमापार लाइन",
+    story: { en: "1000 MW over 150 km on one circuit, Terai route — the scale of the Dhalkebar–Muzaffarpur corridor.", ne: "एक सर्किटमा १५० km, १००० MW — ढल्केबर–मुजफ्फरपुर करिडोरको आकार।" },
+    state: { mode: "simple", level: "HV", std: "IS", job: "line", lineKv: "400", lineKva: 1000, linePf: 0.95, lineKm: 150, lineCct: "1", lineType: "acsr", region: "terai" } },
+];
+let exSel = "pump";
+
+function exampleResult(ex) {
+  const saved = { ...S };
+  Object.assign(S, JOBS[ex.state.job].defaults, ex.state);
+  try {
+    if (JOBS[S.job].kind === "line") {
+      const r = sizeLine(DATA.overhead, lineSpec());
+      return { line: r };
+    }
+    const b = buildSimple();
+    return { res: sizeConductor(b.A, b.inp), b };
+  } catch (e) { return { err: e.message }; }
+  finally { for (const k of Object.keys(S)) delete S[k]; Object.assign(S, saved); }
+}
+
+function renderExamples() {
+  const tabs = $("#ex-tabs"), panel = $("#ex-panel");
+  if (!tabs || !panel) return;
+  const ne = S.lang === "ne" && !eng();
+  tabs.innerHTML = EXAMPLES.map((x) => `<button type="button" role="tab" aria-selected="${x.id === exSel}" data-ex="${x.id}">${esc(ne ? x.ne : x.en)}</button>`).join("");
+  const ex = EXAMPLES.find((x) => x.id === exSel);
+  const out = exampleResult(ex);
+  const k = (v, l) => `<div class="kpi"><b>${v}</b><span>${l}</span></div>`;
+  let kp = "", buy = "", why = "";
+  if (out.line && out.line.chosen) {
+    const c = out.line.chosen;
+    buy = `${c.st_strands ? "ACSR " : ""}${c.name}`;
+    kp = k(buy, ne ? "कन्डक्टर" : "Conductor") + k(`${fmt(c.amp, 0)} A`, ne ? "ठाउँमा क्षमता" : "Rating at the site") +
+      (c.sil != null ? k(`${fmt(c.loadability, 0)} MW`, ne ? "व्यावहारिक क्षमता" : "Practical loadability") : k(`${fmt(c.pct, 1)} %`, ne ? "भोल्टेज ड्रप" : "Voltage drop")) +
+      k(`${fmt(c.lossPct, 1)} %`, ne ? "हानि" : "Losses");
+    why = out.line.decidedBy.join(" and ");
+  } else if (out.res && out.res.chosen) {
+    const r = out.res, c = r.chosen, v = voltageAtLoad(r);
+    buy = `${c.size} mm² ${r.spec.material === "cu" ? "Cu" : "Al"}`;
+    kp = k(buy, ne ? "तार" : "Cable") + k(`${r.current.In} A`, ne ? "ब्रेकर" : "Breaker") +
+      k(`${fmt(v.lowAtLoad, 0)} V`, ne ? "NEA −५ % मा उपकरणको भोल्टेज" : "At the load, NEA at −5 %") + k(`${fmt(c.vdPct, 1)} %`, ne ? "भोल्टेज ड्रप" : "Voltage drop");
+    why = r.decidedBy.join(" and ");
+  }
+  panel.innerHTML = `<div class="ex-story"><h3>${esc(ne ? ex.ne : ex.en)}</h3><p>${esc(ne ? ex.story.ne : ex.story.en)}</p>
+      <button type="button" class="btn" data-open-ex="${ex.id}">${ic("calc", 16)} ${ne ? "क्याल्कुलेटरमा खोल्नुहोस्" : "Open in the calculator"}</button></div>
+    <div class="ex-kpis">${kp || `<p class="err">${esc(out.err || "")}</p>`}</div>
+    ${why ? `<p class="ex-why">${ic("info", 16)} ${ne ? "साइज तय गर्ने:" : "Size decided by"} <b>${esc(why)}</b>.</p>` : ""}`;
+}
+
+function openState(state) {
+  Object.assign(S, JOBS[state.job].defaults, state);
+  save(); renderForm(); compute();
+  document.getElementById("calculator").scrollIntoView({ behavior: "smooth" });
+}
+
+document.addEventListener("click", (e) => {
+  const t = e.target.closest("[data-ex]");
+  if (t) { exSel = t.dataset.ex; renderExamples(); return; }
+  const o = e.target.closest("[data-open-ex]");
+  if (o) { openState(EXAMPLES.find((x) => x.id === o.dataset.openEx).state); return; }
+  const g = e.target.closest("[data-go]");
+  if (g) {
+    e.preventDefault();
+    if (g.dataset.go === "line") openState({ mode: "simple", level: "HV", job: "line", lineKv: "11", lineKva: 1000, lineKm: 8, lineCct: "1", region: S.region || "hills" });
+    else openState({ mode: "simple", level: "LV", job: "house", material: "cu", lengthM: 25 });
+  }
+});
+
+function paintCardIcons() {
+  document.querySelectorAll("[data-ic]").forEach((el) => { if (!el.firstChild) el.innerHTML = ic(el.dataset.ic, 22); });
+}
+
 // ---------- events ----------
 function readField(el) {
   if (el.type === "checkbox") return el.checked;
@@ -732,7 +821,7 @@ function onStruct(name) {
   renderForm();
   if (active) document.querySelector(`[name="${active}"]`)?.focus();
 }
-document.querySelector(".switches").addEventListener("click", (e) => {
+document.addEventListener("click", (e) => {
   const b = e.target.closest("button[data-set]");
   if (!b || b.disabled) return;
   S[b.dataset.set] = b.dataset.val;
@@ -751,7 +840,7 @@ document.querySelector(".switches").addEventListener("click", (e) => {
   const A = adapter();
   const allowed = A.options.methods.map(([m]) => m);
   if (!allowed.includes(S.method)) S.method = allowed[0];
-  save(); renderForm(); compute();
+  save(); renderForm(); compute(); renderExamples();
 });
 $("#copy").addEventListener("click", async () => {
   const t = [$("#answer").innerText, "", $("#working").innerText].join("\n");
@@ -762,3 +851,5 @@ $("#print").addEventListener("click", () => window.print());
 
 renderForm();
 compute();
+paintCardIcons();
+renderExamples();

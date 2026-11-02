@@ -3,95 +3,180 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Conductor sizing</title>
-<meta name="description" content="Size LV and HV cables the way it is done in Nepal (IS) or internationally (IEC): current, derating, voltage drop, short circuit, breaker and earth conductor, with the working shown.">
-<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%2715%27 fill=%27%2318212A%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%279%27 fill=%27%23E2B007%27/%3E%3Ccircle cx=%2716%27 cy=%2716%27 r=%275%27 fill=%27%23B87333%27/%3E%3C/svg%3E">
+<title>CableCalc Nepal</title>
+<meta name="description" content="Choose the right cable, breaker and parts in Nepal — house wiring, motors, EV chargers, 11/33 kV cables and overhead lines up to 400 kV. IS and IEC methods, every step shown, works offline.">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%27http://www.w3.org/2000/svg%27 viewBox=%270 0 32 32%27%3E%3Crect width=%2732%27 height=%2732%27 rx=%278%27 fill=%27%23F2A516%27/%3E%3Cpath d=%27M18 5 9 18h6l-1 9 9-13h-6l1-9z%27 fill=%27%23111A2B%27/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:ital,wght@0,400;0,500;0,600;0,700;1,400&family=IBM+Plex+Sans+Devanagari:wght@400;500;600;700&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<header class="top">
-  <svg class="hero-art" viewBox="0 0 260 110" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M0 96 H260" stroke-width="1.2" opacity=".5"/>
-    <path d="M28 96 V14 M14 22 H42 M18 30 H38"/><circle cx="16" cy="19" r="2" class="fa"/><circle cx="28" cy="19" r="2" class="fa"/><circle cx="40" cy="19" r="2" class="fa"/>
-    <path d="M40 22 C 90 40, 130 44, 168 52" class="acc" stroke-width="2.4"/>
-    <path d="M150 56 L190 30 L230 56" class="fa"/><path d="M156 52 V96 H224 V52"/><rect x="182" y="72" width="14" height="24" class="fa"/>
-    <rect x="162" y="62" width="12" height="16" rx="1"/><path d="M168 66 V74 M164 70 H172" stroke-width="1"/>
-    <rect x="204" y="64" width="12" height="10"/>
-    <path d="M168 78 V96 H140 V104" stroke-dasharray="3 3" opacity=".7"/>
-  </svg>
-  <div class="brand">
-    <h1 data-en="Cable size calculator" data-ne="तारको साइज क्याल्कुलेटर">Cable size calculator</h1>
-    <p data-en="Pick the job, answer a few questions, and get the cable, breaker and parts to buy — checked against IS and IEC." data-ne="काम छान्नुहोस्, केही प्रश्नको जवाफ दिनुहोस्, र किन्नुपर्ने तार, ब्रेकर र सामान पाउनुहोस् — IS र IEC अनुसार जाँचिएको।">Pick the job, answer a few questions, and get the cable, breaker and parts to buy — checked against IS and IEC.</p>
+<header class="nav">
+  <div class="wrap nav-in">
+    <a class="logo" href="#top" aria-label="CableCalc Nepal home"><span class="logo-mark"><svg width="18" height="18" viewBox="0 0 24 24" fill="#111A2B"><path d="M13 2 3 14h9l-1 8 10-12h-9l1-8z"/></svg></span>CableCalc Nepal</a>
+    <nav class="nav-links" aria-label="Sections">
+      <a href="#calculator" data-en="Calculator" data-ne="क्याल्कुलेटर">Calculator</a>
+      <a href="#examples" data-en="Examples" data-ne="उदाहरण">Examples</a>
+      <a href="guide.html" data-en="How sizing works" data-ne="नाप्ने तरिका">How sizing works</a>
+      <div class="seg seg-sm" role="radiogroup" aria-label="Language" data-only="simple">
+        <button type="button" role="radio" data-set="lang" data-val="en">EN</button>
+        <button type="button" role="radio" data-set="lang" data-val="ne" lang="ne">नेपाली</button>
+      </div>
+    </nav>
   </div>
-  <nav class="switches" aria-label="Calculator setup">
-    <div class="seg" role="radiogroup" aria-label="Voltage level">
-      <button type="button" role="radio" data-set="level" data-val="LV" data-en="Low voltage <small>up to 1.1 kV</small>" data-ne="कम भोल्टेज <small>१.१ kV सम्म</small>">Low voltage <small>up to 1.1 kV</small></button>
-      <button type="button" role="radio" data-set="level" data-val="HV" data-en="High voltage <small>cables 3.3–33 kV, lines to 132 kV</small>" data-ne="उच्च भोल्टेज <small>केबल ३३ kV, लाइन १३२ kV सम्म</small>">High voltage <small>cables 3.3–33 kV, lines to 132 kV</small></button>
-    </div>
-    <div class="seg" role="radiogroup" aria-label="Standard">
-      <button type="button" role="radio" data-set="std" data-val="IS" data-en="Nepal / India <small>IS tables</small>" data-ne="नेपाल / भारत <small>IS तालिका</small>">Nepal / India <small>IS tables</small></button>
-      <button type="button" role="radio" data-set="std" data-val="IEC" data-en="International <small>IEC 60364</small>" data-ne="अन्तर्राष्ट्रिय <small>IEC 60364</small>">International <small>IEC 60364</small></button>
-    </div>
-    <div class="seg" role="radiogroup" aria-label="Detail">
-      <button type="button" role="radio" data-set="mode" data-val="simple" data-en="Simple" data-ne="सजिलो">Simple</button>
-      <button type="button" role="radio" data-set="mode" data-val="engineer" data-en="Engineer" data-ne="इन्जिनियर">Engineer</button>
-    </div>
-    <div class="seg" role="radiogroup" aria-label="Language" data-only="simple">
-      <button type="button" role="radio" data-set="lang" data-val="en">English</button>
-      <button type="button" role="radio" data-set="lang" data-val="ne" lang="ne">नेपाली</button>
-    </div>
-    <a class="guide-link" href="guide.html" data-en="How cable sizing works" data-ne="तार नाप्ने तरिका">How cable sizing works</a>
-  </nav>
 </header>
 
-<main class="page">
- <div class="bench">
-  <form id="f" class="form" autocomplete="off" novalidate>
-    <section class="step" aria-labelledby="s1">
-      <h2 id="s1"><span class="n">1</span> What the cable will power</h2>
-      <div id="load-fields"></div>
-    </section>
-    <section class="step" aria-labelledby="s2">
-      <h2 id="s2"><span class="n">2</span> Where the cable runs</h2>
-      <div id="route-fields"></div>
-    </section>
-    <section class="step" aria-labelledby="s3">
-      <h2 id="s3"><span class="n">3</span> The cable</h2>
-      <div id="cable-fields"></div>
-    </section>
-    <section class="step" aria-labelledby="s4">
-      <h2 id="s4"><span class="n">4</span> Checks</h2>
-      <div id="check-fields"></div>
-    </section>
-  </form>
-
-  <aside class="result" aria-live="polite" aria-labelledby="r-h">
-    <h2 id="r-h" class="sr-only">Result</h2>
-    <figure class="xsec">
-      <svg id="xsec" viewBox="0 0 240 240" role="img" aria-labelledby="xsec-t"><title id="xsec-t">Cable cross-section</title></svg>
-      <figcaption id="xsec-cap"></figcaption>
-    </figure>
-    <div id="answer"></div>
-    <div class="actions">
-      <button type="button" id="copy" class="btn">Copy result</button>
-      <button type="button" id="print" class="btn ghost">Print or save PDF</button>
+<section class="hero" id="top">
+  <div class="wrap hero-in">
+    <div class="hero-copy">
+      <p class="pill" data-en="Free · Made for Nepal · Works offline" data-ne="निःशुल्क · नेपालका लागि · इन्टरनेट बिना पनि चल्छ">Free · Made for Nepal · Works offline</p>
+      <h1 data-en="The right cable, from the house meter to a 400 kV line." data-ne="घरको मिटरदेखि ४०० kV लाइनसम्म, सही तार।">The right cable, from the house meter to a 400 kV line.</h1>
+      <p class="lead" data-en="Tell it what you are powering, where the cable runs and how far. You get the cable to ask for, the breaker and every part to buy — with the voltage your appliance will actually get, and every step of the calculation." data-ne="के चलाउने, तार कहाँबाट र कति टाढा जान्छ भन्नुहोस्। माग्नुपर्ने तार, ब्रेकर र सबै सामान पाउनुहोस् — उपकरणमा पुग्ने वास्तविक भोल्टेज र हिसाबका सबै चरणसहित।">Tell it what you are powering, where the cable runs and how far. You get the cable to ask for, the breaker and every part to buy — with the voltage your appliance will actually get, and every step of the calculation.</p>
+      <div class="cta">
+        <a class="btn" href="#calculator" data-go="house"><span data-en="Size a house or motor cable" data-ne="घर वा मोटरको तार नाप्नुहोस्">Size a house or motor cable</span></a>
+        <a class="btn ghost" href="#calculator" data-go="line"><span data-en="Plan an 11–400 kV line" data-ne="११–४०० kV लाइन योजना">Plan an 11–400 kV line</span></a>
+        <a class="btn ghost" href="guide.html"><span data-en="How cable sizing works" data-ne="तार नाप्ने तरिका">How cable sizing works</span></a>
+      </div>
+      <ul class="facts">
+        <li data-en="<b>IS + IEC</b> methods, the ones used in Nepal" data-ne="<b>IS + IEC</b> विधि, नेपालमा प्रयोग हुने"><b>IS + IEC</b> methods, the ones used in Nepal</li>
+        <li data-en="<b>156</b> published line ratings reproduced" data-ne="<b>१५६</b> प्रकाशित लाइन रेटिङ मिल्ने"><b>156</b> published line ratings reproduced</li>
+        <li data-en="<b>No sign-up</b>, nothing leaves your device" data-ne="<b>साइन-अप चाहिँदैन</b>, डाटा कतै जाँदैन"><b>No sign-up</b>, nothing leaves your device</li>
+      </ul>
     </div>
-  </aside>
- </div>
+    <svg class="hero-art" viewBox="0 0 320 200" aria-hidden="true" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M0 176 H320" opacity=".35"/>
+      <path d="M40 176 L56 26 L72 176 M45 120 H67 M50 72 H62" /><path d="M30 40 H82" stroke-width="2.2"/>
+      <circle cx="34" cy="44" r="2.4" class="fa"/><circle cx="56" cy="44" r="2.4" class="fa"/><circle cx="78" cy="44" r="2.4" class="fa"/>
+      <path d="M80 44 C 140 66, 180 70, 214 88" class="acc" stroke-width="2.6"/>
+      <path d="M196 92 L242 58 L288 92" class="fa"/><path d="M204 88 V176 H280 V88"/><rect x="234" y="140" width="16" height="36" class="fa"/>
+      <rect x="212" y="102" width="14" height="20" rx="1.5"/><path d="M219 107 V117 M214 112 H224" stroke-width="1.2"/>
+      <rect x="258" y="104" width="14" height="12"/>
+      <path d="M219 122 V176 H150 V190" stroke-dasharray="4 4" opacity=".6"/>
+      <circle cx="140" cy="190" r="7" class="fa"/><path d="M147 190 H170" opacity=".6"/>
+    </svg>
+  </div>
+</section>
+
+<section class="band" id="tools">
+  <div class="wrap">
+    <h2 data-en="One tool for every cable job in Nepal" data-ne="नेपालका सबै तारको कामका लागि एउटै उपकरण">One tool for every cable job in Nepal</h2>
+    <p class="sub" data-en="It asks only what you can read off a nameplate, a bill or a tape measure, and explains every term." data-ne="नेमप्लेट, बिल वा टेपबाट थाहा हुने कुरा मात्र सोध्छ, र हरेक शब्द बुझाउँछ।">It asks only what you can read off a nameplate, a bill or a tape measure, and explains every term.</p>
+    <div class="cards4">
+      <article class="card"><span class="card-ic" data-ic="plug"></span><h3 data-en="Houses, shops, motors" data-ne="घर, पसल, मोटर">Houses, shops, motors</h3>
+        <p data-en="Main cable from the NEA meter, geysers, ACs, borewell pumps, EV chargers — copper or aluminium, IS or IEC." data-ne="NEA मिटरदेखिको मुख्य तार, गिजर, AC, बोरिङ पम्प, EV चार्जर — तामा वा एल्युमिनियम।">Main cable from the NEA meter, geysers, ACs, borewell pumps, EV chargers — copper or aluminium, IS or IEC.</p></article>
+      <article class="card"><span class="card-ic" data-ic="cable"></span><h3 data-en="11 and 33 kV cables" data-ne="११ र ३३ kV केबल">11 and 33 kV cables</h3>
+        <p data-en="XLPE cables to transformers, sized for load, NEA fault level and voltage drop, with RMU, fuses and arresters." data-ne="ट्रान्सफर्मरसम्मका XLPE केबल — भार, फल्ट लेभल र भोल्टेज ड्रपअनुसार।">XLPE cables to transformers, sized for load, NEA fault level and voltage drop, with RMU, fuses and arresters.</p></article>
+      <article class="card"><span class="card-ic" data-ic="tower"></span><h3 data-en="Lines from 11 to 400 kV" data-ne="११ देखि ४०० kV सम्मका लाइन">Lines from 11 to 400 kV</h3>
+        <p data-en="ACSR and AAAC, single or bundled, rated for your site's heat, wind and altitude, with loadability for transmission." data-ne="ACSR र AAAC, एकल वा बन्डल — ठाउँको ताप, हावा र उचाइअनुसार।">ACSR and AAAC, single or bundled, rated for your site's heat, wind and altitude, with loadability for transmission.</p></article>
+      <article class="card"><span class="card-ic" data-ic="cart"></span><h3 data-en="What to buy" data-ne="के किन्ने">What to buy</h3>
+        <p data-en="Breaker, RCD, isolator, surge protector, starter, lugs, glands, conduit, earthing — each with its rating and reason." data-ne="ब्रेकर, RCD, आइसोलेटर, SPD, स्टार्टर, लग, ग्ल्यान्ड, पाइप, अर्थिङ — रेटिङ र कारणसहित।">Breaker, RCD, isolator, surge protector, starter, lugs, glands, conduit, earthing — each with its rating and reason.</p></article>
+    </div>
+  </div>
+</section>
+
+<section class="band alt" id="how">
+  <div class="wrap">
+    <h2 data-en="How it works" data-ne="कसरी काम गर्छ">How it works</h2>
+    <ol class="steps4">
+      <li><b data-en="Pick the job" data-ne="काम छान्नुहोस्">Pick the job</b><span data-en="House main, pump, AC, EV, shop, HV cable or overhead line." data-ne="घरको मुख्य तार, पम्प, AC, EV, पसल, HV केबल वा लाइन।">House main, pump, AC, EV, shop, HV cable or overhead line.</span></li>
+      <li><b data-en="Describe the run" data-ne="बाटो बताउनुहोस्">Describe the run</b><span data-en="How it is laid, where in Nepal, how long. Pictures help you choose." data-ne="कसरी राखिन्छ, नेपालको कुन भाग, कति लामो।">How it is laid, where in Nepal, how long. Pictures help you choose.</span></li>
+      <li><b data-en="Get the answer" data-ne="उत्तर पाउनुहोस्">Get the answer</b><span data-en="Cable, breaker, voltage at the load, and the check that decided the size." data-ne="तार, ब्रेकर, उपकरणमा पुग्ने भोल्टेज, र साइज तय गर्ने जाँच।">Cable, breaker, voltage at the load, and the check that decided the size.</span></li>
+      <li><b data-en="Buy and install" data-ne="किन्नुहोस् र जडान गर्नुहोस्">Buy and install</b><span data-en="Take the list to the shop; check the cable markings; test before switching on." data-ne="सूची लिएर पसल जानुहोस्; तारको छाप जाँच्नुहोस्; चलाउनुअघि टेस्ट।">Take the list to the shop; check the cable markings; test before switching on.</span></li>
+    </ol>
+  </div>
+</section>
+
+<main class="calc" id="calculator">
+ <div class="wrap">
+  <div class="calc-head">
+    <h2 data-en="Calculator" data-ne="क्याल्कुलेटर">Calculator</h2>
+    <nav class="switches" aria-label="Calculator setup">
+      <div class="seg" role="radiogroup" aria-label="Voltage level">
+        <button type="button" role="radio" data-set="level" data-val="LV" data-en="Low voltage <small>230/400 V</small>" data-ne="कम भोल्टेज <small>२३०/४०० V</small>">Low voltage <small>230/400 V</small></button>
+        <button type="button" role="radio" data-set="level" data-val="HV" data-en="High voltage <small>cables to 33 kV, lines to 400 kV</small>" data-ne="उच्च भोल्टेज <small>केबल ३३ kV, लाइन ४०० kV सम्म</small>">High voltage <small>cables to 33 kV, lines to 400 kV</small></button>
+      </div>
+      <div class="seg" role="radiogroup" aria-label="Standard">
+        <button type="button" role="radio" data-set="std" data-val="IS" data-en="Nepal / India <small>IS tables</small>" data-ne="नेपाल / भारत <small>IS तालिका</small>">Nepal / India <small>IS tables</small></button>
+        <button type="button" role="radio" data-set="std" data-val="IEC" data-en="International <small>IEC 60364</small>" data-ne="अन्तर्राष्ट्रिय <small>IEC 60364</small>">International <small>IEC 60364</small></button>
+      </div>
+      <div class="seg" role="radiogroup" aria-label="Detail">
+        <button type="button" role="radio" data-set="mode" data-val="simple" data-en="Simple" data-ne="सजिलो">Simple</button>
+        <button type="button" role="radio" data-set="mode" data-val="engineer" data-en="Engineer" data-ne="इन्जिनियर">Engineer</button>
+      </div>
+    </nav>
+  </div>
+  <div class="bench">
+   <form id="f" class="form" autocomplete="off" novalidate>
+     <section class="step" aria-labelledby="s1">
+       <h2 id="s1"><span class="n">1</span> What the cable will power</h2>
+       <div id="load-fields"></div>
+     </section>
+     <section class="step" aria-labelledby="s2">
+       <h2 id="s2"><span class="n">2</span> Where the cable runs</h2>
+       <div id="route-fields"></div>
+     </section>
+     <section class="step" aria-labelledby="s3">
+       <h2 id="s3"><span class="n">3</span> The cable</h2>
+       <div id="cable-fields"></div>
+     </section>
+     <section class="step" aria-labelledby="s4">
+       <h2 id="s4"><span class="n">4</span> Checks</h2>
+       <div id="check-fields"></div>
+     </section>
+   </form>
+
+   <aside class="result" aria-live="polite" aria-labelledby="r-h">
+     <h2 id="r-h" class="sr-only">Result</h2>
+     <figure class="xsec">
+       <svg id="xsec" viewBox="0 0 240 240" role="img" aria-labelledby="xsec-t"><title id="xsec-t">Cable cross-section</title></svg>
+       <figcaption id="xsec-cap"></figcaption>
+     </figure>
+     <div id="answer"></div>
+     <div class="actions">
+       <button type="button" id="copy" class="btn">Copy result</button>
+       <button type="button" id="print" class="btn ghost">Print or save PDF</button>
+     </div>
+   </aside>
+  </div>
 
   <section class="working" aria-labelledby="w-h">
     <h2 id="w-h">How this answer was calculated</h2>
     <div id="working"></div>
   </section>
+ </div>
 </main>
+
+<section class="band alt" id="examples">
+  <div class="wrap">
+    <h2 data-en="Worked examples from Nepal" data-ne="नेपालका उदाहरण">Worked examples from Nepal</h2>
+    <p class="sub" data-en="Calculated live by the same engine. Open any one in the calculator and change it." data-ne="एउटै इन्जिनले अहिले नै हिसाब गरेको। कुनै पनि क्याल्कुलेटरमा खोलेर बदल्नुहोस्।">Calculated live by the same engine. Open any one in the calculator and change it.</p>
+    <div id="ex-tabs" class="tabs" role="tablist"></div>
+    <div id="ex-panel" class="ex-panel" role="tabpanel"></div>
+  </div>
+</section>
+
+<section class="band" id="honest">
+  <div class="wrap">
+    <h2 data-en="Honest by design" data-ne="इमानदार डिजाइन">Honest by design</h2>
+    <div class="cards3">
+      <article class="card"><span class="card-ic" data-ic="book"></span><h3 data-en="Standards you can check" data-ne="जाँच्न मिल्ने मापदण्ड">Standards you can check</h3>
+        <p data-en="IS 1554, IS 7098, IS 3961, IS 398, IEC 60364-5-52, IEEE 738, Nepal Electricity Regulation 2050 and NBC 207 — each step names its clause." data-ne="हरेक चरणमा मापदण्ड र दफा उल्लेख गरिएको छ।">IS 1554, IS 7098, IS 3961, IS 398, IEC 60364-5-52, IEEE 738, Nepal Electricity Regulation 2050 and NBC 207 — each step names its clause.</p></article>
+      <article class="card"><span class="card-ic" data-ic="check"></span><h3 data-en="Checked against published data" data-ne="प्रकाशित डाटासँग जाँचिएको">Checked against published data</h3>
+        <p data-en="45 automated tests with hand-worked examples; the overhead line engine reproduces 156 CEA and manufacturer ratings within 0.6 %. Typos found in source tables are listed and corrected." data-ne="४५ स्वचालित टेस्ट; लाइन इन्जिनले १५६ प्रकाशित रेटिङ ०.६ % भित्र मिलाउँछ।">45 automated tests with hand-worked examples; the overhead line engine reproduces 156 CEA and manufacturer ratings within 0.6 %. Typos found in source tables are listed and corrected.</p></article>
+      <article class="card"><span class="card-ic" data-ic="alert"></span><h3 data-en="Knows where it stops" data-ne="आफ्नो सीमा थाहा छ">Knows where it stops</h3>
+        <p data-en="It says when something is typical practice rather than a rule, when NEA data is needed, and when the work needs NEA approval or a licensed electrician." data-ne="कुन कुरा सामान्य अभ्यास हो, कहाँ NEA को डाटा चाहिन्छ र कहाँ इजाजतप्राप्त इलेक्ट्रिसियन चाहिन्छ भनेर बताउँछ।">It says when something is typical practice rather than a rule, when NEA data is needed, and when the work needs NEA approval or a licensed electrician.</p></article>
+    </div>
+  </div>
+</section>
 
 <div class="sticky" id="sticky" aria-hidden="true"></div>
 
 <footer class="foot">
-  <p data-en="Results are for design and checking. Use the actual manufacturer datasheet before buying, and have the installation done or inspected by a licensed electrician. In Nepal, any connection to the NEA network needs NEA approval." data-ne="नतिजा डिजाइन र जाँचका लागि हो। किन्नुअघि निर्माताको डाटाशिट हेर्नुहोस्, र जडान इजाजतप्राप्त इलेक्ट्रिसियनबाट गराउनुहोस्। NEA को लाइनमा जोड्न NEA को स्वीकृति चाहिन्छ।">Results are for design and checking. Use the actual manufacturer datasheet before buying, and have the installation done or inspected by a licensed electrician. In Nepal, any connection to the NEA network needs NEA approval.</p>
+  <div class="wrap">
+    <p><b>CableCalc Nepal</b> — <span data-en="free, open-source cable sizing." data-ne="निःशुल्क, खुला स्रोत।">free, open-source cable sizing.</span> <a href="https://github.com/kesuj/cable-sizing">github.com/kesuj/cable-sizing</a></p>
+    <p data-en="Results are for design and checking. Use the actual manufacturer datasheet before buying, and have the installation done or inspected by a licensed electrician. In Nepal, any connection to the NEA network needs NEA approval." data-ne="नतिजा डिजाइन र जाँचका लागि हो। किन्नुअघि निर्माताको डाटाशिट हेर्नुहोस्, र जडान इजाजतप्राप्त इलेक्ट्रिसियनबाट गराउनुहोस्। NEA को लाइनमा जोड्न NEA को स्वीकृति चाहिन्छ।">Results are for design and checking. Use the actual manufacturer datasheet before buying, and have the installation done or inspected by a licensed electrician. In Nepal, any connection to the NEA network needs NEA approval.</p>
+  </div>
 </footer>
 <script src="dist/app.bundle.js"></script>
 </body>
