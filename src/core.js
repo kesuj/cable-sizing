@@ -72,6 +72,15 @@ export function minSizeShortCircuit(faultKA, timeS, k) {
   return (faultKA * 1000 * Math.sqrt(timeS)) / k;
 }
 
+/** Prospective fault (kA) at the start of a cable fed by a transformer through a supply conductor.
+ *  Transformer: per-phase impedance zPct·U²/S, treated as reactive (slightly conservative). Supply conductor: R at 20 °C
+ *  (maximum fault, IEC 60909) and X in Ω/km over lengthM. Single-phase circuits fault through phase and neutral (2 × line). */
+export function faultAtDistance({ kva, zPct = 0.045, lengthM = 0, rOhmKm = 0, xOhmKm = 0, singlePhase = false }) {
+  const zt = (zPct * 400 * 400) / (kva * 1000);
+  const L = lengthM / 1000, n = singlePhase ? 2 : 1;
+  return 400 / SQRT3 / Math.hypot(n * rOhmKm * L, zt + n * xOhmKm * L) / 1000;
+}
+
 /** What the chosen conductor can take in a fault (IEC 60364-4-43 §434.5.2): allowable energy (k·S)² in A²s,
  *  and the longest time (ms) a fault of iscKA may last before the conductor passes its limit temperature. */
 export function faultWithstand(insulation, material, size, iscKA) {

@@ -471,3 +471,5 @@ input[type=number], select { border-radius: 8px; border-bottom-width: 1px; }
 .card > h3 { font-size: 19px; }
 .comp-ph { overflow: hidden; }
 .comp-ph img { position: absolute; inset: 0; }
+.deploy { display: flex; flex-wrap: wrap; gap: var(--s3); margin: var(--s4) 0; }
+.deploy .btn { padding: 10px 16px; font-size: 14px; }

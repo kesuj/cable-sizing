@@ -3,7 +3,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DATA } from "../src/data.js";
-import { loadCurrent, voltageDrop, minSizeShortCircuit, kValue, faultWithstand, nextDevice, interp,
+import { loadCurrent, voltageDrop, minSizeShortCircuit, kValue, faultWithstand, faultAtDistance, nextDevice, interp,
   tempFactorFormula, earthConductorSize } from "../src/core.js";
 import { makeIsLv } from "../src/adapters/is_lv.js";
 import { sizeConductor } from "../src/size.js";
@@ -49,6 +49,13 @@ test("short-circuit minimum size and k values", () => {
   assert.equal(kValue("XLPE", "cu", 95), 143);
   assert.equal(kValue("PVC", "al", 400), 68);
   near(minSizeShortCircuit(15, 0.2, 94), 71.36);
+});
+
+test("fault level falls with distance from the transformer", () => {
+  near(faultAtDistance({ kva: 200 }), 6.415, 0.01);                                           // at the transformer
+  near(faultAtDistance({ kva: 200, lengthM: 100, rOhmKm: 0.443, xOhmKm: 0.08 }), 3.70, 0.05); // 100 m of 70 mm² Al, 3-phase
+  const one = faultAtDistance({ kva: 200, lengthM: 100, rOhmKm: 0.443, xOhmKm: 0.08, singlePhase: true });
+  assert.ok(one < 3.70 && one > 2.0, `single-phase loop ${one}`);
 });
 
 test("fault withstand: 6 mm² Cu XLPE at 6.4 kA", () => {

@@ -1,10 +1,10 @@
 // UI for the conductor sizing workbench. All engineering lives in core.js / size.js / adapters.
 import { ADAPTERS } from "./adapters/index.js";
 import { sizeConductor, cableDescription } from "./size.js";
-import { round, kValue, faultWithstand } from "./core.js";
+import { round, kValue, faultWithstand, faultAtDistance, interp } from "./core.js";
 import { drawCable, drawStrands } from "./xsec.js";
 import { sizeLine, LINE_DEFAULTS, stClair } from "./overhead.js";
-import { bomFor, bomHv, bomLine, lvFaultKA } from "./bom.js";
+import { bomFor, bomHv, bomLine } from "./bom.js";
 import { DATA } from "./data.js";
 import { JOBS, ROUTES, REGIONS as NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } from "./jobs.js";
 import { explainHtml, routePic, houseMap } from "./explain.js";
@@ -39,7 +39,7 @@ const DEFAULT_STATE = {
   region: "hills", airTemp: 35, groundTemp: 25, soilRes: 150, depthMm: 750,
   method: "ground", groupCount: 1, spacing: "touching", formation: "flat", racks: 1, lengthM: 40,
   material: "cu", insulation: "XLPE", cores: "4", armoured: true,
-  vdLimitPct: 5, vdStartLimitPct: 15, faultOn: false, faultBasis: "kat", faultKa: 10, faultT: 0.1, i2t: 40000, sizeOn: "device", trafoKva: 200,
+  vdLimitPct: 5, vdStartLimitPct: 15, faultOn: false, faultBasis: "kat", faultKa: 10, faultT: 0.1, i2t: 40000, sizeOn: "device", trafoKva: 200, supplyM: 0, supplyMm2: 70,
   hvKv: 11, hvEarth: "E", hvSource: "polycab", minSize: "",
   lang: "en", job: "house", route: "buried",
   ...Object.values(JOBS).reduce((o, j) => ({ ...o, ...j.defaults }), {}), ...JOBS.house.defaults, hvKv: "11", faultKa: 10, faultT: 0.1,
@@ -150,7 +150,8 @@ function renderForm() {
 
   // 4 checks
   h = row(num("vdLimitPct", "Allowed voltage drop", { suffix: "%", hint: hv ? "NEA planning uses 5 % at the far end of an 11 kV or 33 kV feeder." : "5 % from the meter to the farthest point; 3 % if lights are sensitive." }));
-  if (!hv) h += row(sel("trafoKva", UI.en.trafo, TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: UI.en.trafoHint }));
+  if (!hv) h += row(sel("trafoKva", UI.en.trafo, TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: UI.en.trafoHint }),
+    num("supplyM", UI.en.supplyM, { suffix: "m", hint: UI.en.supplyHint }), sel("supplyMm2", UI.en.supplyMm2, SUPPLY_MM2.map((k) => [k, `${k} mm²`])));
   h += check("faultOn", hv || eng() ? "Check short-circuit withstand" : "Check short-circuit withstand (needed for a feeder straight from a transformer, or one protected by fuses)");
   if (!hv && S.faultOn) h += row(sel("faultBasis", "Fault data", [["kat", "Fault current and clearing time"], ["i2t", "Breaker/fuse let-through energy I²t (fast devices)"]], { struct: true,
     hint: "Below 0.1 s a current-limiting MCB, MCCB or HRC fuse lets through much less energy than I²·t. Take I²t from the device catalogue." }));
@@ -331,8 +332,8 @@ function renderWorking(res, A) {
     else if (s.voltage <= 1100) {
       const w = scWithstand(res), ne = S.lang === "ne" && !eng();
       h += `<li><b>${tr("w7")}</b> ${ne
-        ? `${S.trafoKva} kVA ट्रान्सफर्मरले तारको सुरुमा ${fmt(w.isc, 1)} kA सम्म दिन्छ। यो तारले (k·S)² = (${w.k} × ${c.size})² = ${fmt(w.allow / 1000, 0)} kA²s सहन्छ, त्यसैले फल्ट ${fmtMs(w.tMs)} ms भित्र कट्नुपर्छ। ब्रेकरको डाटाशिटको I²t यसभन्दा कम छ कि जाँच्नुहोस्।`
-        : `A ${S.trafoKva} kVA transformer gives up to ${fmt(w.isc, 1)} kA at the cable start. This cable withstands (k·S)² = (${w.k} × ${c.size})² = <b>${fmt(w.allow / 1000, 0)} kA²s</b>, so the fault must clear within <b>${fmtMs(w.tMs)} ms</b>. Check the breaker's datasheet let-through I²t is below that. To size the cable on a chosen fault level and time instead, turn on "Check short-circuit withstand" in Engineer mode.`}</li>`;
+        ? `${S.trafoKva} kVA ट्रान्सफर्मर${+S.supplyM > 0 ? ` र ${S.supplyM} m सप्लाई कन्डक्टर` : ""}ले तारको सुरुमा ${fmt(w.isc, 1)} kA सम्म दिन्छ। यो तारले (k·S)² = (${w.k} × ${c.size})² = ${fmt(w.allow / 1000, 0)} kA²s सहन्छ, त्यसैले फल्ट ${fmtMs(w.tMs)} ms भित्र कट्नुपर्छ। ब्रेकरको डाटाशिटको I²t यसभन्दा कम छ कि जाँच्नुहोस्।`
+        : `A ${S.trafoKva} kVA transformer${+S.supplyM > 0 ? ` and ${S.supplyM} m of ${S.supplyMm2} mm² supply conductor give` : " gives up to"} ${fmt(w.isc, 1)} kA at the cable start. This cable withstands (k·S)² = (${w.k} × ${c.size})² = <b>${fmt(w.allow / 1000, 0)} kA²s</b>, so the fault must clear within <b>${fmtMs(w.tMs)} ms</b>. Check the breaker's datasheet let-through I²t is below that. To size the cable on a chosen fault level and time instead, turn on "Check short-circuit withstand" in Engineer mode.`}</li>`;
     }
     h += `<li><b>${tr("w8")} ${c.size} mm²</b> (${tr("w8b")} ${fmt(c.theta, 0)} °C).</li>`;
   }
@@ -462,7 +463,12 @@ Object.assign(UI.en, RT.en); Object.assign(UI.ne, RT.ne);
 
 // Short-circuit strings. Fault level comes from the transformer size (IS 1180: 4.5 % impedance up to 630 kVA).
 const TRAFO_KVA = [50, 100, 200, 315, 500];
+const SUPPLY_MM2 = [35, 50, 70, 95, 120];
 Object.assign(UI.en, {
+  supplyM: "Distance from the transformer to this cable's start",
+  supplyHint: "Along the NEA line or cable, in metres. Enter 0 if unknown: the highest possible fault is then used, the safe choice.",
+  supplyMm2: "NEA supply conductor, aluminium",
+  scNoteDist: "Includes {m} m of {s} mm² aluminium supply conductor (cold resistance, IEC 60909) after a {t} kVA transformer with 4.5 % impedance.",
   trafo: "Transformer feeding your supply",
   trafoHint: "Read it on the transformer nameplate; NEA mostly uses 50, 100 and 200 kVA. If unsure, keep 200 kVA (the safe choice).",
   scTitle: "Short circuit", scFault: "Fault at the cable start", scAllow: "Energy this cable can take, (k·S)²",
@@ -471,6 +477,10 @@ Object.assign(UI.en, {
   scNote: "Taken at the transformer terminals (infinite source, 4.5 % impedance). Cable length lowers it, so this is an upper bound.",
 });
 Object.assign(UI.ne, {
+  supplyM: "ट्रान्सफर्मरदेखि यो तारको सुरुसम्मको दूरी",
+  supplyHint: "NEA को लाइन वा केबलको बाटो, मिटरमा। थाहा नभए ० राख्नुहोस्: त्यसबेला सबैभन्दा ठूलो सम्भावित फल्ट लिइन्छ, जुन सुरक्षित हो।",
+  supplyMm2: "NEA को सप्लाई कन्डक्टर, एल्युमिनियम",
+  scNoteDist: "{t} kVA ट्रान्सफर्मर (४.५ % इम्पिडेन्स) पछि {m} m, {s} mm² एल्युमिनियम सप्लाई कन्डक्टर समावेश (चिसो अवस्थाको रेजिस्टेन्स, IEC 60909)।",
   trafo: "तपाईंलाई सप्लाई दिने ट्रान्सफर्मर",
   trafoHint: "ट्रान्सफर्मरको नेमप्लेटमा हेर्नुहोस्; NEA ले प्रायः ५०, १०० र २०० kVA प्रयोग गर्छ। थाहा नभए २०० kVA नै राख्नुहोस् (सुरक्षित)।",
   scTitle: "सर्ट सर्किट", scFault: "तारको सुरुमा फल्ट करेन्ट", scAllow: "यो तारले सहने ऊर्जा, (k·S)²",
@@ -480,8 +490,14 @@ Object.assign(UI.ne, {
 });
 
 /** Prospective fault at the cable start and what the chosen cable can take (LV, from the transformer size). */
+function lvFault(res) {
+  const mm2 = +S.supplyMm2 || 70;
+  const row = DATA.lvIs.tables.XLPE["4"].rows.find((r) => r.size === mm2);
+  return faultAtDistance({ kva: +S.trafoKva || 200, lengthM: Math.max(0, +S.supplyM || 0), rOhmKm: row?.rdc20.al ?? 0.64,
+    xOhmKm: interp(DATA.lvReactance.XLPE.multi, mm2).value, singlePhase: res.spec.system === "1ph" });
+}
 function scWithstand(res) {
-  const isc = lvFaultKA(+S.trafoKva || 200);
+  const isc = lvFault(res);
   return { isc, ...faultWithstand(res.spec.insulation, res.spec.material, res.chosen.size, isc) };
 }
 const fmtMs = (ms) => fmt(ms, ms < 10 ? 1 : 0);
@@ -568,7 +584,8 @@ function renderSimple() {
   h += row(sel("region", tr("region"), [...Object.entries(NP_REGIONS).map(([k, r]) => [k, L2(r)]), ["custom", tr("custom")]], { struct: true }));
   if (S.region === "custom") h += row(num("airTemp", tr("airTemp"), { suffix: "°C" }), num("groundTemp", tr("groundTemp"), { suffix: "°C" }));
   h += row(num("lengthM", tr("lengthM"), { suffix: "m" }), num("groupCount", tr("groupCount"), { step: 1, min: 1 }));
-  if (job.level === "LV") h += row(sel("trafoKva", tr("trafo"), TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: tr("trafoHint") }));
+  if (job.level === "LV") h += row(sel("trafoKva", tr("trafo"), TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: tr("trafoHint") }),
+    num("supplyM", tr("supplyM"), { suffix: "m", hint: tr("supplyHint") }), sel("supplyMm2", tr("supplyMm2"), SUPPLY_MM2.map((k) => [k, `${k} mm²`])));
   $("#route-fields").innerHTML = h;
 
   $("#cable-fields").innerHTML = row(sel("material", tr("material"), [["cu", tr("cu")], ["al", tr("al")]], { struct: true })) + explainHtml("cores", lang);
@@ -612,7 +629,7 @@ function cableOd(res) {
 }
 function bomCtx(res, sm) {
   const kW = S.job === "pump" && S.motorBasis === "hp" ? +S.hp * 0.7457 : null;
-  return { res, kind: sm.t.kind, S, route: S.route, od: cableOd(res), kW, starter: S.starter, pumpType: S.pumpType, isc: lvFaultKA(+S.trafoKva || 200) };
+  return { res, kind: sm.t.kind, S, route: S.route, od: cableOd(res), kW, starter: S.starter, pumpType: S.pumpType, isc: lvFault(res) };
 }
 const COMP_MAP = [[/MCCB/, "mccb"], [/MCB/, "mcb"], [/RCD|RCCB/, "rccb"], [/isolating/i, "isolator"], [/Changeover/, "changeover"], [/SPD/, "spd"],
   [/Distribution board/, "db"], [/HRC/, "hrc-fuse"], [/starter/i, "dol-starter"], [/capacitor/i, "capacitor"], [/lugs/i, "lug"], [/glands/i, "gland"],
@@ -638,11 +655,11 @@ function renderSimpleResult(res, sm) {
   if (sm.job.level === "LV") {
     const w = scWithstand(res);
     h += `<div class="volt"><h3 class="rh">${ic("shield", 18)} ${tr("scTitle")}</h3><dl class="kv">
-      <dt>${tr("scFault")} (${S.trafoKva} kVA)</dt><dd>${fmt(w.isc, 1)} kA</dd>
+      <dt>${tr("scFault")} (${S.trafoKva} kVA${+S.supplyM > 0 ? `, ${S.supplyM} m` : ""})</dt><dd>${fmt(w.isc, 1)} kA</dd>
       <dt>${tr("scAllow")}</dt><dd>${fmt(w.allow / 1000, 0)} kA²s</dd>
       <dt>${tr("scTime")}</dt><dd>${fmtMs(w.tMs)} ms</dd></dl>
       <p class="hint">${tr("scRule").replace("{kA}", Math.ceil(w.isc)).replace("{E}", fmt(w.allow / 1000, 0))}</p>
-      <p class="hint">${tr("scNote")}</p></div>`;
+      <p class="hint">${+S.supplyM > 0 ? tr("scNoteDist").replace("{m}", S.supplyM).replace("{s}", S.supplyMm2).replace("{t}", S.trafoKva) : tr("scNote")}</p></div>`;
   }
   h += renderBom(sm.job.level === "HV" ? bomHv({ res, kva: +S.kva, kv: Number(S.hvKv) }) : bomFor(bomCtx(res, sm)));
   const sm1 = smallerSize(res);
