@@ -65,6 +65,15 @@
         ],
         "createdAt": "2026-11-02T19:41:21.370Z",
         "reason": "User asked for a wire-themed design; the repeating gradient is the dashed live wire with current flowing in 'How it works' (one element), not decoration."
+      },
+      {
+        "rule": "cramped-padding",
+        "value": "*",
+        "files": [
+          "index.html"
+        ],
+        "createdAt": "2026-11-03T12:37:59.204Z",
+        "reason": "Claude (agent): static scan flags the How-it-works <li> steps, which are deliberately open terminals on the wire (no box). Live-page scan of index.html reports no cramped padding (2026-11-03)."
       }
     ]
   }
