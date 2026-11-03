@@ -82,6 +82,14 @@ function minSizeShortCircuit(faultKA, timeS, k) {
   return (faultKA * 1000 * Math.sqrt(timeS)) / k;
 }
 
+/** What the chosen conductor can take in a fault (IEC 60364-4-43 §434.5.2): allowable energy (k·S)² in A²s,
+ *  and the longest time (ms) a fault of iscKA may last before the conductor passes its limit temperature. */
+function faultWithstand(insulation, material, size, iscKA) {
+  const k = kValue(insulation, material, size);
+  const allow = (k * size) ** 2;
+  return { k, allow, tMs: (allow / (iscKA * 1000) ** 2) * 1000 };
+}
+
 /** Adiabatic k (A·√s/mm²) — IEC 60364-5-54 Table A.54.2/A.54.3, IEC 60364-4-43 Table 43A. */
 function kValue(insulation, material, size) {
   const cu = material === "cu";
@@ -113,7 +121,7 @@ function operatingTemp(thetaAmb, thetaMax, ib, iz) {
 
 const round = (v, d = 2) => (v == null || !isFinite(v) ? v : Math.round(v * 10 ** d) / 10 ** d);
 
-return { SQRT3, DEVICE_RATINGS, loadCurrent, nextDevice, interp, tempFactorFormula, voltageDrop, minSizeShortCircuit, kValue, earthConductorSize, operatingTemp, round };
+return { SQRT3, DEVICE_RATINGS, loadCurrent, nextDevice, interp, tempFactorFormula, voltageDrop, minSizeShortCircuit, faultWithstand, kValue, earthConductorSize, operatingTemp, round };
 })();
 __m["adapters/is_lv.js"] = (() => {
 // IS / Indian-catalogue LV adapter (1.1 kV PVC to IS 1554-1, XLPE to IS 7098-1).
@@ -1106,14 +1114,21 @@ function bomFor(ctx) {
 
   // --- protection -------------------------------------------------------------------------------
   const poles = sys === "1ph" ? "DP" : isMotor ? "TP" : "TPN";
-  if (In <= 63) {
+  // Prospective fault at the board (transformer terminals, infinite source): MCBs reach 10 kA (catalogue), so above that an MCCB is needed.
+  const isc = ctx.isc ?? 6;
+  const icu = [18, 25, 36, 50, 70].find((k) => k >= isc) ?? 70; // ABB XT1 Icu ladder at 415 V
+  if (In <= 63 && isc > 10) {
+    add(B("Moulded case circuit breaker (MCCB)", "MCCB (मोल्डेड केस सर्किट ब्रेकर)"), `rated ${In} A, ${sys === "1ph" ? "2P" : poles === "TP" ? "3P" : "4P"}, IEC 60947-2, Icu ≥ ${icu} kA`, 1,
+      B(`The fault here can reach ${isc.toFixed(1)} kA, above the 10 kA of a miniature breaker, so a moulded-case breaker is fitted (breaking capacity must exceed the fault level, SP 30).`,
+        `यहाँ फल्ट ${isc.toFixed(1)} kA सम्म पुग्न सक्छ, जुन MCB को १० kA भन्दा बढी हो; त्यसैले MCCB राख्नुहोस्।`));
+  } else if (In <= 63) {
     const curve = kind === "resistive" ? "B" : isMotor && (ctx.kW ?? 0) > 3.7 && ctx.starter === "dol" ? "D" : "C";
-    add(B("Miniature circuit breaker (MCB)", "MCB (मिनिएचर सर्किट ब्रेकर)"), `${In} A ${poles}, ${curve}-curve, IS/IEC 60898-1, Icn ≥ 6 kA (10 kA within ~50 m of a 250 kVA+ transformer)`, 1,
+    add(B("Miniature circuit breaker (MCB)", "MCB (मिनिएचर सर्किट ब्रेकर)"), `${In} A ${poles}, ${curve}-curve, IS/IEC 60898-1, Icn ≥ ${isc <= 6 ? 6 : 10} kA`, 1,
       B(`Protects the cable: ${In} A ≤ cable rating. Curve ${curve}: ${curve === "B" ? "3–5 × In trip, heaters/lights" : curve === "C" ? "5–10 × In, motors/compressors/general" : "10–20 × In, heavy starting"} (CPWD Table 4). Breaking capacity must exceed the fault level where it is fitted (SP 30).`,
         `तार जोगाउँछ। ${curve}-कर्भ: ${curve === "B" ? "हिटर/बत्ती" : curve === "C" ? "मोटर/कम्प्रेसर/सामान्य" : "धेरै सुरु करेन्ट"}। फल्ट लेभलभन्दा बढी ब्रेकिङ क्षमता चाहिन्छ।`));
   } else {
     const frame = next(MCCB_FRAMES, In);
-    add(B("Moulded case circuit breaker (MCCB)", "MCCB (मोल्डेड केस सर्किट ब्रेकर)"), `${frame} A frame, set ${In} A, ${sys === "1ph" ? "2P" : poles === "TP" ? "3P" : "4P"}, IEC 60947-2, Icu ≥ 25 kA (36 kA near a 630 kVA+ transformer)`, 1,
+    add(B("Moulded case circuit breaker (MCCB)", "MCCB (मोल्डेड केस सर्किट ब्रेकर)"), `${frame} A frame, set ${In} A, ${sys === "1ph" ? "2P" : poles === "TP" ? "3P" : "4P"}, IEC 60947-2, Icu ≥ ${icu} kA`, 1,
       B("Above 63 A an MCB is not available; an MCCB with thermal setting at the cable's breaker rating protects it (IEC 60947-2: trips at 1.30 × In).", "६३ A भन्दा माथि MCB हुँदैन; MCCB लाई तारको रेटिङमा सेट गर्नुहोस्।"));
   }
 
@@ -1713,10 +1728,10 @@ __m["app.js"] = (() => {
 // UI for the conductor sizing workbench. All engineering lives in core.js / size.js / adapters.
 const { ADAPTERS } = __m["adapters/index.js"];
 const { sizeConductor, cableDescription } = __m["size.js"];
-const { round, kValue } = __m["core.js"];
+const { round, kValue, faultWithstand } = __m["core.js"];
 const { drawCable, drawStrands } = __m["xsec.js"];
 const { sizeLine, LINE_DEFAULTS, stClair } = __m["overhead.js"];
-const { bomFor, bomHv, bomLine } = __m["bom.js"];
+const { bomFor, bomHv, bomLine, lvFaultKA } = __m["bom.js"];
 const { DATA } = __m["data.js"];
 const { JOBS, ROUTES, REGIONS: NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } = __m["jobs.js"];
 const { explainHtml, routePic, houseMap } = __m["explain.js"];
@@ -1750,7 +1765,7 @@ const DEFAULT_STATE = {
   region: "hills", airTemp: 35, groundTemp: 25, soilRes: 150, depthMm: 750,
   method: "ground", groupCount: 1, spacing: "touching", formation: "flat", racks: 1, lengthM: 40,
   material: "cu", insulation: "XLPE", cores: "4", armoured: true,
-  vdLimitPct: 5, vdStartLimitPct: 15, faultOn: false, faultBasis: "kat", faultKa: 10, faultT: 0.1, i2t: 40000, sizeOn: "device",
+  vdLimitPct: 5, vdStartLimitPct: 15, faultOn: false, faultBasis: "kat", faultKa: 10, faultT: 0.1, i2t: 40000, sizeOn: "device", trafoKva: 200,
   hvKv: 11, hvEarth: "E", hvSource: "polycab", minSize: "",
   lang: "en", job: "house", route: "buried",
   ...Object.values(JOBS).reduce((o, j) => ({ ...o, ...j.defaults }), {}), ...JOBS.house.defaults, hvKv: "11", faultKa: 10, faultT: 0.1,
@@ -1861,6 +1876,7 @@ function renderForm() {
 
   // 4 checks
   h = row(num("vdLimitPct", "Allowed voltage drop", { suffix: "%", hint: hv ? "NEA planning uses 5 % at the far end of an 11 kV or 33 kV feeder." : "5 % from the meter to the farthest point; 3 % if lights are sensitive." }));
+  if (!hv) h += row(sel("trafoKva", UI.en.trafo, TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: UI.en.trafoHint }));
   h += check("faultOn", hv || eng() ? "Check short-circuit withstand" : "Check short-circuit withstand (needed for a feeder straight from a transformer, or one protected by fuses)");
   if (!hv && S.faultOn) h += row(sel("faultBasis", "Fault data", [["kat", "Fault current and clearing time"], ["i2t", "Breaker/fuse let-through energy I²t (fast devices)"]], { struct: true,
     hint: "Below 0.1 s a current-limiting MCB, MCCB or HRC fuse lets through much less energy than I²·t. Take I²t from the device catalogue." }));
@@ -2038,7 +2054,12 @@ function renderWorking(res, A) {
     h += `<li><b>${tr("w6")}</b> ΔU = ${s.system === "3ph" ? "√3" : "2"} × I × L × (R cos φ + X sin φ) = <b>${fmt(c.vd, 2)} V (${fmt(c.vdPct, 2)} %)</b>.</li>`;
     if (c.scMin != null && s.fault.i2t) h += `<li><b>${tr("w7")}</b> S ≥ √(I²t) / k = √${s.fault.i2t} ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
     else if (c.scMin != null) h += `<li><b>${tr("w7")}</b> S ≥ I·√t / k = ${s.fault.ka * 1000} A × √${s.fault.timeS} s ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
-    else if (s.voltage <= 1100) h += `<li><b>${tr("w7")}</b> ${tr("w7none")}</li>`;
+    else if (s.voltage <= 1100) {
+      const w = scWithstand(res), ne = S.lang === "ne" && !eng();
+      h += `<li><b>${tr("w7")}</b> ${ne
+        ? `${S.trafoKva} kVA ट्रान्सफर्मरले तारको सुरुमा ${fmt(w.isc, 1)} kA सम्म दिन्छ। यो तारले (k·S)² = (${w.k} × ${c.size})² = ${fmt(w.allow / 1000, 0)} kA²s सहन्छ, त्यसैले फल्ट ${fmtMs(w.tMs)} ms भित्र कट्नुपर्छ। ब्रेकरको डाटाशिटको I²t यसभन्दा कम छ कि जाँच्नुहोस्।`
+        : `A ${S.trafoKva} kVA transformer gives up to ${fmt(w.isc, 1)} kA at the cable start. This cable withstands (k·S)² = (${w.k} × ${c.size})² = <b>${fmt(w.allow / 1000, 0)} kA²s</b>, so the fault must clear within <b>${fmtMs(w.tMs)} ms</b>. Check the breaker's datasheet let-through I²t is below that. To size the cable on a chosen fault level and time instead, turn on "Check short-circuit withstand" in Engineer mode.`}</li>`;
+    }
     h += `<li><b>${tr("w8")} ${c.size} mm²</b> (${tr("w8b")} ${fmt(c.theta, 0)} °C).</li>`;
   }
   const hasStart = res.candidates.some((x) => x.vdStartPct != null), hasSc = res.candidates.some((x) => x.scMin != null);
@@ -2071,7 +2092,6 @@ const RT = {
     w3hv: "Sizing basis.", w3hvb: "HV cables are sized on the load current; the relay is then set at or below the cable's rating.",
     w4: "Rating factors for the chosen size:", tFactor: "Factor", tBasis: "Basis", tValue: "Value", tProduct: "all factors multiplied",
     w5: "Required table rating", parallel: "cables in parallel", w6: "Voltage drop:", w7: "Short circuit:",
-    w7none: "not checked. A fast MCB/MCCB limits the fault energy for final circuits; check it for transformer feeders and fuse-protected circuits.",
     w8: "Smallest size passing every check:", w8b: "estimated conductor temperature at full load",
     tried: "Every cable size tested",
     triedLead: "The calculator tries every standard size from the smallest up and keeps the first one that passes all checks. Red numbers show which check a size fails.",
@@ -2098,7 +2118,6 @@ const RT = {
     w3hv: "नाप्ने आधार।", w3hvb: "HV तार भारको करेन्टमा नापिन्छ; रिले तारको क्षमताभन्दा कममा सेट गरिन्छ।",
     w4: "छानिएको साइजका रेटिङ फ्याक्टर:", tFactor: "फ्याक्टर", tBasis: "आधार", tValue: "मान", tProduct: "सबै फ्याक्टरको गुणनफल",
     w5: "चाहिने तालिका रेटिङ", parallel: "समानान्तर तार", w6: "भोल्टेज ड्रप:", w7: "सर्ट सर्किट:",
-    w7none: "जाँच गरिएन। छिटो काट्ने MCB/MCCB ले फल्टको ऊर्जा सीमित गर्छ; ट्रान्सफर्मरबाट आउने वा फ्यूज भएको सर्किटमा जाँच्नुहोस्।",
     w8: "सबै जाँच पास गर्ने सबैभन्दा सानो साइज:", w8b: "पूरा भारमा तारको अनुमानित तापक्रम",
     tried: "जाँचिएका सबै साइज",
     triedLead: "सबैभन्दा सानो साइजदेखि माथि हरेक मानक साइज जाँचिन्छ र सबै जाँच पास गर्ने पहिलो साइज छानिन्छ। रातो अंकले कुन जाँचमा फेल भयो देखाउँछ।",
@@ -2166,6 +2185,32 @@ const UI = {
       "चलाउनुअघि ५०० V टेस्टरले इन्सुलेसन जाँच (कम्तीमा १ MΩ) र RCD को टेस्ट बटन थिच्नुहोस्।"] },
 };
 Object.assign(UI.en, RT.en); Object.assign(UI.ne, RT.ne);
+
+// Short-circuit strings. Fault level comes from the transformer size (IS 1180: 4.5 % impedance up to 630 kVA).
+const TRAFO_KVA = [50, 100, 200, 315, 500];
+Object.assign(UI.en, {
+  trafo: "Transformer feeding your supply",
+  trafoHint: "Read it on the transformer nameplate; NEA mostly uses 50, 100 and 200 kVA. If unsure, keep 200 kVA (the safe choice).",
+  scTitle: "Short circuit", scFault: "Fault at the cable start", scAllow: "Energy this cable can take, (k·S)²",
+  scTime: "Longest time the fault may last",
+  scRule: "Fit a breaker or fuse that breaks at least {kA} kA and whose datasheet let-through energy (I²t) at that fault is below {E} kA²s. Fast, current-limiting MCBs and HRC fuses usually clear well within this; a time-delayed device may not.",
+  scNote: "Taken at the transformer terminals (infinite source, 4.5 % impedance). Cable length lowers it, so this is an upper bound.",
+});
+Object.assign(UI.ne, {
+  trafo: "तपाईंलाई सप्लाई दिने ट्रान्सफर्मर",
+  trafoHint: "ट्रान्सफर्मरको नेमप्लेटमा हेर्नुहोस्; NEA ले प्रायः ५०, १०० र २०० kVA प्रयोग गर्छ। थाहा नभए २०० kVA नै राख्नुहोस् (सुरक्षित)।",
+  scTitle: "सर्ट सर्किट", scFault: "तारको सुरुमा फल्ट करेन्ट", scAllow: "यो तारले सहने ऊर्जा, (k·S)²",
+  scTime: "फल्ट रहन सक्ने अधिकतम समय",
+  scRule: "कम्तीमा {kA} kA काट्न सक्ने ब्रेकर वा फ्यूज राख्नुहोस्, र यो फल्टमा डाटाशिटको let-through ऊर्जा (I²t) {E} kA²s भन्दा कम हुनुपर्छ। छिटो काट्ने, करेन्ट सीमित गर्ने MCB र HRC फ्यूजले प्रायः यसभित्रै काट्छ; ढिलो काट्ने उपकरणले नसक्न सक्छ।",
+  scNote: "ट्रान्सफर्मरको टर्मिनलमा (अनन्त स्रोत, ४.५ % इम्पिडेन्स) लिइएको। तार लामो भए यो घट्छ, त्यसैले यो माथिल्लो सीमा हो।",
+});
+
+/** Prospective fault at the cable start and what the chosen cable can take (LV, from the transformer size). */
+function scWithstand(res) {
+  const isc = lvFaultKA(+S.trafoKva || 200);
+  return { isc, ...faultWithstand(res.spec.insulation, res.spec.material, res.chosen.size, isc) };
+}
+const fmtMs = (ms) => fmt(ms, ms < 10 ? 1 : 0);
 const tr = (k) => (eng() ? UI.en : UI[S.lang] || UI.en)[k] ?? UI.en[k] ?? k;
 const L2 = (o) => (S.lang === "ne" && o.ne ? o.ne : o.en);
 const STEP_EN = ["What the cable will power", "Where the cable runs", "The cable", "Checks"];
@@ -2249,6 +2294,7 @@ function renderSimple() {
   h += row(sel("region", tr("region"), [...Object.entries(NP_REGIONS).map(([k, r]) => [k, L2(r)]), ["custom", tr("custom")]], { struct: true }));
   if (S.region === "custom") h += row(num("airTemp", tr("airTemp"), { suffix: "°C" }), num("groundTemp", tr("groundTemp"), { suffix: "°C" }));
   h += row(num("lengthM", tr("lengthM"), { suffix: "m" }), num("groupCount", tr("groupCount"), { step: 1, min: 1 }));
+  if (job.level === "LV") h += row(sel("trafoKva", tr("trafo"), TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: tr("trafoHint") }));
   $("#route-fields").innerHTML = h;
 
   $("#cable-fields").innerHTML = row(sel("material", tr("material"), [["cu", tr("cu")], ["al", tr("al")]], { struct: true })) + explainHtml("cores", lang);
@@ -2292,7 +2338,7 @@ function cableOd(res) {
 }
 function bomCtx(res, sm) {
   const kW = S.job === "pump" && S.motorBasis === "hp" ? +S.hp * 0.7457 : null;
-  return { res, kind: sm.t.kind, S, route: S.route, od: cableOd(res), kW, starter: S.starter, pumpType: S.pumpType };
+  return { res, kind: sm.t.kind, S, route: S.route, od: cableOd(res), kW, starter: S.starter, pumpType: S.pumpType, isc: lvFaultKA(+S.trafoKva || 200) };
 }
 const COMP_MAP = [[/MCCB/, "mccb"], [/MCB/, "mcb"], [/RCD|RCCB/, "rccb"], [/isolating/i, "isolator"], [/Changeover/, "changeover"], [/SPD/, "spd"],
   [/Distribution board/, "db"], [/HRC/, "hrc-fuse"], [/starter/i, "dol-starter"], [/capacitor/i, "capacitor"], [/lugs/i, "lug"], [/glands/i, "gland"],
@@ -2315,6 +2361,15 @@ function renderSimpleResult(res, sm) {
     <dt>${tr("vNom")} ${fmt(v.nominal, 0)} V</dt><dd>${fmt(v.atLoad, 0)} V</dd>
     <dt>${tr("vLow")} (${fmt(v.low, 0)} V)</dt><dd>${fmt(v.lowAtLoad, 0)} V</dd></dl>
     ${v.unit !== "V" ? `<p class="hint">${tr("ph3note")}</p>` : ""}${bad ? `<p class="err">${tr("vBad")}</p>` : ""}</div>`;
+  if (sm.job.level === "LV") {
+    const w = scWithstand(res);
+    h += `<div class="volt"><h3 class="rh">${ic("shield", 18)} ${tr("scTitle")}</h3><dl class="kv">
+      <dt>${tr("scFault")} (${S.trafoKva} kVA)</dt><dd>${fmt(w.isc, 1)} kA</dd>
+      <dt>${tr("scAllow")}</dt><dd>${fmt(w.allow / 1000, 0)} kA²s</dd>
+      <dt>${tr("scTime")}</dt><dd>${fmtMs(w.tMs)} ms</dd></dl>
+      <p class="hint">${tr("scRule").replace("{kA}", Math.ceil(w.isc)).replace("{E}", fmt(w.allow / 1000, 0))}</p>
+      <p class="hint">${tr("scNote")}</p></div>`;
+  }
   h += renderBom(sm.job.level === "HV" ? bomHv({ res, kva: +S.kva, kv: Number(S.hvKv) }) : bomFor(bomCtx(res, sm)));
   const sm1 = smallerSize(res);
   if (sm1 && sm1.why.length) h += `<p class="smaller">${ic("alert", 16)} <b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;

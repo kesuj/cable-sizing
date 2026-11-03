@@ -3,7 +3,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 import { DATA } from "../src/data.js";
-import { loadCurrent, voltageDrop, minSizeShortCircuit, kValue, nextDevice, interp,
+import { loadCurrent, voltageDrop, minSizeShortCircuit, kValue, faultWithstand, nextDevice, interp,
   tempFactorFormula, earthConductorSize } from "../src/core.js";
 import { makeIsLv } from "../src/adapters/is_lv.js";
 import { sizeConductor } from "../src/size.js";
@@ -49,6 +49,13 @@ test("short-circuit minimum size and k values", () => {
   assert.equal(kValue("XLPE", "cu", 95), 143);
   assert.equal(kValue("PVC", "al", 400), 68);
   near(minSizeShortCircuit(15, 0.2, 94), 71.36);
+});
+
+test("fault withstand: 6 mm² Cu XLPE at 6.4 kA", () => {
+  const w = faultWithstand("XLPE", "cu", 6, 6.4);
+  assert.equal(w.k, 143);
+  near(w.allow, 736164, 1);          // (143 × 6)² A²s
+  near(w.tMs, 17.97, 0.05);          // 736164 / 6400² = 17.97 ms
 });
 
 test("earth conductor table 54.2", () => {

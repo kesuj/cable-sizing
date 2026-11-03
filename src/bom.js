@@ -84,14 +84,21 @@ export function bomFor(ctx) {
 
   // --- protection -------------------------------------------------------------------------------
   const poles = sys === "1ph" ? "DP" : isMotor ? "TP" : "TPN";
-  if (In <= 63) {
+  // Prospective fault at the board (transformer terminals, infinite source): MCBs reach 10 kA (catalogue), so above that an MCCB is needed.
+  const isc = ctx.isc ?? 6;
+  const icu = [18, 25, 36, 50, 70].find((k) => k >= isc) ?? 70; // ABB XT1 Icu ladder at 415 V
+  if (In <= 63 && isc > 10) {
+    add(B("Moulded case circuit breaker (MCCB)", "MCCB (मोल्डेड केस सर्किट ब्रेकर)"), `rated ${In} A, ${sys === "1ph" ? "2P" : poles === "TP" ? "3P" : "4P"}, IEC 60947-2, Icu ≥ ${icu} kA`, 1,
+      B(`The fault here can reach ${isc.toFixed(1)} kA, above the 10 kA of a miniature breaker, so a moulded-case breaker is fitted (breaking capacity must exceed the fault level, SP 30).`,
+        `यहाँ फल्ट ${isc.toFixed(1)} kA सम्म पुग्न सक्छ, जुन MCB को १० kA भन्दा बढी हो; त्यसैले MCCB राख्नुहोस्।`));
+  } else if (In <= 63) {
     const curve = kind === "resistive" ? "B" : isMotor && (ctx.kW ?? 0) > 3.7 && ctx.starter === "dol" ? "D" : "C";
-    add(B("Miniature circuit breaker (MCB)", "MCB (मिनिएचर सर्किट ब्रेकर)"), `${In} A ${poles}, ${curve}-curve, IS/IEC 60898-1, Icn ≥ 6 kA (10 kA within ~50 m of a 250 kVA+ transformer)`, 1,
+    add(B("Miniature circuit breaker (MCB)", "MCB (मिनिएचर सर्किट ब्रेकर)"), `${In} A ${poles}, ${curve}-curve, IS/IEC 60898-1, Icn ≥ ${isc <= 6 ? 6 : 10} kA`, 1,
       B(`Protects the cable: ${In} A ≤ cable rating. Curve ${curve}: ${curve === "B" ? "3–5 × In trip, heaters/lights" : curve === "C" ? "5–10 × In, motors/compressors/general" : "10–20 × In, heavy starting"} (CPWD Table 4). Breaking capacity must exceed the fault level where it is fitted (SP 30).`,
         `तार जोगाउँछ। ${curve}-कर्भ: ${curve === "B" ? "हिटर/बत्ती" : curve === "C" ? "मोटर/कम्प्रेसर/सामान्य" : "धेरै सुरु करेन्ट"}। फल्ट लेभलभन्दा बढी ब्रेकिङ क्षमता चाहिन्छ।`));
   } else {
     const frame = next(MCCB_FRAMES, In);
-    add(B("Moulded case circuit breaker (MCCB)", "MCCB (मोल्डेड केस सर्किट ब्रेकर)"), `${frame} A frame, set ${In} A, ${sys === "1ph" ? "2P" : poles === "TP" ? "3P" : "4P"}, IEC 60947-2, Icu ≥ 25 kA (36 kA near a 630 kVA+ transformer)`, 1,
+    add(B("Moulded case circuit breaker (MCCB)", "MCCB (मोल्डेड केस सर्किट ब्रेकर)"), `${frame} A frame, set ${In} A, ${sys === "1ph" ? "2P" : poles === "TP" ? "3P" : "4P"}, IEC 60947-2, Icu ≥ ${icu} kA`, 1,
       B("Above 63 A an MCB is not available; an MCCB with thermal setting at the cable's breaker rating protects it (IEC 60947-2: trips at 1.30 × In).", "६३ A भन्दा माथि MCB हुँदैन; MCCB लाई तारको रेटिङमा सेट गर्नुहोस्।"));
   }
 

@@ -72,6 +72,14 @@ export function minSizeShortCircuit(faultKA, timeS, k) {
   return (faultKA * 1000 * Math.sqrt(timeS)) / k;
 }
 
+/** What the chosen conductor can take in a fault (IEC 60364-4-43 §434.5.2): allowable energy (k·S)² in A²s,
+ *  and the longest time (ms) a fault of iscKA may last before the conductor passes its limit temperature. */
+export function faultWithstand(insulation, material, size, iscKA) {
+  const k = kValue(insulation, material, size);
+  const allow = (k * size) ** 2;
+  return { k, allow, tMs: (allow / (iscKA * 1000) ** 2) * 1000 };
+}
+
 /** Adiabatic k (A·√s/mm²) — IEC 60364-5-54 Table A.54.2/A.54.3, IEC 60364-4-43 Table 43A. */
 export function kValue(insulation, material, size) {
   const cu = material === "cu";

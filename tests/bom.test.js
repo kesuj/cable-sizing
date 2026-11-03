@@ -30,3 +30,13 @@ test("house main BOM contains Nepal Rule 59 isolator, RCCB, SPD and earthing", (
   const items = bomFor({ res, kind: "main", S: {}, route: "buried", od: 16 }).map((x) => x.item.en);
   for (const w of ["Main isolating switch", "RCCB at the main board", "Surge protective device (SPD)", "Earth electrode", "Cable glands, double compression"]) assert.ok(items.includes(w), w);
 });
+
+test("breaker follows the fault level: 6.4 kA needs Icn 10 kA, 16 kA needs an MCCB with Icu 18 kA", () => {
+  const res = { spec: { system: "1ph", cores: "2", material: "cu", armoured: true, method: "ground", lengthM: 40 }, current: { I: 30, In: 32 },
+    chosen: { size: 6 }, runs: 1, earthSize: 6 };
+  const first = (isc) => bomFor({ res, kind: "main", S: {}, route: "buried", od: 16, isc })[0];
+  assert.match(first(6.4).spec, /Icn ≥ 10 kA/);
+  assert.match(first(3.2).spec, /Icn ≥ 6 kA/);
+  assert.equal(first(16).item.en, "Moulded case circuit breaker (MCCB)");
+  assert.match(first(16).spec, /Icu ≥ 18 kA/);
+});
