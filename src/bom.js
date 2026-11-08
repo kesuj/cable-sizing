@@ -69,6 +69,8 @@ export const lvFaultKA = (kva, z = 0.045) => kva / (Math.sqrt(3) * 0.4 * z) / 10
  * Build the BOM. ctx: { kind, job answers (S), route, res (sizeConductor result), od, phases, std }
  * Returns [{ item:{en,ne}, spec, qty, why:{en,ne} }]
  */
+import { mcbCurve, spdSpec } from "./protection.js";
+
 export function bomFor(ctx) {
   const { res, kind, S, route } = ctx;
   const s = res.spec, c = res.chosen;
@@ -92,7 +94,7 @@ export function bomFor(ctx) {
       B(`The fault here can reach ${isc.toFixed(1)} kA, above the 10 kA of a miniature breaker, so a moulded-case breaker is fitted (breaking capacity must exceed the fault level, SP 30).`,
         `यहाँ फल्ट ${isc.toFixed(1)} kA सम्म पुग्न सक्छ, जुन MCB को १० kA भन्दा बढी हो; त्यसैले MCCB राख्नुहोस्।`));
   } else if (In <= 63) {
-    const curve = kind === "resistive" ? "B" : isMotor && (ctx.kW ?? 0) > 3.7 && ctx.starter === "dol" ? "D" : "C";
+    const curve = mcbCurve({ kind, kW: ctx.kW ?? 0, starter: ctx.starter });
     add(B("Miniature circuit breaker (MCB)", "MCB (मिनिएचर सर्किट ब्रेकर)"), `${In} A ${poles}, ${curve}-curve, IS/IEC 60898-1, Icn ≥ ${isc <= 6 ? 6 : 10} kA`, 1,
       B(`Protects the cable: ${In} A ≤ cable rating. Curve ${curve}: ${curve === "B" ? "3–5 × In trip, heaters/lights" : curve === "C" ? "5–10 × In, motors/compressors/general" : "10–20 × In, heavy starting"} (CPWD Table 4). Breaking capacity must exceed the fault level where it is fitted (SP 30).`,
         `तार जोगाउँछ। ${curve}-कर्भ: ${curve === "B" ? "हिटर/बत्ती" : curve === "C" ? "मोटर/कम्प्रेसर/सामान्य" : "धेरै सुरु करेन्ट"}। फल्ट लेभलभन्दा बढी ब्रेकिङ क्षमता चाहिन्छ।`));
@@ -136,8 +138,12 @@ export function bomFor(ctx) {
       B("30 mA for shock protection on sockets and bathrooms; 100–300 mA for the whole installation (CPWD / SP 30). Indian RCCBs go up to 125 A.", "सकेट र बाथरुममा ३० mA; पूरै घरका लागि १००–३०० mA।"));
     add(B("Main isolating switch", "मुख्य आइसोलेटिङ स्विच"), `${next([32, 40, 63, 80, 100, 125, 160, 200, 250, 315, 400, 630], In)} A ${poles}, AC-22 (IEC 60947-3)`, 1,
       B("Nepal Electricity Rules 2050, Rule 59: the consumer must have an isolating switch near the meter. AC-22 switches mixed loads.", "विद्युत नियमावली २०५०, नियम ५९: मिटर नजिक आइसोलेटिङ स्विच अनिवार्य।"));
-    add(B("Surge protective device (SPD)", "सर्ज प्रोटेक्टर (SPD)"), "Type 2, Uc 275 V, In 20 kA / Imax 40 kA, Up ≤ 1.5 kV, back-up fuse ≤ 125 A gG", sys === "1ph" ? 2 : 4,
-      B("SP 30 requires an SPD in main boards; Nepal has frequent lightning (Rule 56). One pole per live conductor plus N–PE.", "बिजुली चम्किने भएकाले मुख्य बोर्डमा SPD राख्नुहोस्।"));
+    const spd = spdSpec({ exposure: ctx.exposure || "medium", lightningRod: !!ctx.lightningRod });
+    add(B("Surge protective device (SPD)", "सर्ज प्रोटेक्टर (SPD)"),
+      `${spd.type}, Uc ≥ ${spd.ucMinV} V (catalogue 275 to 350 V), Up ≤ ${spd.upKV} kV, In ≥ ${spd.inKA} kA, Imax ${spd.imaxKA} kA, with the maker's matching back-up breaker or fuse; leads under ${spd.leadMaxCm} cm and at least ${spd.leadMinMm2} mm² copper`,
+      sys === "1ph" ? 2 : 4,
+      B(`Type 2 at the main board (EIG chapter J); Imax ${spd.imaxKA} kA suits this site's lightning exposure (20 low, 40 medium, 65 high). Add a second SPD near sensitive equipment more than ${spd.secondSpdBeyondM} m of cable away. Nepal Rule 56 puts lightning protection on the licensee, but SP 30 asks for an SPD in main boards.`,
+        `मुख्य बोर्डमा Type 2 SPD (EIG अध्याय J); यो ठाउँको चट्याङ जोखिमअनुसार Imax ${spd.imaxKA} kA। संवेदनशील उपकरण ${spd.secondSpdBeyondM} m भन्दा टाढा भए नजिकै दोस्रो SPD राख्नुहोस्।`));
     add(B("Changeover switch (only if you have a generator)", "चेन्जओभर स्विच (जेनेरेटर भए मात्र)"), `${next([32, 63, 100, 125, 200, 250, 400, 630], In)} A ${poles === "DP" ? "2P" : "4P"}`, 1,
       B("Nepal Electricity Rules 2050, Rule 57: a generator must connect through a changeover switch so it can never feed back into the NEA line.", "नियम ५७: जेनेरेटर चेन्जओभर स्विचबाट मात्र जोड्नुहोस्।"));
     add(B("Distribution board", "डिस्ट्रिब्युसन बोर्ड"), `${sys === "1ph" ? "single-phase" : "TPN"} DB with spare ways, IP42 indoor / IP54 outdoor`, 1, B("Only MCB/MCCB boards — no rewirable fuses (CPWD 3.3.2). Leave spare ways for growth.", "MCB बोर्ड मात्र; भविष्यका लागि खाली ठाउँ राख्नुहोस्।"));

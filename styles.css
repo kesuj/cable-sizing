@@ -475,3 +475,12 @@ input[type=number], select { border-radius: 8px; border-bottom-width: 1px; }
 .deploy .btn { padding: 10px 16px; font-size: 14px; }
 .foot a.btn { color: var(--primary-ink); text-decoration: none; }
 .foot a.btn.ghost { color: var(--ink); }
+
+/* load list table */
+table.loads td { padding: 6px 8px; }
+table.loads select, table.loads input { min-height: 38px; padding: 6px 8px; }
+table.loads input { width: 92px; }
+table.loads select { min-width: 180px; }
+.icon-btn { width: 36px; height: 36px; border-radius: 8px; border: 1px solid var(--rule); background: var(--sheet); color: var(--graphite); cursor: pointer; display: grid; place-items: center; }
+.icon-btn:hover { color: var(--fail); border-color: var(--fail); }
+.field > .btn { margin-top: var(--s2); justify-self: start; }

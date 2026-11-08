@@ -26,6 +26,10 @@ Live: **https://kesuj.github.io/cable-sizing/**
 * **Overhead / transmission lines** (11, 33, 66, 132 kV, ACSR or AAAC): thermal rating at your site by the
   IEEE 738-2012 heat balance (validated against 156 CEA 2023 / manufacturer ratings within 0.6 %), including
   Nepal's altitude, reactance from phase spacing, voltage drop, losses, and the corona minimum conductor.
+* **Checks from the Electrical Installation Guide 2018**: TT earth-fault check (earth resistance against RCD sensitivity), far-end
+  fault (longest circuit the breaker protects, also in TN), third-harmonic neutral, fault level that depends on the transformer and the
+  distance to it, a load list with ku and ks for a whole building, power factor correction, solar string and DC cable checker,
+  surge protector selection and a before-you-switch-on test list. Method in docs/METHOD.md sections 12 to 17.
 * **What to buy**: a bill of materials with ratings — breaker, RCD, isolator, SPD, starter, overload,
   back-up fuse, capacitor, lugs, glands, conduit/pipe, earthing; for HV the RMU/VCB, HV fuses, arresters,
   CTs, termination kits and the transformer LV breaker; for lines the poles, insulators, clamps and arresters.
@@ -59,7 +63,7 @@ Full method with formulas and clauses: [docs/METHOD.md](docs/METHOD.md).
 Regenerate everything: `python scripts/build.py` (needs Python 3 and `openpyxl` only for re-reading the Excel file).
 
 ## Tests
-`npm test` (42 tests) and `node scripts/validate_overhead.mjs` (156 published line ratings) — hand-checked worked examples (LV house feeder, motor pump, long
+`npm test` (70+ tests) and `node scripts/validate_overhead.mjs` (156 published line ratings) — hand-checked worked examples (LV house feeder, motor pump, long
 run, parallel runs, Terai temperatures, 11 kV and 33 kV feeders) plus data self-checks. Worked
 examples are explained in [docs/WORKED_EXAMPLES.md](docs/WORKED_EXAMPLES.md).
 
@@ -73,6 +77,8 @@ src/adapters/               data sources: IS LV, IS HV, IEC 60364-5-52
 src/jobs.js                 Simple-mode jobs: plain answers -> engineering input, protection, voltage at load
 src/explain.js              "?" explainers (EN/NE) and line figures
 src/overhead.js             IEEE 738 ampacity, reactance, line drop, line sizing
+src/protection.js           earth fault, far-end fault, harmonics, SPD, tests before switching on
+src/planning.js             building demand, power factor correction, solar strings
 src/bom.js                  bill of materials rules (SP 30, CPWD, IS 3043, IS 1255, maker tables)
 src/icons.js                Lucide-style icons
 src/app.js  src/xsec.js     UI and the to-scale cable cross-section

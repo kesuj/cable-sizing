@@ -5,6 +5,8 @@ import { round, kValue, faultWithstand, faultAtDistance, interp } from "./core.j
 import { drawCable, drawStrands } from "./xsec.js";
 import { sizeLine, LINE_DEFAULTS, stClair } from "./overhead.js";
 import { bomFor, bomHv, bomLine } from "./bom.js";
+import { ttCheck, disconnectTime, mcbCurve, PRE_ENERGISE } from "./protection.js";
+import { LOAD_TYPES, pfCorrection, pvStrings } from "./planning.js";
 import { DATA } from "./data.js";
 import { JOBS, ROUTES, REGIONS as NP_REGIONS, NEA_METERS, STARTERS, PUMPS, EV, routeFor, coresFor, protectionFor, voltageAtLoad, smallerSize } from "./jobs.js";
 import { explainHtml, routePic, houseMap } from "./explain.js";
@@ -40,9 +42,10 @@ const DEFAULT_STATE = {
   method: "ground", groupCount: 1, spacing: "touching", formation: "flat", racks: 1, lengthM: 40,
   material: "cu", insulation: "XLPE", cores: "4", armoured: true,
   vdLimitPct: 5, vdStartLimitPct: 15, faultOn: false, faultBasis: "kat", faultKa: 10, faultT: 0.1, i2t: 40000, sizeOn: "device", trafoKva: 200, supplyM: 0, supplyMm2: 70,
+  earthing: "TT", earthRa: 30, h3: 0, curve: "C", tripOn: true,
   hvKv: 11, hvEarth: "E", hvSource: "polycab", minSize: "",
   lang: "en", job: "house", route: "buried",
-  ...Object.values(JOBS).reduce((o, j) => ({ ...o, ...j.defaults }), {}), ...JOBS.house.defaults, hvKv: "11", faultKa: 10, faultT: 0.1,
+  ...Object.values(JOBS).reduce((o, j) => ({ ...o, ...j.defaults }), {}), ...JOBS.house.defaults, hvKv: "11", faultKa: 10, faultT: 0.1, earthing: "TT", earthRa: 30, h3: 0, curve: "C", tripOn: true,
 };
 
 let S = { ...DEFAULT_STATE };
@@ -79,7 +82,9 @@ const check = (name, label, struct = true) =>
 const row = (...f) => `<div class="row">${f.join("")}</div>`;
 
 // ---------- render form ----------
+function showSteps() { document.querySelectorAll("#s2, #s3").forEach((n) => { const sec = n.closest("section"); if (sec) sec.hidden = false; }); }
 function renderForm() {
+  showSteps();
   const A = adapter();
   const hv = S.level === "HV";
   for (const b of document.querySelectorAll(".seg button")) {
@@ -152,6 +157,10 @@ function renderForm() {
   h = row(num("vdLimitPct", "Allowed voltage drop", { suffix: "%", hint: hv ? "NEA planning uses 5 % at the far end of an 11 kV or 33 kV feeder." : "5 % from the meter to the farthest point; 3 % if lights are sensitive." }));
   if (!hv) h += row(sel("trafoKva", UI.en.trafo, TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: UI.en.trafoHint }),
     num("supplyM", UI.en.supplyM, { suffix: "m", hint: UI.en.supplyHint }), sel("supplyMm2", UI.en.supplyMm2, SUPPLY_MM2.map((k) => [k, `${k} mm²`])));
+  if (!hv) h += row(sel("earthing", UI.en.earthing, [["TT", UI.en.earthTT], ["TN", UI.en.earthTN]], { hint: UI.en.earthingHint }), num("earthRa", UI.en.earthRa, { suffix: "Ω", hint: UI.en.earthRaHint }));
+  if (!hv) h += row(num("h3", "Third harmonic share of the phase current", { suffix: "%", hint: "0 for no electronics. Above 15 % the neutral is full size and the cable is derated (EIG Fig. G19)." }),
+    sel("curve", "Breaker curve", [["B", "B (trips at 3 to 5 × In)"], ["C", "C (5 to 10 × In)"], ["D", "D (10 to 20 × In)"]]),
+    check("tripOn", "Check that the breaker trips for a fault at the far end", false));
   h += check("faultOn", hv || eng() ? "Check short-circuit withstand" : "Check short-circuit withstand (needed for a feeder straight from a transformer, or one protected by fuses)");
   if (!hv && S.faultOn) h += row(sel("faultBasis", "Fault data", [["kat", "Fault current and clearing time"], ["i2t", "Breaker/fuse let-through energy I²t (fast devices)"]], { struct: true,
     hint: "Below 0.1 s a current-limiting MCB, MCCB or HRC fuse lets through much less energy than I²·t. Take I²t from the device catalogue." }));
@@ -224,12 +233,21 @@ function buildInput() {
   else if (inp.material === "al") { inp.minSize = 16; inp.minSizeRule = "aluminium in fixed installations, IEC 60364-5-52 Table 52.2"; }
   else if (A.id === "IS-LV") { inp.minSize = 4; inp.minSizeRule = "power circuits, Nepal NBC 207 (2.5 mm² for lighting only)"; }
   else { inp.minSize = 1.5; inp.minSizeRule = "copper power and lighting circuits, IEC 60364-5-52 Table 52.2"; }
+  protectionInputs(inp, "main", 0, "dol");
   return { inp, notes };
 }
 
 // ---------- results ----------
 let last = null;
 function compute() {
+  const plannerKind = !eng() ? JOBS[S.job]?.kind : null;
+  const fig = document.querySelector(".xsec");
+  if (fig) fig.hidden = plannerKind === "pfc" || plannerKind === "pv";
+  if (plannerKind === "pfc" || plannerKind === "pv") {
+    last = {};
+    try { plannerKind === "pfc" ? renderPfc() : renderPv(); } catch (e) { $("#answer").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
+    return;
+  }
   if (!eng() && JOBS[S.job]?.kind === "line") {
     try { const r = sizeLine(DATA.overhead, lineSpec()); last = { line: r }; renderLineResult(r); }
     catch (e) { $("#answer").innerHTML = `<p class="err">${esc(e.message)}</p>`; }
@@ -258,6 +276,8 @@ const WARN_NE = [
   ["Single-core AC cables", "सिङ्गल-कोर AC केबलमा स्टिल आर्मर हुनु हुँदैन; एल्युमिनियम आर्मर प्रयोग गर्नुहोस्।"],
   ["Cable runs close to", "पूरा भारमा तार आफ्नो अधिकतम तापक्रम नजिक चल्छ।"],
   ["No size up to", "कुनै पनि मानक साइज पुगेन: उच्च भोल्टेज, छोटो बाटो वा तामा प्रयोग गर्नुहोस्।"],
+  ["Third harmonics", "तेस्रो हार्मोनिकले न्युट्रलमा लोड बढाउँछ: न्युट्रल पूरै साइजको छ र तार घटाइएको छ।"],
+  ["With ", "तेस्रो हार्मोनिक १५ % भन्दा बढी हुँदा न्युट्रल पूरै साइजको हुनुपर्छ: ३½-कोर होइन, ४-कोर तार प्रयोग गर्नुहोस्।"],
 ];
 const warnText = (w) => (S.lang === "ne" && !eng() ? (WARN_NE.find(([k]) => w.startsWith(k))?.[1] ?? w) : w);
 
@@ -304,7 +324,7 @@ function renderResult() {
     if (c.scMin != null) h += meter(tr("mFault"), c.scMin, c.size, "mm²", c.pass.shortCircuit);
     const DEC_NE = { "current-carrying capacity": "करेन्ट बोक्ने क्षमता", "voltage drop": "भोल्टेज ड्रप", "motor starting voltage dip": "मोटर सुरु हुँदा भोल्टेज झर्ने", "short-circuit withstand": "सर्ट सर्किट सहने क्षमता", "smallest size in the table": "तालिकाको सबैभन्दा सानो साइज" };
     const ne = S.lang === "ne" && !eng();
-    const dec = res.decidedBy.map((d) => (ne ? (DEC_NE[d] || (d.startsWith("the minimum size rule") ? "न्यूनतम साइजको नियम (NBC 207 / IEC)" : d)) : d));
+    const dec = res.decidedBy.map((d) => (ne ? (DEC_NE[d] || DEC_BOOK_NE[d] || (d.startsWith("the minimum size rule") ? "न्यूनतम साइजको नियम (NBC 207 / IEC)" : d)) : d));
     h += `<p class="decided">${ic("info", 16)}<span>${tr("decided")} <b>${esc(dec.join(ne ? " र " : " and "))}</b>.</span></p>`;
     if (last.simple) h += renderSimpleResult(res, last.simple);
     const allNotes = [...(last.simple ? [] : notes.filter((n) => !n.startsWith("Climate") || !eng())), ...res.warnings.map(warnText)];
@@ -327,6 +347,7 @@ function renderWorking(res, A) {
     h += `<li><b>${tr("w4")}</b><div class="tablewrap"><table><thead><tr><th>${tr("tFactor")}</th><th class="l">${tr("tBasis")}</th><th>${tr("tValue")}</th></tr></thead><tbody>${c.factors.map((f) => `<tr><td>${esc(f.label)}</td><td class="l">${esc(f.basis)}</td><td>${f.value.toFixed(3)}</td></tr>`).join("")}<tr><td><b>k</b></td><td class="l">${tr("tProduct")}</td><td><b>${c.k.toFixed(3)}</b></td></tr></tbody></table></div></li>`;
     h += `<li><b>${tr("w5")}</b> = ${fmt(res.current.basis / res.runs, 1)} A ÷ ${c.k.toFixed(3)} = <b>${fmt(res.current.basis / res.runs / c.k, 1)} A</b>${res.runs > 1 ? ` (${res.runs} × ${tr("parallel")})` : ""}.</li>`;
     h += `<li><b>${tr("w6")}</b> ΔU = ${s.system === "3ph" ? "√3" : "2"} × I × L × (R cos φ + X sin φ) = <b>${fmt(c.vd, 2)} V (${fmt(c.vdPct, 2)} %)</b>.</li>`;
+    if (c.lmax != null) h += `<li><b>${tr("w7min")}</b> Lmax = 0.8·U·S / (ρ·(1 + m)·Ia) = <b>${fmt(c.lmax, 0)} m</b> ≥ ${fmt(s.lengthM, 0)} m (Ia = ${fmt(res.iaTrip, 0)} A, ${S.earthing === "TN" ? "TN" : "TT"}).</li>`;
     if (c.scMin != null && s.fault.i2t) h += `<li><b>${tr("w7")}</b> S ≥ √(I²t) / k = √${s.fault.i2t} ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
     else if (c.scMin != null) h += `<li><b>${tr("w7")}</b> S ≥ I·√t / k = ${s.fault.ka * 1000} A × √${s.fault.timeS} s ÷ ${kValue(s.insulation, s.material, c.size)} = <b>${fmt(c.scMin, 1)} mm²</b>.</li>`;
     else if (s.voltage <= 1100) {
@@ -337,17 +358,17 @@ function renderWorking(res, A) {
     }
     h += `<li><b>${tr("w8")} ${c.size} mm²</b> (${tr("w8b")} ${fmt(c.theta, 0)} °C).</li>`;
   }
-  const hasStart = res.candidates.some((x) => x.vdStartPct != null), hasSc = res.candidates.some((x) => x.scMin != null);
+  const hasStart = res.candidates.some((x) => x.vdStartPct != null), hasSc = res.candidates.some((x) => x.scMin != null), hasLmax = res.candidates.some((x) => x.lmax != null);
   h += `</ol><h3>${ic("table", 20)} ${tr("tried")}</h3><p>${tr("triedLead")}</p>`;
   const cols = [["tSize", "lSize"], ["tTable", "lTable"], ["tK", "lK"], ["tDerated", "lDerated"], ["tNeeds", "lNeeds"], ["tVd", "lVd"],
-    ...(hasStart ? [["tStart", "lStart"]] : []), ...(hasSc ? [["tFault", "lFault"]] : []), ["tResult", "lResult"]];
+    ...(hasStart ? [["tStart", "lStart"]] : []), ...(hasSc ? [["tFault", "lFault"]] : []), ...(hasLmax ? [["tLmax", "lLmax"]] : []), ["tResult", "lResult"]];
   h += `<dl class="legend">${cols.map(([t, l]) => `<dt>${tr(t)}</dt><dd>${tr(l)}</dd>`).join("")}</dl>`;
   h += `<div class="tablewrap"><table><thead><tr>${cols.map(([t], i) => `<th${i === cols.length - 1 ? ' class="l"' : ""}>${tr(t)}</th>`).join("")}</tr></thead><tbody>`;
   const need = res.current.basis / res.runs;
-  const WHYK = { ampacity: "fHot", voltageDrop: "fVd", motorStart: "fStart", shortCircuit: "fFault" };
+  const WHYK = { ampacity: "fHot", voltageDrop: "fVd", motorStart: "fStart", shortCircuit: "fFault", minFault: "fLmax" };
   for (const x of res.candidates) {
     const why = Object.entries(x.pass).filter(([, v]) => !v).map(([k]) => tr(WHYK[k]));
-    h += `<tr class="${x === c ? "chosen" : ""}"><td>${x.size}</td><td>${fmt(x.amp, 0)}</td><td>${x.k.toFixed(3)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.iz, 1)}</td><td>${fmt(need, 1)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.vdPct, 2)}</td>${hasStart ? `<td class="${x.pass.motorStart ? "" : "no"}">${fmt(x.vdStartPct, 1)}</td>` : ""}${hasSc ? `<td class="${x.pass.shortCircuit ? "" : "no"}">${fmt(x.scMin, 1)}</td>` : ""}<td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "✓ " + tr("rChosen") : tr("rPass")) : "✗ " + why.join(", ")}</td></tr>`;
+    h += `<tr class="${x === c ? "chosen" : ""}"><td>${x.size}</td><td>${fmt(x.amp, 0)}</td><td>${x.k.toFixed(3)}</td><td class="${x.pass.ampacity ? "" : "no"}">${fmt(x.iz, 1)}</td><td>${fmt(need, 1)}</td><td class="${x.pass.voltageDrop ? "" : "no"}">${fmt(x.vdPct, 2)}</td>${hasStart ? `<td class="${x.pass.motorStart ? "" : "no"}">${fmt(x.vdStartPct, 1)}</td>` : ""}${hasSc ? `<td class="${x.pass.shortCircuit ? "" : "no"}">${fmt(x.scMin, 1)}</td>` : ""}${hasLmax ? `<td class="${x.pass.minFault ? "" : "no"}">${fmt(x.lmax, 0)}</td>` : ""}<td class="l ${x.ok ? "yes" : "no"}">${x.ok ? (x === c ? "✓ " + tr("rChosen") : tr("rPass")) : "✗ " + why.join(", ")}</td></tr>`;
   }
   h += `</tbody></table></div><p><small>${tr("dataSrc")} ${esc(A.title)}. <a href="guide.html">${tr("guideLink")}</a></small></p>`;
   return h;
@@ -490,12 +511,7 @@ Object.assign(UI.ne, {
 });
 
 /** Prospective fault at the cable start and what the chosen cable can take (LV, from the transformer size). */
-function lvFault(res) {
-  const mm2 = +S.supplyMm2 || 70;
-  const row = DATA.lvIs.tables.XLPE["4"].rows.find((r) => r.size === mm2);
-  return faultAtDistance({ kva: +S.trafoKva || 200, lengthM: Math.max(0, +S.supplyM || 0), rOhmKm: row?.rdc20.al ?? 0.64,
-    xOhmKm: interp(DATA.lvReactance.XLPE.multi, mm2).value, singlePhase: res.spec.system === "1ph" });
-}
+function lvFault(res) { return lvFaultSys(res.spec.system); }
 function scWithstand(res) {
   const isc = lvFault(res);
   return { isc, ...faultWithstand(res.spec.insulation, res.spec.material, res.chosen.size, isc) };
@@ -524,7 +540,10 @@ const ICONS = {
   hv: '<path d="M24 4 L15 44 M24 4 L33 44 M16 36 H32 M19 24 H29"/><path d="M8 11 H40" stroke-width="2.4"/><circle cx="10" cy="15" r="1.6" class="fa"/><circle cx="24" cy="15" r="1.6" class="fa"/><circle cx="38" cy="15" r="1.6" class="fa"/>',
 };
 const icon = (k) => `<svg class="jobart" viewBox="0 0 48 48" width="44" height="44" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${ICONS[k] || ""}</svg>`;
-const ROUTE_HL = { house: "main", heater: "heater", ac: "heater", pump: "pump", ev: "ev", shop: "main", hvfeed: "service" };
+ICONS.building = '<rect x="10" y="8" width="28" height="34" class="fa"/><path d="M16 14h4M28 14h4M16 22h4M28 22h4M16 30h4M28 30h4"/><rect x="21" y="34" width="6" height="8"/>';
+ICONS.pfc = '<path d="M4 24H20M28 24H44"/><path d="M20 12V36M28 12V36" stroke-width="2.6"/><path d="M34 12l4-4M38 8h-4M38 8v4" stroke-width="1.6"/>';
+ICONS.pv = '<path d="M8 38 L15 15 H41 L34 38 Z" class="fa"/><path d="M11 27 H37 M23 15 L19 38 M32 15 L28 38"/><circle cx="12" cy="9" r="3.5"/><path d="M12 2v2M5 9h2M19 9h-2" stroke-width="1.4"/>';
+const ROUTE_HL = { building: "main", house: "main", heater: "heater", ac: "heater", pump: "pump", ev: "ev", shop: "main", hvfeed: "service" };
 
 function renderSimple() {
   const job = JOBS[S.job] || JOBS.house;
@@ -560,10 +579,46 @@ function renderSimple() {
     lineCct: () => sel("lineCct", S.lang === "ne" ? "सर्किट संख्या" : "Number of circuits", [["1", S.lang === "ne" ? "एक सर्किट" : "Single circuit"], ["2", S.lang === "ne" ? "डबल सर्किट (भार बाँडिन्छ)" : "Double circuit (load shared)"]]),
     linePf: () => num("linePf", tr("linePf"), { step: 0.01 }),
     lineType: () => sel("lineType", tr("lineType"), [["acsr", tr("acsr")], ["aaac", tr("aaac")]]),
+    loadList: () => loadTable(),
+    growthPct: () => num("growthPct", tr("growthPct"), { suffix: "%" }),
+    ksOverride: () => num("ksOverride", tr("ksOverride"), { step: 0.05 }),
+    pfcKw: () => num("pfcKw", tr("pfcKw"), { suffix: "kW" }),
+    pfcPf1: () => num("pfcPf1", tr("pfcPf1"), { step: 0.01 }),
+    pfcPf2: () => num("pfcPf2", tr("pfcPf2"), { step: 0.01 }),
+    pfcMode: () => sel("pfcMode", tr("pfcMode"), [["global", tr("pfcGlobal")], ["motor", tr("pfcMotor")]], { struct: true }),
+    pfcIo: () => num("pfcIo", tr("pfcIo"), { suffix: "A" }),
+    pfcNll: () => sel("pfcNll", tr("pfcNll"), [[0, tr("pfcN0")], [15, tr("pfcN1")], [30, tr("pfcN2")]]),
+    pvVoc: () => num("pvVoc", tr("pvVoc"), { suffix: "V" }), pvVmpp: () => num("pvVmpp", tr("pvVmpp"), { suffix: "V" }),
+    pvIsc: () => num("pvIsc", tr("pvIsc"), { suffix: "A" }), pvCoef: () => num("pvCoef", tr("pvCoef"), { step: 0.01 }),
+    pvVinv: () => num("pvVinv", tr("pvVinv"), { suffix: "V" }), pvVmin: () => num("pvVmin", tr("pvVmin"), { suffix: "V" }),
+    pvIinv: () => num("pvIinv", tr("pvIinv"), { suffix: "A" }), pvStrings: () => num("pvStrings", tr("pvStrings"), { step: 1, min: 1 }),
+    pvModules: () => num("pvModules", tr("pvModules"), { step: 1 }), pvModuleW: () => num("pvModuleW", tr("pvModuleW"), { suffix: "W" }),
+    pvInvKW: () => num("pvInvKW", tr("pvInvKW"), { suffix: "kW" }), pvIrm: () => num("pvIrm", tr("pvIrm"), { suffix: "A" }),
+    pvLen: () => num("pvLen", tr("pvLen"), { suffix: "m" }),
   };
-  const fields = job.fields(S).map((f) => F[f]?.() || "");
-  for (let i = 0; i < fields.length; i += 2) h += row(fields[i], fields[i + 1] || "");
+  // the load list needs the full width; every other field goes two to a row
+  let pending = [];
+  const flush = () => { for (let i = 0; i < pending.length; i += 2) h += row(pending[i], pending[i + 1] || ""); pending = []; };
+  for (const f of job.fields(S)) {
+    if (f === "loadList") { flush(); h += row(F[f]()); } else pending.push(F[f]?.() || "");
+  }
+  flush();
   $("#load-fields").innerHTML = h;
+  showSteps();
+  const regionRow = () => {
+    if (!NP_REGIONS[S.region] && S.region !== "custom") S.region = "hills";
+    return row(sel("region", tr("region"), [...Object.entries(NP_REGIONS).map(([k, r]) => [k, L2(r)]), ["custom", tr("custom")]], { struct: true }));
+  };
+  if (job.kind === "pfc") {
+    $("#route-fields").innerHTML = ""; $("#cable-fields").innerHTML = ""; $("#check-fields").innerHTML = "";
+    document.querySelectorAll("#s2, #s3").forEach((n) => { n.closest("section").hidden = true; });
+    return;
+  }
+  if (job.kind === "pv") {
+    $("#route-fields").innerHTML = regionRow(); $("#cable-fields").innerHTML = ""; $("#check-fields").innerHTML = "";
+    document.querySelector("#s3").closest("section").hidden = true;
+    return;
+  }
 
   if (job.kind === "line") {
     if (!NP_REGIONS[S.region] && S.region !== "custom") S.region = "hills";
@@ -584,8 +639,13 @@ function renderSimple() {
   h += row(sel("region", tr("region"), [...Object.entries(NP_REGIONS).map(([k, r]) => [k, L2(r)]), ["custom", tr("custom")]], { struct: true }));
   if (S.region === "custom") h += row(num("airTemp", tr("airTemp"), { suffix: "°C" }), num("groundTemp", tr("groundTemp"), { suffix: "°C" }));
   h += row(num("lengthM", tr("lengthM"), { suffix: "m" }), num("groupCount", tr("groupCount"), { step: 1, min: 1 }));
-  if (job.level === "LV") h += row(sel("trafoKva", tr("trafo"), TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: tr("trafoHint") }),
-    num("supplyM", tr("supplyM"), { suffix: "m", hint: tr("supplyHint") }), sel("supplyMm2", tr("supplyMm2"), SUPPLY_MM2.map((k) => [k, `${k} mm²`])));
+  if (job.level === "LV") {
+    h += row(sel("trafoKva", tr("trafo"), TRAFO_KVA.map((k) => [k, `${k} kVA`]), { hint: tr("trafoHint") }),
+      num("supplyM", tr("supplyM"), { suffix: "m", hint: tr("supplyHint") }), sel("supplyMm2", tr("supplyMm2"), SUPPLY_MM2.map((k) => [k, `${k} mm²`])));
+    h += row(sel("earthing", tr("earthing"), [["TT", tr("earthTT")], ["TN", tr("earthTN")]], { hint: tr("earthingHint") }),
+      num("earthRa", tr("earthRa"), { suffix: "Ω", hint: tr("earthRaHint") }));
+    if (["shop", "building"].includes(S.job) || (S.job === "house" && S.phase === "3ph")) h += row(sel("h3", tr("elec"), [[0, tr("elec0")], [25, tr("elec25")], [40, tr("elec40")]]));
+  }
   $("#route-fields").innerHTML = h;
 
   $("#cable-fields").innerHTML = row(sel("material", tr("material"), [["cu", tr("cu")], ["al", tr("al")]], { struct: true })) + explainHtml("cores", lang);
@@ -613,6 +673,7 @@ function buildSimple() {
     if (inp.material === "al") { inp.minSize = 16; inp.minSizeRule = "aluminium in fixed installations, IEC 60364-5-52 Table 52.2"; }
     else if (S.std === "IS") { inp.minSize = 4; inp.minSizeRule = "power circuits, Nepal NBC 207"; }
     else { inp.minSize = 1.5; inp.minSizeRule = "IEC 60364-5-52 Table 52.2"; }
+    protectionInputs(inp, t.kind, S.job === "pump" && S.motorBasis === "hp" ? +S.hp * 0.7457 : null, S.starter);
   }
   const notes = t.assumptions.map(L2);
   if (reg) notes.push(L2({ en: `Climate: ${reg.en.split(" (")[0]}: air ${reg.air} °C, ground ${reg.ground} °C.`, ne: `मौसम: ${reg.ne.split(" (")[0]}: हावा ${reg.air} °C, जमिन ${reg.ground} °C।` }));
@@ -629,7 +690,7 @@ function cableOd(res) {
 }
 function bomCtx(res, sm) {
   const kW = S.job === "pump" && S.motorBasis === "hp" ? +S.hp * 0.7457 : null;
-  return { res, kind: sm.t.kind, S, route: S.route, od: cableOd(res), kW, starter: S.starter, pumpType: S.pumpType, isc: lvFault(res) };
+  return { res, kind: sm.t.kind, S, route: S.route, od: cableOd(res), kW, starter: S.starter, pumpType: S.pumpType, isc: lvFault(res), exposure: NP_REGIONS[S.region]?.exposure || "medium" };
 }
 const COMP_MAP = [[/MCCB/, "mccb"], [/MCB/, "mcb"], [/RCD|RCCB/, "rccb"], [/isolating/i, "isolator"], [/Changeover/, "changeover"], [/SPD/, "spd"],
   [/Distribution board/, "db"], [/HRC/, "hrc-fuse"], [/starter/i, "dol-starter"], [/capacitor/i, "capacitor"], [/lugs/i, "lug"], [/glands/i, "gland"],
@@ -659,12 +720,16 @@ function renderSimpleResult(res, sm) {
       <dt>${tr("scAllow")}</dt><dd>${fmt(w.allow / 1000, 0)} kA²s</dd>
       <dt>${tr("scTime")}</dt><dd>${fmtMs(w.tMs)} ms</dd></dl>
       <p class="hint">${tr("scRule").replace("{kA}", Math.ceil(w.isc)).replace("{E}", fmt(w.allow / 1000, 0))}</p>
-      <p class="hint">${+S.supplyM > 0 ? tr("scNoteDist").replace("{m}", S.supplyM).replace("{s}", S.supplyMm2).replace("{t}", S.trafoKva) : tr("scNote")}</p></div>`;
+      <p class="hint">${+S.supplyM > 0 ? tr("scNoteDist").replace("{m}", S.supplyM).replace("{s}", S.supplyMm2).replace("{t}", S.trafoKva) : tr("scNote")}</p>
+      ${res.chosen.lmax != null ? meter(tr("mLmax"), +S.lengthM, res.chosen.lmax, "m", res.chosen.pass.minFault) : ""}</div>`;
+    h += earthBlock(res);
+    if (sm.t.demand) h = demandBlock(sm.t.demand) + h;
   }
   h += renderBom(sm.job.level === "HV" ? bomHv({ res, kva: +S.kva, kv: Number(S.hvKv) }) : bomFor(bomCtx(res, sm)));
   const sm1 = smallerSize(res);
   if (sm1 && sm1.why.length) h += `<p class="smaller">${ic("alert", 16)} <b>${tr("whyNot")} ${sm1.size} mm²?</b> ${tr("wouldIt")} ${esc(sm1.why.map(L2).join(S.lang === "ne" ? ", र " : ", and "))}.</p>`;
   h += `<details class="box"><summary>${ic("info", 17)} ${tr("assum")}</summary><ul class="plain">${last.notes.map((n) => `<li>${esc(n)}</li>`).join("")}</ul></details>`;
+  if (sm.job.level === "LV") h += testsBlock(res);
   if (sm.job.level === "LV") h += `<details class="box"><summary>${ic("cart", 17)} ${tr("shop")}</summary><ul class="plain">${tr("shopList").map((x) => `<li>${esc(x)}</li>`).join("")}</ul></details>`;
   return h;
 }
@@ -842,6 +907,9 @@ function openState(state) {
 }
 
 document.addEventListener("click", (e) => {
+  if (e.target.closest("[data-add-load]")) { (S.loads ||= []).push({ type: "sockets", qty: 1, kw: 1 }); save(); renderSimple(); compute(); return; }
+  const del = e.target.closest("[data-del-load]");
+  if (del) { S.loads.splice(+del.dataset.delLoad, 1); save(); renderSimple(); compute(); return; }
   const t = e.target.closest("[data-ex]");
   if (t) { exSel = t.dataset.ex; renderExamples(); return; }
   const o = e.target.closest("[data-open-ex]");
@@ -865,6 +933,266 @@ function paintCardIcons() {
   document.querySelectorAll("[data-ic]").forEach((el) => { if (!el.firstChild) el.innerHTML = ic(el.dataset.ic, 22); });
 }
 
+
+// ======================================================================
+// Checks from the Electrical Installation Guide 2018: earth fault, far-end fault, harmonics,
+// load list, power factor correction, solar strings, tests before switching on.
+// ======================================================================
+Object.assign(UI.en, {
+  earthing: "Earthing system of your supply",
+  earthTT: "TT: your own earth electrode (the usual case on a public LV network)", earthTN: "TN-S or TN-C-S: the supply brings an earth wire",
+  earthingHint: "If unsure, keep TT: it is the safe choice. Ask NEA what your connection is.",
+  earthRa: "Earth electrode resistance", earthRaHint: "Measure it with an earth tester. Unknown: 30 ohm is a normal target. The result shows which RCD it allows.",
+  elec: "Computers, LED lights, UPS or inverters on this supply", elec0: "Few", elec25: "Some (about 25 % of the current)", elec40: "Many (about 40 % of the current)",
+  efTitle: "Earth fault", efTime: "Fault must disconnect within", efLmax: "Longest circuit the breaker protects",
+  efTT: "In a TT system an RCD does the disconnecting, and the earth electrode must satisfy resistance × RCD sensitivity ≤ 50 V.",
+  efTNrule: "In a TN system the breaker's instantaneous trip must operate for an earth fault at the far end, so the circuit length is limited. The result already uses a cable that is long enough.",
+  efTable: "RCD sensitivity", efMaxRa: "Highest earth resistance", efOk: "allowed", efNo: "not allowed",
+  efMain: "Main RCD to fit", efSockets: "30 mA on sockets, bathrooms and outdoor circuits",
+  efOnly30: "Only a 30 mA RCD works with this earth resistance: improve the electrode (more rods, wetter soil, deeper) so a less nuisance-prone RCD can be used.",
+  efBad: "This earth resistance is too high for any RCD: improve the earth electrode before connecting.",
+  efTimes: "Final circuits up to 32 A: 0.2 s (TT) or 0.4 s (TN) at 230 V; distribution circuits 1 s (TT) or 5 s (TN).",
+  mLmax: "Cable length vs longest the breaker protects",
+  tLmax: "Longest m", lLmax: "longest circuit whose far-end fault still trips the breaker instantly", fLmax: "breaker may not trip at the far end",
+  w7min: "Far-end fault:", elecNote: "Third harmonics from electronics load the neutral up to 3 times; the neutral is full size and the cable is derated.",
+  testsTitle: "Before you switch on",
+  // building
+  loadList: "Loads in the building", ldType: "Type", ldQty: "How many", ldKw: "kW each", ldAdd: "Add a load", ldDel: "Remove this load",
+  growthPct: "Growth allowance", ksOverride: "Diversity ks (leave empty for automatic)",
+  dmTitle: "Demand of the building", dmInstalled: "Installed load", dmAfterKu: "After utilisation (ku)", dmKs: "Diversity (ks)", dmReq: "Needed, with growth",
+  dmCur: "Main cable current", dmTr: "Transformer to ask for", dmTrFlc: "Transformer full-load current",
+  dmLarge: "About 100 kVA or more counts as a large consumer: confirm the supply with NEA.", dmMv: "Above about 250 kVA a medium-voltage connection and your own transformer is usually needed.",
+  dmEmpty: "Add at least one load with a quantity and kW.",
+  // pfc
+  pfcKw: "Load, active power", pfcPf1: "Power factor now", pfcPf2: "Power factor wanted", pfcMode: "Where the capacitor goes",
+  pfcGlobal: "At the main board (whole load)", pfcMotor: "At one motor's terminals", pfcIo: "Motor no-load current (optional)",
+  pfcNll: "Electronics share of the load", pfcN0: "Little (up to 10 %)", pfcN1: "Some (10 to 20 %)", pfcN2: "Lots (over 20 %)",
+  pfcBuy: "Capacitor bank to buy", pfcQ: "Capacitor size", pfcIn: "Capacitor current", pfcLong: "Breaker, long-time setting", pfcShort: "Breaker, short-time setting",
+  pfcI1: "Load current now", pfcI2: "Load current after", pfcCut: "Current and cable loss cut", pfcType: "Capacitor type",
+  pfcStd: "Standard", pfcHeavy: "Heavy-duty (current-rated)", pfcDet: "Detuned reactor bank (5.7 % or 7 %; 14 % if third harmonic is strong)",
+  pfcMotorK: "Suggested at the motor", pfcMotorMax: "Never more than (self-excitation)", pfcOverload: "Set the overload relay lower by",
+  pfcRound: "Round up to the maker's next step. Fit discharge resistors, and use inrush-limiting contactors: switching can give 2 to 3 times the peak voltage.",
+  pfcRule: "Nepal Electricity Rules 2050, Rule 44: customer power factor not below 0.8 lagging. Check NEA's current tariff before choosing a target.",
+  pfcHigh: "Going above about 0.98 is rarely worth it and risks over-voltage when load is light.", pfcNone: "Target is not above the present power factor: no capacitor needed.",
+  pfcDetWarn: "Many electronic loads: a plain capacitor can resonate with the network and overheat. Use a detuned reactor bank.",
+  // pv
+  pvVoc: "Module Voc (open circuit)", pvVmpp: "Module Vmpp", pvIsc: "Module Isc", pvCoef: "Voc temperature coefficient, %/°C (negative)",
+  pvVinv: "Inverter maximum DC voltage", pvVmin: "Inverter MPPT minimum voltage", pvIinv: "Inverter maximum DC input current",
+  pvStrings: "Strings in parallel", pvModules: "Modules per string (0 = the most allowed)", pvModuleW: "Module power", pvInvKW: "Inverter AC power",
+  pvIrm: "Module maximum reverse current IRM (optional)", pvLen: "DC cable length, one way",
+  pvTitle: "Solar strings", pvRange: "Modules per string", pvVocCold: "String Voc on the coldest morning", pvVmppHot: "String Vmpp on the hottest day",
+  pvStr: "Strings the inverter can take", pvProt: "String fuses", pvFuse: "Fuse rating", pvCable: "DC cable", pvDrop: "DC voltage drop",
+  pvDouble: "Over 120 V DC: use double-insulated PV cable and DC equipment.", pvNoFit: "No number of modules fits both the cold-day voltage limit and the hot-day minimum: this module and inverter do not match.",
+  pvProtYes: "needed, one per string", pvProtNo: "not needed", pvRatio: "Inverter to array power",
+  pvRatioNote: "0.8 to 1.0 is the usual choice (European practice).", pvStrNo: "More strings than the inverter's current limit allows.",
+  pvSpd: "Fit an SPD at the inverter. If the DC cable is longer than 10 m, add a second one in a box near the panels.",
+  pvCool: "Tmin and Tmax come from your region; module temperature is air temperature plus 30 °C (assumption).",
+  pvLead: "Voltage rules: modules × Voc at the lowest temperature must stay below the inverter maximum, and modules × Vmpp at the highest cell temperature must stay above its MPPT minimum.",
+});
+Object.assign(UI.ne, {
+  earthing: "तपाईंको सप्लाईको अर्थिङ प्रणाली",
+  earthTT: "TT: आफ्नै अर्थ इलेक्ट्रोड (सार्वजनिक LV नेटवर्कमा सामान्य)", earthTN: "TN-S वा TN-C-S: सप्लाईले अर्थ तार ल्याउँछ",
+  earthingHint: "थाहा नभए TT नै राख्नुहोस्: सुरक्षित हुन्छ। NEA लाई सोध्नुहोस्।",
+  earthRa: "अर्थ इलेक्ट्रोडको रेजिस्टेन्स", earthRaHint: "अर्थ टेस्टरले नाप्नुहोस्। थाहा नभए ३० ओम सामान्य लक्ष्य हो। नतिजामा कुन RCD चल्छ देखिन्छ।",
+  elec: "यो सप्लाईमा कम्प्युटर, LED बत्ती, UPS वा इन्भर्टर", elec0: "थोरै", elec25: "केही (करेन्टको करिब २५ %)", elec40: "धेरै (करेन्टको करिब ४० %)",
+  efTitle: "अर्थ फल्ट", efTime: "फल्ट यति समयभित्र कट्नुपर्छ", efLmax: "ब्रेकरले जोगाउने सबैभन्दा लामो सर्किट",
+  efTT: "TT प्रणालीमा RCD ले काट्छ, र अर्थ रेजिस्टेन्स × RCD संवेदनशीलता ≤ ५० V हुनुपर्छ।",
+  efTNrule: "TN प्रणालीमा टाढाको छेउको अर्थ फल्टमा पनि ब्रेकरको इन्स्टेन्टेनियस ट्रिप चल्नुपर्छ, त्यसैले सर्किटको लम्बाइ सीमित हुन्छ। नतिजामा पुग्ने साइजको तार नै छानिएको छ।",
+  efTable: "RCD संवेदनशीलता", efMaxRa: "अधिकतम अर्थ रेजिस्टेन्स", efOk: "मिल्छ", efNo: "मिल्दैन",
+  efMain: "मुख्यमा राख्ने RCD", efSockets: "सकेट, बाथरुम र बाहिरका सर्किटमा ३० mA",
+  efOnly30: "यो अर्थ रेजिस्टेन्समा ३० mA RCD मात्र चल्छ: इलेक्ट्रोड सुधार्नुहोस् (धेरै रड, ओसिलो माटो, गहिरो) ताकि कम बारम्बार ट्रिप हुने RCD राख्न सकियोस्।",
+  efBad: "यो अर्थ रेजिस्टेन्स कुनै पनि RCD का लागि धेरै बढी छ: जोड्नुअघि इलेक्ट्रोड सुधार्नुहोस्।",
+  efTimes: "३२ A सम्मका अन्तिम सर्किट: २३० V मा ०.२ s (TT) वा ०.४ s (TN); वितरण सर्किट १ s (TT) वा ५ s (TN)।",
+  mLmax: "तारको लम्बाइ र ब्रेकरले जोगाउने सबैभन्दा लामो दूरी",
+  tLmax: "सबैभन्दा लामो m", lLmax: "टाढाको फल्टमा पनि ब्रेकर तुरुन्त ट्रिप हुने सबैभन्दा लामो सर्किट", fLmax: "टाढाको छेउमा ब्रेकर ट्रिप नहुन सक्छ",
+  w7min: "टाढाको फल्ट:", elecNote: "इलेक्ट्रोनिक भारका तेस्रो हार्मोनिक न्युट्रलमा ३ गुणासम्म पुग्छन्; न्युट्रल पूरै साइजको र तार घटाइएको।",
+  testsTitle: "चालु गर्नुअघि",
+  loadList: "भवनका भार", ldType: "प्रकार", ldQty: "कति वटा", ldKw: "हरेकको kW", ldAdd: "भार थप्नुहोस्", ldDel: "यो भार हटाउनुहोस्",
+  growthPct: "भविष्यका लागि थप", ksOverride: "डाइभर्सिटी ks (खाली राखे स्वचालित)",
+  dmTitle: "भवनको माग", dmInstalled: "जडान गरिएको भार", dmAfterKu: "प्रयोग अनुपात (ku) पछि", dmKs: "डाइभर्सिटी (ks)", dmReq: "आवश्यक, थपसहित",
+  dmCur: "मुख्य तारको करेन्ट", dmTr: "माग्नुपर्ने ट्रान्सफर्मर", dmTrFlc: "ट्रान्सफर्मरको पूरा-भार करेन्ट",
+  dmLarge: "करिब १०० kVA वा बढी ठूलो उपभोक्ता मानिन्छ: NEA सँग सप्लाई पक्का गर्नुहोस्।", dmMv: "करिब २५० kVA भन्दा माथि प्रायः मध्यम भोल्टेज जडान र आफ्नै ट्रान्सफर्मर चाहिन्छ।",
+  dmEmpty: "कम्तीमा एउटा भार, संख्या र kW सहित थप्नुहोस्।",
+  pfcKw: "भार, एक्टिभ पावर", pfcPf1: "अहिलेको पावर फ्याक्टर", pfcPf2: "चाहिने पावर फ्याक्टर", pfcMode: "क्यापासिटर कहाँ राख्ने",
+  pfcGlobal: "मुख्य बोर्डमा (पूरै भार)", pfcMotor: "एउटा मोटरको टर्मिनलमा", pfcIo: "मोटरको नो-लोड करेन्ट (ऐच्छिक)",
+  pfcNll: "भारमा इलेक्ट्रोनिक्सको अंश", pfcN0: "थोरै (१० % सम्म)", pfcN1: "केही (१० देखि २० %)", pfcN2: "धेरै (२० % भन्दा बढी)",
+  pfcBuy: "किन्ने क्यापासिटर बैंक", pfcQ: "क्यापासिटरको साइज", pfcIn: "क्यापासिटरको करेन्ट", pfcLong: "ब्रेकर, लामो-समय सेटिङ", pfcShort: "ब्रेकर, छोटो-समय सेटिङ",
+  pfcI1: "अहिलेको लोड करेन्ट", pfcI2: "सुधारपछिको लोड करेन्ट", pfcCut: "करेन्ट र तारको हानि घट्ने", pfcType: "क्यापासिटरको प्रकार",
+  pfcStd: "सामान्य", pfcHeavy: "हेभी-ड्युटी (करेन्ट-रेटेड)", pfcDet: "डिट्युन्ड रियाक्टर बैंक (५.७ % वा ७ %; तेस्रो हार्मोनिक बलियो भए १४ %)",
+  pfcMotorK: "मोटरमा सुझाव", pfcMotorMax: "यसभन्दा बढी कहिल्यै होइन (सेल्फ-एक्साइटेसन)", pfcOverload: "ओभरलोड रिले यति अनुपातले घटाउनुहोस्",
+  pfcRound: "निर्माताको अर्को स्टेपमा माथि पुर्‍याउनुहोस्। डिस्चार्ज रेजिस्टर राख्नुहोस्, र इनरश घटाउने कन्ट्याक्टर प्रयोग गर्नुहोस्: स्विचिङमा पिक भोल्टेज २ देखि ३ गुणा हुन सक्छ।",
+  pfcRule: "विद्युत नियमावली २०५०, नियम ४४: उपभोक्ताको पावर फ्याक्टर ०.८ ल्यागिङ भन्दा कम हुनु हुँदैन। लक्ष्य छान्नुअघि NEA को हालको दर हेर्नुहोस्।",
+  pfcHigh: "०.९८ भन्दा माथि जानु विरलै फाइदाजनक हुन्छ र हल्का भारमा ओभर-भोल्टेजको जोखिम हुन्छ।", pfcNone: "लक्ष्य अहिलेको पावर फ्याक्टरभन्दा बढी छैन: क्यापासिटर चाहिँदैन।",
+  pfcDetWarn: "धेरै इलेक्ट्रोनिक भार: सामान्य क्यापासिटर नेटवर्कसँग रेजोनेन्समा गई तात्न सक्छ। डिट्युन्ड रियाक्टर बैंक प्रयोग गर्नुहोस्।",
+  pvVoc: "मोड्युलको Voc (ओपन सर्किट)", pvVmpp: "मोड्युलको Vmpp", pvIsc: "मोड्युलको Isc", pvCoef: "Voc को तापक्रम गुणांक, %/°C (ऋणात्मक)",
+  pvVinv: "इन्भर्टरको अधिकतम DC भोल्टेज", pvVmin: "इन्भर्टरको MPPT न्यूनतम भोल्टेज", pvIinv: "इन्भर्टरको अधिकतम DC इनपुट करेन्ट",
+  pvStrings: "समानान्तर स्ट्रिङ", pvModules: "प्रति स्ट्रिङ मोड्युल (० = अधिकतम)", pvModuleW: "मोड्युलको पावर", pvInvKW: "इन्भर्टरको AC पावर",
+  pvIrm: "मोड्युलको अधिकतम रिभर्स करेन्ट IRM (ऐच्छिक)", pvLen: "DC तारको लम्बाइ (एकतर्फी)",
+  pvTitle: "सोलार स्ट्रिङ", pvRange: "प्रति स्ट्रिङ मोड्युल", pvVocCold: "सबैभन्दा चिसो बिहानको स्ट्रिङ Voc", pvVmppHot: "सबैभन्दा तातो दिनको स्ट्रिङ Vmpp",
+  pvStr: "इन्भर्टरले लिन सक्ने स्ट्रिङ", pvProt: "स्ट्रिङ फ्यूज", pvFuse: "फ्यूजको रेटिङ", pvCable: "DC तार", pvDrop: "DC भोल्टेज ड्रप",
+  pvDouble: "१२० V DC भन्दा माथि: डबल-इन्सुलेटेड PV तार र DC उपकरण प्रयोग गर्नुहोस्।", pvNoFit: "चिसो दिनको भोल्टेज सीमा र तातो दिनको न्यूनतम दुवैमा मिल्ने मोड्युल संख्या छैन: यो मोड्युल र इन्भर्टर मिल्दैनन्।",
+  pvProtYes: "चाहिन्छ, हरेक स्ट्रिङमा एउटा", pvProtNo: "चाहिँदैन", pvRatio: "इन्भर्टर र एरेको पावर अनुपात",
+  pvRatioNote: "०.८ देखि १.० सामान्य छनोट हो (युरोपेली अभ्यास)।", pvStrNo: "इन्भर्टरको करेन्ट सीमाले दिनेभन्दा बढी स्ट्रिङ।",
+  pvSpd: "इन्भर्टरमा SPD राख्नुहोस्। DC तार १० m भन्दा लामो भए प्यानल नजिकको बक्समा दोस्रो SPD पनि।",
+  pvCool: "Tmin र Tmax तपाईंको क्षेत्रबाट; मोड्युलको तापक्रम हावाको तापक्रम + ३० °C (अनुमान)।",
+  pvLead: "भोल्टेजका नियम: सबैभन्दा कम तापक्रममा मोड्युल × Voc इन्भर्टरको अधिकतमभन्दा कम, र सबैभन्दा बढी सेल तापक्रममा मोड्युल × Vmpp यसको MPPT न्यूनतमभन्दा माथि हुनुपर्छ।",
+});
+
+const DEC_BOOK_NE = { "far-end fault must trip the breaker": "टाढाको फल्टमा ब्रेकर ट्रिप हुनुपर्ने" };
+
+function lvFaultSys(system) {
+  const mm2 = +S.supplyMm2 || 70;
+  const row = DATA.lvIs.tables.XLPE["4"].rows.find((r) => r.size === mm2);
+  return faultAtDistance({ kva: +S.trafoKva || 200, lengthM: Math.max(0, +S.supplyM || 0), rOhmKm: row?.rdc20.al ?? 0.64,
+    xOhmKm: interp(DATA.lvReactance.XLPE.multi, mm2).value, singlePhase: system === "1ph" });
+}
+
+/** Breaker curve, far-end fault and harmonic inputs for the sizing engine (LV). */
+function protectionInputs(inp, kind, kW, starter) {
+  if (JOBS[S.job]?.kind === "pfc" || JOBS[S.job]?.kind === "pv") return;
+  const curve = eng() ? S.curve || "C" : mcbCurve({ kind, kW: kW || 0, starter });
+  if (!eng() || S.tripOn) inp.trip = { curve, iscKA: lvFaultSys(inp.system), earthing: S.earthing === "TN" ? "TN" : "TT" };
+  const threePhase4w = inp.system === "3ph" && inp.cores !== "3";
+  if (threePhase4w && (eng() || ["shop", "building"].includes(S.job) || (S.job === "house" && S.phase === "3ph"))) inp.h3 = Math.max(0, +S.h3 || 0);
+}
+
+function earthBlock(res) {
+  const c = res.chosen;
+  let h = `<div class="volt"><h3 class="rh">${ic("earth", 18)} ${tr("efTitle")}</h3>`;
+  if (S.earthing === "TN") {
+    const t = disconnectTime({ system: "TN", uo: 230 });
+    h += `<dl class="kv"><dt>${tr("efTime")}</dt><dd>${t} s</dd>${c.lmax != null ? `<dt>${tr("efLmax")}</dt><dd>${fmt(c.lmax, 0)} m</dd>` : ""}</dl><p class="hint">${tr("efTNrule")}</p>`;
+  } else {
+    const tt = ttCheck(+S.earthRa || 30);
+    h += `<dl class="kv"><dt>${tr("efTime")}</dt><dd>${disconnectTime({ system: "TT", uo: 230 })} s</dd>
+      <dt>${tr("efMain")}</dt><dd>${tt.main ? tt.main + " mA" : "–"}</dd></dl>
+      <div class="tablewrap"><table><thead><tr><th class="l">${tr("efTable")}</th><th>${tr("efMaxRa")}</th><th class="l"></th></tr></thead><tbody>${tt.rows.map((r) =>
+        `<tr><td class="l">${r.ma} mA</td><td>${fmt(r.maxRa, 0)} Ω</td><td class="l ${r.ok ? "yes" : "no"}">${r.ok ? "✓ " + tr("efOk") : "✗ " + tr("efNo")}</td></tr>`).join("")}</tbody></table></div>
+      <p class="hint">${tr("efTT")} ${tr("efSockets")}.</p>${tt.only30 ? `<p class="err">${tr("efOnly30")}</p>` : ""}${!tt.ok ? `<p class="err">${tr("efBad")}</p>` : ""}`;
+  }
+  return h + `<p class="hint">${tr("efTimes")}</p></div>`;
+}
+
+function demandBlock(d) {
+  const ne = S.lang === "ne" && !eng();
+  if (!d.rows.length) return `<p class="err">${tr("dmEmpty")}</p>`;
+  let h = `<div class="volt"><h3 class="rh">${ic("layers", 18)} ${tr("dmTitle")}</h3><dl class="kv">
+    <dt>${tr("dmInstalled")}</dt><dd>${fmt(d.installedKW, 1)} kW · ${fmt(d.installedKVA, 1)} kVA</dd>
+    <dt>${tr("dmAfterKu")}</dt><dd>${fmt(d.afterKu, 1)} kVA</dd>
+    <dt>${tr("dmKs")}</dt><dd>${d.ks}</dd>
+    <dt>${tr("dmReq")}</dt><dd>${fmt(d.requiredKVA, 1)} kVA</dd>
+    <dt>${tr("dmCur")}</dt><dd>${fmt(d.currentA, 0)} A</dd>
+    <dt>${tr("dmTr")}</dt><dd>${d.transformer ? d.transformer + " kVA" : "–"}</dd>
+    ${d.transformerFlc ? "" : ""}${d.transformerFlcA ? `<dt>${tr("dmTrFlc")}</dt><dd>${fmt(d.transformerFlcA, 0)} A</dd>` : ""}</dl>
+    <div class="tablewrap"><table><thead><tr><th class="l">${tr("ldType")}</th><th>kW</th><th>kVA</th><th>ku</th><th>kVA × ku</th></tr></thead><tbody>${d.rows.map((r) =>
+      `<tr><td class="l">${esc(ne ? LOAD_TYPES[r.type].ne : LOAD_TYPES[r.type].en)} × ${r.qty}</td><td>${fmt(r.installedKW, 1)}</td><td>${fmt(r.installedKVA, 1)}</td><td>${r.ku}</td><td>${fmt(r.afterKuKVA, 1)}</td></tr>`).join("")}</tbody></table></div>`;
+  if (d.mvLikely) h += `<p class="hint">${tr("dmMv")}</p>`;
+  else if (d.largeConsumer) h += `<p class="hint">${tr("dmLarge")}</p>`;
+  return h + `</div>`;
+}
+
+function testsBlock(res) {
+  const tt = S.earthing !== "TN";
+  const items = PRE_ENERGISE.filter((t, i) => (i === 5 ? !tt : true));
+  return `<details class="box"><summary>${ic("check", 17)} ${tr("testsTitle")}</summary><ul class="plain">${items.map((x) => `<li>${esc(L2(x))}</li>`).join("")}</ul></details>`;
+}
+
+// ---- Power factor correction job
+function renderPfc() {
+  const ne = S.lang === "ne" && !eng();
+  const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
+  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
+  $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`; $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
+  drawCable($("#xsec"), null); $("#xsec-cap").textContent = "";
+  const kw = +S.pfcKw, pf1 = +S.pfcPf1, pf2 = +S.pfcPf2;
+  if (!(kw > 0 && pf1 > 0 && pf1 <= 1 && pf2 > 0 && pf2 <= 1)) { ans.innerHTML = `<p class="err">${ic("alert", 16)} ${tr("dmEmpty")}</p>`; work.innerHTML = ""; sticky.textContent = ""; return; }
+  const motor = S.pfcMode === "motor";
+  const p = pfCorrection({ kw, pf1, pf2, nllPct: +S.pfcNll, individualMotor: motor, ioA: +S.pfcIo || null });
+  let h = "";
+  if (pf2 <= pf1) h = `<div class="fail-box"><p class="buy">${ic("alert", 20)} ${tr("pfcNone")}</p></div>`;
+  else {
+    const typeTxt = p.bank === "standard" ? tr("pfcStd") : p.bank === "heavy-duty" ? tr("pfcHeavy") : tr("pfcDet");
+    h += `<p class="ask">${ic("cart", 16)} ${tr("pfcBuy")}</p><p class="buy">${fmt(Math.ceil(p.qc * 10) / 10, 1)} kvar, 415 V, ${S.lang === "ne" ? "३ फेज" : "3-phase"}</p>
+      <p class="buy-sub">${esc(typeTxt)}</p><div class="kvs">`;
+    h += kvRow("zap", tr("pfcIn"), `${fmt(p.inA, 1)} A`);
+    h += kvRow("shield", tr("pfcLong"), `${fmt(p.longA, 0)} A (${p.bank === "detuned" ? "1.31" : "1.5"} × IN)`);
+    h += kvRow("shield", tr("pfcShort"), `${fmt(p.shortA, 0)} A (10 × IN)`);
+    h += kvRow("gauge", tr("pfcI1"), `${fmt(p.i1, 1)} A`);
+    h += kvRow("gauge", tr("pfcI2"), `${fmt(p.i2, 1)} A`);
+    h += kvRow("check", tr("pfcCut"), `${fmt(p.currentCutPct, 0)} % · ${fmt(p.lossCutPct, 0)} %`);
+    if (motor) {
+      h += kvRow("plug", tr("pfcMotorK"), `${fmt(p.motorSuggestKvar, 1)} kvar`);
+      if (p.motorMaxKvar) h += kvRow("alert", tr("pfcMotorMax"), `${fmt(p.motorMaxKvar, 1)} kvar`);
+      h += kvRow("alert", tr("pfcOverload"), `× ${fmt(1 / p.overloadReduce, 2)}`);
+    }
+    h += `</div><ul class="notes"><li>${ic("info", 15)}<span>${tr("pfcRound")}</span></li><li>${ic("info", 15)}<span>${tr("pfcRule")}</span></li>
+      ${p.bank === "detuned" ? `<li>${ic("alert", 15)}<span>${tr("pfcDetWarn")}</span></li>` : ""}${pf2 > 0.98 ? `<li>${ic("alert", 15)}<span>${tr("pfcHigh")}</span></li>` : ""}</ul>`;
+  }
+  ans.innerHTML = h;
+  sticky.textContent = pf2 > pf1 ? `${fmt(Math.ceil(p.qc * 10) / 10, 1)} kvar` : "";
+  work.innerHTML = `<p class="lead-s">${ne ? "क्यापासिटरको साइज Qc = P (tan φ१ − tan φ२) बाट निकालिएको; सुरक्षा Electrical Installation Guide 2018 को अध्याय L अनुसार।" : "Capacitor size from Qc = P (tan φ1 − tan φ2); protection settings follow the Electrical Installation Guide 2018, chapter L."}</p>
+    <ol class="trail"><li><b>Qc</b> = ${fmt(kw, 1)} kW × (tan ${fmt(Math.acos(pf1) * 180 / Math.PI, 1)}° − tan ${fmt(Math.acos(pf2) * 180 / Math.PI, 1)}°) = ${fmt(Math.tan(Math.acos(pf1)), 3)} − ${fmt(Math.tan(Math.acos(pf2)), 3)} → <b>${fmt(p.qc, 1)} kvar</b></li>
+    <li><b>IN</b> = Q / (√3 × U) = ${fmt(p.qc, 1)} / (√3 × 0.4) = <b>${fmt(p.inA, 1)} A</b></li>
+    <li><b>${ne ? "ब्रेकर" : "Breaker"}</b>: ${p.bank === "detuned" ? "1.31" : "1.5"} × IN, ${ne ? "छोटो-समय" : "short-time"} 10 × IN (${ne ? "इनरश सहन" : "rides out the inrush"})</li>
+    <li><b>${ne ? "करेन्ट" : "Current"}</b>: I = P / (√3 × U × cos φ): ${fmt(p.i1, 1)} A → ${fmt(p.i2, 1)} A; ${ne ? "I²R हानि" : "I²R loss"} ${fmt(p.lossCutPct, 0)} % ${ne ? "कम" : "less"}</li></ol>`;
+}
+
+// ---- Solar string job
+function renderPv() {
+  const ne = S.lang === "ne" && !eng();
+  const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
+  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
+  $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`; $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
+  drawCable($("#xsec"), null); $("#xsec-cap").textContent = "";
+  const reg = NP_REGIONS[S.region] || NP_REGIONS.hills;
+  const tMin = reg.tMin, tCellMax = reg.air + 30;
+  const need = ["pvVoc", "pvVmpp", "pvIsc", "pvVinv", "pvVmin", "pvIinv"].every((k) => +S[k] > 0);
+  if (!need) { ans.innerHTML = `<p class="err">${ic("alert", 16)} ${tr("dmEmpty")}</p>`; work.innerHTML = ""; sticky.textContent = ""; return; }
+  const p = pvStrings({ voc: +S.pvVoc, vmpp: +S.pvVmpp, isc: +S.pvIsc, coefPct: +S.pvCoef || -0.28, tMin, tCellMax, vInvMax: +S.pvVinv, vMpptMin: +S.pvVmin,
+    iInvMax: +S.pvIinv, strings: Math.max(1, +S.pvStrings || 1), irm: +S.pvIrm || null, moduleW: +S.pvModuleW || null, inverterKW: +S.pvInvKW || null,
+    nModules: +S.pvModules > 0 ? +S.pvModules : null });
+  let h = "", cable = null, cableErr = null;
+  if (!p.feasible) h = `<div class="fail-box"><p class="buy">${ic("alert", 20)} ${tr("pvNoFit")}</p></div>`;
+  else {
+    try {
+      cable = sizeConductor(ADAPTERS["LV-IEC"], { system: "dc", voltage: p.stringVmppV, load: { power: 1.25 * (+S.pvIsc), unit: "A" }, material: "cu", insulation: "XLPE",
+        cores: "1", method: "C", armoured: false, sizeOn: "current", lengthM: +S.pvLen || 30, vdLimitPct: 3, minSize: 4, minSizeRule: "PV cable, typical minimum",
+        env: { airTemp: reg.air + 20, groundTemp: 20, soilRes: 250, depthMm: 700 }, group: { count: Math.max(1, +S.pvStrings || 1), spacing: "touching", formation: "flat", racks: 1 } });
+    } catch (e) { cableErr = e.message; }
+    h += `<p class="ask">${ic("cart", 16)} ${tr("pvTitle")}</p><p class="buy">${p.nMin} ${S.lang === "ne" ? "देखि" : "to"} ${p.nMax} ${S.lang === "ne" ? "मोड्युल प्रति स्ट्रिङ" : "modules per string"}</p><div class="kvs">`;
+    h += kvRow("layers", tr("pvRange"), `${p.nMin} – ${p.nMax}  (${S.lang === "ne" ? "प्रयोग" : "using"} ${p.n})`);
+    h += kvRow("zap", tr("pvVocCold"), `${fmt(p.stringVocColdV, 0)} V  (≤ ${fmt(+S.pvVinv, 0)} V)`);
+    h += kvRow("thermo", tr("pvVmppHot"), `${fmt(p.stringVmppHotV, 0)} V  (≥ ${fmt(+S.pvVmin, 0)} V)`);
+    h += kvRow("plug", tr("pvStr"), `${p.maxStrings}  (${S.lang === "ne" ? "योजना" : "planned"} ${+S.pvStrings || 1})`);
+    h += kvRow("shield", tr("pvProt"), p.protect ? tr("pvProtYes") : tr("pvProtNo"));
+    if (p.protect) h += kvRow("shield", tr("pvFuse"), `${fmt(p.fuseMinA, 1)} – ${fmt(p.fuseMaxA, 1)} A (1.5 – 2.4 × Isc)`);
+    if (cable?.chosen) h += kvRow("cable", tr("pvCable"), `${cable.chosen.size} mm² Cu, 1.1 kV`) + kvRow("gauge", tr("pvDrop"), `${fmt(cable.chosen.vdPct, 1)} % (≤ 3 %)`);
+    if (p.inverterRatio) h += kvRow("calc", tr("pvRatio"), `${fmt(p.inverterRatio, 2)}`);
+    h += `</div>`;
+    if (!p.stringsOk) h += meter(tr("pvStr"), +S.pvStrings || 1, p.maxStrings, "", false);
+    h += `<ul class="notes">${!p.stringsOk ? `<li>${ic("alert", 15)}<span>${tr("pvStrNo")}</span></li>` : ""}${p.doubleInsulation ? `<li>${ic("alert", 15)}<span>${tr("pvDouble")}</span></li>` : ""}
+      <li>${ic("info", 15)}<span>${tr("pvSpd")}</span></li>${p.inverterRatio ? `<li>${ic("info", 15)}<span>${tr("pvRatioNote")}</span></li>` : ""}<li>${ic("info", 15)}<span>${tr("pvCool")}</span></li></ul>`;
+  }
+  ans.innerHTML = h;
+  sticky.textContent = p.feasible ? `${p.nMin}–${p.nMax} / ${S.lang === "ne" ? "स्ट्रिङ" : "string"}` : "";
+  work.innerHTML = `<p class="lead-s">${tr("pvLead")}</p><ol class="trail">
+    <li><b>Voc ${ne ? "चिसोमा" : "cold"}</b> = ${fmt(+S.pvVoc, 1)} × (1 + ${fmt((+S.pvCoef || -0.28) / 100, 4)} × (${tMin} − 25)) = <b>${fmt(p.vocCold, 1)} V</b> → ${ne ? "अधिकतम" : "max"} ${fmt(+S.pvVinv, 0)} / ${fmt(p.vocCold, 1)} = <b>${p.nMax}</b></li>
+    <li><b>Vmpp ${ne ? "तातोमा" : "hot"}</b> = ${fmt(+S.pvVmpp, 1)} × (1 + ${fmt((+S.pvCoef || -0.28) / 100, 4)} × (${tCellMax} − 25)) = <b>${fmt(p.vmppHot, 1)} V</b> → ${ne ? "न्यूनतम" : "min"} ${fmt(+S.pvVmin, 0)} / ${fmt(p.vmppHot, 1)} = <b>${p.nMin}</b></li>
+    <li><b>${ne ? "स्ट्रिङ" : "Strings"}</b>: ${fmt(+S.pvIinv, 0)} A / ${fmt(+S.pvIsc, 1)} A Isc = <b>${p.maxStrings}</b>; ${ne ? "सुरक्षा चाहिने नियम" : "protection needed when"} 1.35 × IRM &lt; (Ns − 1) × Isc${+S.pvIrm ? "" : (ne ? " (IRM थाहा नभए दुईभन्दा बढी स्ट्रिङमा चाहिन्छ)" : " (without IRM: more than two strings)")}</li>
+    <li><b>${ne ? "DC तार" : "DC cable"}</b>: I = 1.25 × Isc = ${fmt(1.25 * (+S.pvIsc), 1)} A; ${ne ? "ड्रप ≤ ३ %" : "drop at most 3 %"}${cableErr ? `; ${esc(cableErr)}` : ""}</li></ol>`;
+}
+
+// ---- Load list table (building job)
+function loadTable() {
+  const rows = (S.loads || []).map((l, i) => `<tr><td><select name="ld_${i}_type" aria-label="${tr("ldType")}">${Object.entries(LOAD_TYPES).map(([k, t]) =>
+    `<option value="${k}"${l.type === k ? " selected" : ""}>${esc(S.lang === "ne" ? t.ne : t.en)}</option>`).join("")}</select></td>
+    <td><input type="number" name="ld_${i}_qty" value="${esc(l.qty)}" min="0" step="1" inputmode="numeric" aria-label="${tr("ldQty")}"></td>
+    <td><input type="number" name="ld_${i}_kw" value="${esc(l.kw)}" min="0" step="any" inputmode="decimal" aria-label="${tr("ldKw")}"></td>
+    <td><button type="button" class="icon-btn" data-del-load="${i}" aria-label="${tr("ldDel")}">${ic("x", 16)}</button></td></tr>`).join("");
+  return `<div class="field"><span class="lbl">${tr("loadList")}</span><div class="tablewrap"><table class="loads"><thead><tr><th class="l">${tr("ldType")}</th><th>${tr("ldQty")}</th><th>${tr("ldKw")}</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>
+    <button type="button" class="btn ghost" data-add-load>${ic("plug", 16)} ${tr("ldAdd")}</button></div>`;
+}
+
 // ---------- events ----------
 function readField(el) {
   if (el.type === "checkbox") return el.checked;
@@ -874,6 +1202,8 @@ function readField(el) {
 const form = $("#f");
 form.addEventListener("input", (e) => {
   if (!e.target.name) return;
+  const ld = /^ld_(\d+)_(type|qty|kw)$/.exec(e.target.name);
+  if (ld) { if (S.loads?.[+ld[1]]) S.loads[+ld[1]][ld[2]] = readField(e.target); save(); compute(); return; }
   S[e.target.name] = readField(e.target);
   if (e.target.hasAttribute("data-struct")) onStruct(e.target.name);
   save(); compute();

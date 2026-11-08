@@ -4,7 +4,7 @@
 
 /** Starting current multiples (× full-load current) and power factor at start. */
 export const STARTERS = {
-  dol: { mult: 6, pf: 0.3, en: "Direct-on-line (DOL) starter", ne: "डाइरेक्ट अन लाइन (DOL) स्टार्टर" },
+  dol: { mult: 6, pf: 0.35, en: "Direct-on-line (DOL) starter", ne: "डाइरेक्ट अन लाइन (DOL) स्टार्टर" },
   sd: { mult: 2.5, pf: 0.35, en: "Star-delta starter", ne: "स्टार-डेल्टा स्टार्टर" },
   soft: { mult: 3.5, pf: 0.35, en: "Soft starter", ne: "सफ्ट स्टार्टर" },
   vfd: { mult: 1.2, pf: 0.85, en: "VFD / inverter drive", ne: "VFD / इन्भर्टर ड्राइभ" },
@@ -29,6 +29,8 @@ export const EV = {
 
 /** NEA domestic meter categories (single phase), A. */
 export const NEA_METERS = [5, 15, 30, 60];
+
+import { demandCalc } from "./planning.js";
 
 const A = (en, ne) => ({ en, ne });
 
@@ -151,6 +153,40 @@ export const JOBS = {
     defaults: { lineKv: "11", lineKva: 1000, linePf: 0.9, lineType: "acsr", lineKm: 8, lineCct: "1" },
   },
 
+  building: {
+    level: "LV", icon: "building", kind: "main",
+    en: "Whole building: add up the loads", ne: "पूरै भवन: भारको जोड",
+    fields: () => ["loadList", "growthPct", "ksOverride"],
+    defaults: { loads: [{ type: "lighting", qty: 1, kw: 4 }, { type: "sockets", qty: 1, kw: 10 }, { type: "ac", qty: 4, kw: 1.6 }, { type: "motor", qty: 1, kw: 7.5 }],
+      growthPct: 25, ksOverride: "" },
+    toInput(a) {
+      const rows = (a.loads || []).map((l) => ({ type: l.type, qty: +l.qty || 0, kw: +l.kw || 0 }));
+      const d = demandCalc({ rows, ksOverride: +a.ksOverride || null, growthPct: +a.growthPct || 0 });
+      return { input: { system: "3ph", voltage: 400, load: { power: Math.max(d.requiredKVA, 0.01), unit: "kVA", pf: 0.9 }, designMargin: 0, motorFactor: 1 },
+        assumptions: [
+          A(`Each load is counted at its input kVA (kW ÷ power factor), then reduced by its utilisation factor ku (lighting, heating, AC and EV 1, motors 0.75, sockets 0.2; Electrical Installation Guide 2018, chapter A).`,
+            `हरेक भार इनपुट kVA (kW ÷ पावर फ्याक्टर) मा गनिन्छ, अनि यसको ku (बत्ती, हिटर, AC, EV: १; मोटर ०.७५; सकेट ०.२) ले घटाइन्छ।`),
+          A(`Diversity ks ${d.ks} for ${d.rows.length} load groups (IEC 61439-2: 2-3 groups 0.9, 4-5 0.8, 6-9 0.7, 10 or more 0.6; mainly lighting 1), then ${a.growthPct} % for growth. Override ks only if you know better.`,
+            `${d.rows.length} भार समूहका लागि डाइभर्सिटी ks ${d.ks} (IEC 61439-2), त्यसपछि ${a.growthPct} % भविष्यका लागि। राम्रोसँग थाहा भए मात्र ks बदल्नुहोस्।`),
+        ], kind: "main", demand: d };
+    },
+  },
+
+  pfc: {
+    level: "LV", icon: "pfc", kind: "pfc",
+    en: "Power factor correction (capacitor bank)", ne: "पावर फ्याक्टर सुधार (क्यापासिटर)",
+    fields: (a) => ["pfcKw", "pfcPf1", "pfcPf2", "pfcMode", ...(a.pfcMode === "motor" ? ["pfcIo"] : []), "pfcNll"],
+    defaults: { pfcKw: 100, pfcPf1: 0.75, pfcPf2: 0.95, pfcMode: "global", pfcNll: 0, pfcIo: "" },
+  },
+
+  pv: {
+    level: "LV", icon: "pv", kind: "pv",
+    en: "Solar panel strings and DC cable", ne: "सोलार प्यानल स्ट्रिङ र DC तार",
+    fields: () => ["pvVoc", "pvVmpp", "pvIsc", "pvCoef", "pvVinv", "pvVmin", "pvIinv", "pvStrings", "pvModules", "pvModuleW", "pvInvKW", "pvIrm", "pvLen"],
+    defaults: { pvVoc: 49.5, pvVmpp: 41.5, pvIsc: 13.9, pvCoef: -0.28, pvVinv: 600, pvVmin: 120, pvIinv: 32, pvStrings: 2, pvModules: 0,
+      pvModuleW: 550, pvInvKW: 10, pvIrm: "", pvLen: 30 },
+  },
+
   hvfeed: {
     level: "HV", icon: "hv",
     en: "11 or 33 kV cable to a transformer", ne: "ट्रान्सफर्मरसम्म ११/३३ kV केबल",
@@ -183,9 +219,9 @@ export const ROUTES = {
 };
 
 export const REGIONS = {
-  terai: { air: 45, ground: 35, elev: 150, en: "Terai / Madhesh (Biratnagar, Birgunj, Nepalgunj, Dhangadhi)", ne: "तराई / मधेस (विराटनगर, वीरगञ्ज, नेपालगञ्ज, धनगढी)" },
-  hills: { air: 35, ground: 25, elev: 1400, en: "Hills and valleys (Kathmandu, Pokhara, Dhankuta, Tansen)", ne: "पहाड र उपत्यका (काठमाडौं, पोखरा, धनकुटा, तानसेन)" },
-  mountain: { air: 25, ground: 20, elev: 2500, en: "High hills and mountains (above 2000 m)", ne: "उच्च पहाड र हिमाल (२००० मिटरभन्दा माथि)" },
+  terai: { air: 45, ground: 35, elev: 150, tMin: 5, exposure: "medium", en: "Terai / Madhesh (Biratnagar, Birgunj, Nepalgunj, Dhangadhi)", ne: "तराई / मधेस (विराटनगर, वीरगञ्ज, नेपालगञ्ज, धनगढी)" },
+  hills: { air: 35, ground: 25, elev: 1400, tMin: -3, exposure: "medium", en: "Hills and valleys (Kathmandu, Pokhara, Dhankuta, Tansen)", ne: "पहाड र उपत्यका (काठमाडौं, पोखरा, धनकुटा, तानसेन)" },
+  mountain: { air: 25, ground: 20, elev: 2500, tMin: -15, exposure: "high", en: "High hills and mountains (above 2000 m)", ne: "उच्च पहाड र हिमाल (२००० मिटरभन्दा माथि)" },
 };
 
 /** Which adapter + method a route uses for a job under the chosen standard. */

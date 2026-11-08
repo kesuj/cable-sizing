@@ -129,3 +129,41 @@ the PE if its cross-section passes that check.
 TN systems: Zs × Ia ≤ U0, with Ia the current that trips the device in 0.4 s (final circuits ≤ 32 A)
 or 5 s (distribution). Nepal LV networks are generally TT at the customer end, so an RCD (30 mA for
 sockets, 100–300 mA for main) is what provides the fast disconnection. See `research/world_practice.md`.
+
+## 12. Minimum short circuit (far-end fault)
+The instantaneous trip must operate for the smallest fault the circuit can produce, at the far end of the cable.
+Using the conventional method (80 % of the voltage is available during the fault):
+
+  Lmax = 0.8 · U · S / (ρ · (1 + m) · Ia)
+
+U = Uo for phase-neutral or phase-PE faults, √3·Uo for phase-phase faults on 3-wire circuits; S = phase cross-section;
+m = S / S(return conductor); ρ = 0.023 Ω·mm²/m for copper and 0.037 for aluminium at fault temperature; Ia = current that
+certainly trips the device: MCB curve B 5 × In, C 10 × In, D 20 × In; MCCB magnetic setting 10 × In plus 20 % tolerance = 12 × In.
+In TN systems the phase-PE loop is also checked, with m = S / S(PE) from the earth conductor table.
+The engine adds this as a sizing criterion ("far-end fault must trip the breaker"). Check: 10 mm² copper, 3-wire 400 V,
+MCCB 700 A ±20 % gives 83 m, the Electrical Installation Guide's worked example (p258).
+
+## 13. TT earth fault
+RA × IΔn ≤ 50 V (25 V in worksites and agricultural premises). Highest earth resistance per RCD sensitivity at 50 V:
+30 mA 1,666 Ω; 100 mA 500 Ω; 300 mA 166 Ω; 500 mA 100 Ω. Disconnection times at 230 V: TT 0.2 s, TN 0.4 s for final circuits
+(≤ 32 A fixed, ≤ 63 A with sockets); distribution circuits TT 1 s, TN 5 s.
+
+## 14. Third-harmonic neutral current
+Neutral current = 3 × h3 × phase current (maximum 3×). h3 up to 15 %: size on phase current. 15 to 33 %: phase current, factor 0.86,
+neutral full size. 33 to 45 %: neutral current, factor 0.86. Above 45 %: neutral current, factor 1.0. Four- or five-core cable required.
+
+## 15. Demand of a building
+Input kVA = kW / power factor; × ku (lighting, heating, AC, EV 1; motors 0.75; sockets 0.2); × ks for the number of circuit groups
+(IEC 61439-2: 1 group 1.0; 2-3: 0.9; 4-5: 0.8; 6-9: 0.7; 10 or more: 0.6; mainly lighting 1.0); × growth. Current = kVA·1000 / (√3·400).
+
+## 16. Power factor correction
+Qc = P (tan φ1 − tan φ2). Capacitor current IN = Q / (√3·U). Breaker long-time 1.5 × IN (1.31 × IN with a 5.7 % reactor), short-time 10 × IN.
+Non-linear load share ≤ 10 %: standard capacitor; ≤ 20 %: heavy-duty; above: detuned reactor. Motor capacitor: about 25 % of motor kW,
+never above 0.9 × Io × U × √3; reduce the overload relay setting by cos φ before / cos φ after.
+
+## 17. Solar strings
+Modules per string: N ≤ Vinv,max / Voc(Tmin) and N ≥ Vmppt,min / Vmpp(Tcell,max), with V(T) = V25 × (1 + coef × (T − 25)).
+Strings in parallel ≤ inverter maximum current / Isc. String protection when 1.35 × IRM < (Ns − 1) × Isc (more than two strings if IRM is unknown),
+rated 1.5 to 2.4 × Isc. DC voltage drop at most 3 %. Above 120 V DC use double insulation.
+
+Source for sections 12 to 17: Schneider Electric, Electrical Installation Guide 2018, chapters F, G, J, L and P. The tests in tests/ reproduce its worked examples.
