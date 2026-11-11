@@ -3251,7 +3251,7 @@ document.addEventListener("click", (e) => {
   save(); renderForm(); compute(); renderExamples();
 });
 $("#copy").addEventListener("click", async () => {
-  const t = [$("#answer").innerText, "", $("#working").innerText].join("\n");
+  const t = $("#answer").innerText;
   try { await navigator.clipboard.writeText(t); $("#copy").textContent = "Copied"; } catch { $("#copy").textContent = "Copy failed — use Print"; }
   setTimeout(() => ($("#copy").textContent = "Copy result"), 1800);
 });
