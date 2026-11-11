@@ -290,7 +290,6 @@ function sheathPrint(parts) {
 function renderResult() {
   const { res, err, notes, A } = last;
   const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
-  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
   $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`;
   $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
   if (err) {
@@ -772,7 +771,6 @@ function lineSpec() {
 
 function renderLineResult(r) {
   const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
-  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
   $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`;
   $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
   const c = r.chosen, s = r.spec, ne = S.lang === "ne";
@@ -1101,7 +1099,6 @@ function testsBlock(res) {
 function renderPfc() {
   const ne = S.lang === "ne" && !eng();
   const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
-  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
   $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`; $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
   drawCable($("#xsec"), null); $("#xsec-cap").textContent = "";
   const kw = +S.pfcKw, pf1 = +S.pfcPf1, pf2 = +S.pfcPf2;
@@ -1141,7 +1138,6 @@ function renderPfc() {
 function renderPv() {
   const ne = S.lang === "ne" && !eng();
   const ans = $("#answer"), work = $("#working"), sticky = $("#sticky");
-  $("#w-h").innerHTML = `${ic("calc", 22)} ${tr("calcTitle")}`;
   $("#copy").innerHTML = `${ic("copy", 16)} ${tr("copy")}`; $("#print").innerHTML = `${ic("print", 16)} ${tr("print")}`;
   drawCable($("#xsec"), null); $("#xsec-cap").textContent = "";
   const reg = NP_REGIONS[S.region] || NP_REGIONS.hills;
